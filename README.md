@@ -5,7 +5,9 @@ Two words, endless possibilities.
 <img width="426" height="240" alt="showcaseGif" src="https://github.com/user-attachments/assets/94bff7f7-ccc9-40c0-acdd-65a3b8586470" />
 
 Download & try here:
+
 https://ai-zamden.itch.io/searchuse
+
 To launch:
 - Press download
 - In files, locate the zip, right click, and press extract all
