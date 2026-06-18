@@ -21,3 +21,7 @@ What Searchuse is all about
 - Use strategic thinking to create plans
 - Use logical deduction/reasoning to infer deeper layers of information about the enemy
 - Don't step on landmines!!
+
+Credits:
+- Some sound effects are from games such as Minecraft, CS2, Last Day on Earth, etc.
+- Some items are inspired by the games as mentioned above such as Invis Pot, Bandages, AWP, etc.
