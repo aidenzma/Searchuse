@@ -24,3 +24,8 @@ What Searchuse is all about
 Credits:
 - Some sound effects are from games such as Minecraft, CS2, Last Day on Earth, etc.
 - Some items are inspired by the games mentioned above such as Invis Pot, Bandages, AWP, etc.
+
+AI:
+- I used AI for low-level help such as setting the positions of objects in game
+- AI helped me configure the online relay feature of the game
+- Most of the code and all of the art assets were made by me
