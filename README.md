@@ -30,6 +30,7 @@ Controls:
 - S to open stats book
 - L to open terrain drop chances
 - T to see how many turns it's been
+- If the screen is stuck in fullscreen press alt + shift + enter to exit
 
 Credits:
 - Some sound effects are from games such as Minecraft, CS2, Last Day on Earth, etc.
