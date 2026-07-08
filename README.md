@@ -21,6 +21,16 @@ What Searchuse is all about
 - Use logical deduction/reasoning to infer deeper layers of information about the enemy
 - Don't step on landmines!!
 
+Controls:
+- Arrow keys to move
+- R to replay enemy action
+- I to open inventory
+- C to open items on cooldown
+- B to open book inventory
+- S to open stats book
+- L to open terrain drop chances
+- T to see how many turns it's been
+
 Credits:
 - Some sound effects are from games such as Minecraft, CS2, Last Day on Earth, etc.
 - Some items are inspired by the games mentioned above such as Invis Pot, Bandages, AWP, etc.
