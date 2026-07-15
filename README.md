@@ -30,6 +30,7 @@ Controls:
 - S to open stats book
 - L to open terrain drop chances
 - T to see how many turns it's been
+- V to change the volume
 - If the screen is stuck in fullscreen press alt + shift + enter to exit
 
 Credits:
