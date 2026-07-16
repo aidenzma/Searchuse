@@ -55,4 +55,6 @@ Credits:
 AI:
 - I used AI for low-level help such as setting the positions of objects in game
 - AI helped me configure the online relay feature of the game
+- AI heavily helped me with the neural network logic
+- AI helped me a lot in the build process for Linux and Web
 - Most of the code and all of the art assets were made by me
