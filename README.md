@@ -27,7 +27,7 @@ To launch:
 -     Double-click "Searchuse Linux.x86_64"
 
 
-- Play bot or play a friend using the join code
+Play bot or play a friend using the join code
 
 What Searchuse is all about
 - Move, Search and Use
