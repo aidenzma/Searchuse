@@ -26,6 +26,7 @@ To launch:
 -     Go to the Permissions tab and check the box for "Allow executing file as program"/"Is executable"
 -     Double-click "Searchuse Linux.x86_64"
 
+
 - Play bot or play a friend using the join code
 
 What Searchuse is all about
