@@ -142,7 +142,9 @@ public class LocalScript : NetworkBehaviour
     public GameObject movesText;
     public RectTransform CANVAS;
     public AudioSource audioSource;
+    public AudioSource musicSource;
     public AudioClip[] sounds;
+    public AudioClip[] musics;
     int actionsLength = 32;
     //public NetworkList<GameObject> playersList = new NetworkList<GameObject>();
     public List<int> myEffectLengths = new List<int>();
@@ -239,9 +241,16 @@ public class LocalScript : NetworkBehaviour
     List<int> spectatorCombinedVG;
 
     public Slider volumeSlider;
+    public Slider musicVolumeSlider;
     public GameObject mainMenuButton;
     public RestartGame restartGame;
 
+    IEnumerator PlayMusic() {
+        while (true) {
+            yield return StartCoroutine(PlayMusicAndWait(musics[0]));
+            yield return new WaitForSeconds(UnityEngine.Random.Range(1f, 10f));
+        }
+    }
     void NetworkEnable() {
         if (NetworkManager.Singleton != null) {
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
@@ -258,6 +267,7 @@ public class LocalScript : NetworkBehaviour
         NetworkEnable();
         StartCoroutine(StartCR());
         volumeSlider.onValueChanged.AddListener(ChangeVolume);
+        musicVolumeSlider.onValueChanged.AddListener(ChangeMusicVolume);
     }
     IEnumerator StartCR() {
         while (!spectatorSet) { 
@@ -299,6 +309,10 @@ public class LocalScript : NetworkBehaviour
     void ChangeVolume(float val) {
         audioSource.volume = val / 100;
         volumeSlider.transform.Find("SliderText").GetComponent<TextMeshProUGUI>().text = val.ToString();
+    }
+    void ChangeMusicVolume(float val) {
+        musicSource.volume = val / 100;
+        musicVolumeSlider.transform.Find("SliderText").GetComponent<TextMeshProUGUI>().text = val.ToString();
     }
     void UpdateSliderText(float val) {
         GameObject ST = UAATSlider.transform.Find("SliderText")?.gameObject;
@@ -671,6 +685,7 @@ public class LocalScript : NetworkBehaviour
     int healthInitialConfirm = 0;
     IEnumerator StartGameRpc()
     {
+        StartCoroutine(PlayMusic());
         Debug.Log("Game Start");
         //yield return null;
         //yield return new WaitForSeconds(0.2f);
@@ -1485,9 +1500,11 @@ public class LocalScript : NetworkBehaviour
     IEnumerator ToggleVolume() {
         if (volumeShown) {
             volumeSlider.gameObject.SetActive(false);
+            musicVolumeSlider.gameObject.SetActive(false);
             volumeShown = false;
         } else {
             volumeSlider.gameObject.SetActive(true);
+            musicVolumeSlider.gameObject.SetActive(true);
             volumeShown = true;
         }
         yield return null;
@@ -3812,6 +3829,10 @@ public class LocalScript : NetworkBehaviour
     }
     IEnumerator PlaySoundAndWait(AudioClip clip) {
         StartCoroutine(PlaySound(clip));
+        yield return new WaitForSeconds(clip.length);
+    }
+    IEnumerator PlayMusicAndWait(AudioClip clip) {
+        musicSource.PlayOneShot(clip);
         yield return new WaitForSeconds(clip.length);
     }
     IEnumerator RemoveItems(List<int> inv, int index, int uaat) {
