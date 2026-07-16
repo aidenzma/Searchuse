@@ -8,15 +8,19 @@ Download & try here:
 https://ai-zamden.itch.io/searchuse
 
 To launch:
+
 **Browser:**
 -   Find the itch.io page (demo)
 -   Press "Run game"
+
 **Download zip:**
 -   Press download
 -   In files, locate the zip, right click, and press extract all
 -   Find the folder you extracted to
-  **Windows:**
+
+    **Windows:**
 -     Double-click "Searchuse 2.exe"
+
   **Linux:**
 -     Right-click "Searchuse Linux.x86_64" and select Properties
 -     Go to the Permissions tab and check the box for "Allow executing file as program"/"Is executable"
