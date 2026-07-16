@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerScript : NetworkBehaviour
 {
+    public NetworkVariable<bool> amSpectator = new NetworkVariable<bool>(false);
     public NetworkVariable<int> playerNum = new NetworkVariable<int>(0);
     public NetworkVariable<int> position = new NetworkVariable<int>(0);
     public int botNum = 0;
