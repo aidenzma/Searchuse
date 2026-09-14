@@ -29,6 +29,9 @@ public class LocalScript : NetworkBehaviour
     public Sprite[] terrain;
     public NetworkList<int> GRID = new NetworkList<int>(); //GRID is 1+
     //public List<int> GRID;
+    public NetworkList<float> GAS = new NetworkList<float>();
+    int gasTurn = 0;
+    public GameObject gasFolder;
     public List<float> GRIDX = new List<float>();
     public List<float> GRIDY = new List<float>();
     public List<float> smokes = new List<float>();
@@ -62,6 +65,7 @@ public class LocalScript : NetworkBehaviour
     public int myPosition; //myPosition is 1+
     public bool amSpectator = false;
     public static int gamemode = 0;
+    public int mapMode = 0;
     public PlayerScript myPlayerScript;
     float limitCoefficientX;
     float limitCoefficientY;
@@ -93,16 +97,23 @@ public class LocalScript : NetworkBehaviour
     public GameObject useButton;
     public GameObject OKButton;
     public GameObject OKButton2;
+    public GameObject OKButton3;
+    public GameObject OKButton4;
+    public GameObject OKButton5;
     public GameObject XButton;
     public GameObject XButton2;
     public GameObject XButton3;
+    public GameObject XButton4;
     public GameObject NoButton;
+    public GameObject NoButton2;
     public GameObject itemDescription;
     int buttonClicked = 0;
     int useItem = 0;
+    bool searchDisabled;
     bool useDisabled;
     bool searchused;
     bool searching = false;
+    bool useing = false;
     public Sprite[] buttons;
     public List<List<int>> itemInts = new List<List<int>>();
     public List<List<List<int>>> itemIntLists = new List<List<List<int>>>();
@@ -119,6 +130,7 @@ public class LocalScript : NetworkBehaviour
     public int maxHealth = 100;
     public int HEALTH; 
     float pseudoHealth;
+    float pseudoMaxHealth;
     public List<int> healths = new List<int>();
     public List<int> maxHealths = new List<int>();
     List<int> prevHealths = new List<int>();
@@ -126,12 +138,16 @@ public class LocalScript : NetworkBehaviour
     List<int> playersDeltaHealth = new List<int>();
     List<bool> enemyHealthsVisible = new List<bool>();
     public float armorCoefficient = 1;
-    public List<int> INVENTORY = new List<int>(); // INVENTORY is 1+
+    public List<InventoryItem> INVENTORY = new List<InventoryItem>(); // INVENTORY is 1+
+    List<InventoryItem> prevInv;
     public List<int> bookInventory = new List<int>();
     public GameObject useOptionsScroll;
     public GameObject useOptions;
     public Transform useOptionsTF;
     public GameObject elementPrefab;
+    public GameObject modifierOptionsScroll;
+    public GameObject modifierOptions;
+    public Transform modifierOptionsTF;
     public GameObject bulletPrefab;
     public GameObject explosionPrefab;
     public Sprite[] bulletCostumes;
@@ -145,7 +161,8 @@ public class LocalScript : NetworkBehaviour
     public AudioSource musicSource;
     public AudioClip[] sounds;
     public AudioClip[] musics;
-    int actionsLength = 32;
+    int actionsLength = 33;
+    int modifiersLength = 1;
     //public NetworkList<GameObject> playersList = new NetworkList<GameObject>();
     public List<int> myEffectLengths = new List<int>();
     public List<int> myEffects = new List<int>();
@@ -245,6 +262,24 @@ public class LocalScript : NetworkBehaviour
     public GameObject mainMenuButton;
     public RestartGame restartGame;
 
+    public List<GameObject> gases;
+    public Sprite gasCostume;
+    List<float> prevGas;
+    List<float> prevGas1;
+    public GameObject getBetterDurability;
+
+    public GameObject TutorialIcons;
+    public GameObject[] TuIList;
+    public Sprite[] TuICostumes;
+    
+    bool CompareInventoryItems(InventoryItem A, InventoryItem B) {
+        bool same = true;
+        if (A.itemNum != B.itemNum) same = false;
+        if (A.durability != B.durability) same = false;
+        if (A.maxDurability != B.maxDurability) same = false;
+        return same;
+    }
+    
     IEnumerator PlayMusic() {
         while (true) {
             yield return StartCoroutine(PlayMusicAndWait(musics[0]));
@@ -281,16 +316,22 @@ public class LocalScript : NetworkBehaviour
         }
         
         if (!amSpectator) {
-            AddClickListener(searchButton, () => OnImageClicked("Search"), () => OnImageEnter("Search"), () => OnImageExit("Search"));
-            AddClickListener(useButton, () => OnImageClicked("Use"), () => OnImageEnter("Use"), () => OnImageExit("Use"));
-            AddClickListener(OKButton, () => OnImageClicked("OK"), () => OnImageEnter("OK"), () => OnImageExit("OK"));
-            AddClickListener(OKButton2, () => OnImageClicked("OK2"), () => OnImageEnter("OK2"), () => OnImageExit("OK2"));
-            AddClickListener(XButton, () => OnImageClicked("X"), () => OnImageEnter("X"), () => OnImageExit("X"));
-            AddClickListener(XButton2, () => OnImageClicked("X2"), () => OnImageEnter("X2"), () => OnImageExit("X2"));
-            AddClickListener(NoButton, () => OnImageClicked("No"), () => OnImageEnter("No"), () => OnImageExit("No"));
-            AddClickListener(airdropOptions[0], () => OnImageClicked("Airdrop1"), () => OnImageEnter("Airdrop1"), () => OnImageExit("Airdrop1"));
-            AddClickListener(airdropOptions[1], () => OnImageClicked("Airdrop2"), () => OnImageEnter("Airdrop2"), () => OnImageExit("Airdrop2"));
-            AddClickListener(airdropOptions[2], () => OnImageClicked("Airdrop3"), () => OnImageEnter("Airdrop3"), () => OnImageExit("Airdrop3"));
+            AddClickListener(searchButton, () => OnImageClicked("Search"), () => OnImageEnter("Search", searchButton), () => OnImageExit("Search", searchButton));
+            AddClickListener(useButton, () => OnImageClicked("Use"), () => OnImageEnter("Use", useButton), () => OnImageExit("Use", useButton));
+            AddClickListener(OKButton, () => OnImageClicked("OK"), () => OnImageEnter("OK", OKButton), () => OnImageExit("OK", OKButton));
+            AddClickListener(OKButton2, () => OnImageClicked("OK2"), () => OnImageEnter("OK", OKButton2), () => OnImageExit("OK", OKButton2));
+            AddClickListener(OKButton3, () => OnImageClicked("OK3"), () => OnImageEnter("OK", OKButton3), () => OnImageExit("OK", OKButton3));
+            AddClickListener(OKButton4, () => OnImageClicked("OK4"), () => OnImageEnter("OK", OKButton4), () => OnImageExit("OK", OKButton4));
+            AddClickListener(OKButton5, () => OnImageClicked("OK5"), () => OnImageEnter("OK", OKButton5), () => OnImageExit("OK", OKButton5));
+            //OK6 is being used for something
+            AddClickListener(XButton, () => OnImageClicked("X"), () => OnImageEnter("X", XButton), () => OnImageExit("X", XButton));
+            AddClickListener(XButton2, () => OnImageClicked("X2"), () => OnImageEnter("X", XButton2), () => OnImageExit("X", XButton2));
+            AddClickListener(XButton4, () => OnImageClicked("X4"), () => OnImageEnter("X", XButton4), () => OnImageExit("X", XButton4));
+            AddClickListener(NoButton, () => OnImageClicked("No"), () => OnImageEnter("No", NoButton), () => OnImageExit("No", NoButton));
+            AddClickListener(NoButton2, () => OnImageClicked("No2"), () => OnImageEnter("No2", NoButton2), () => OnImageExit("No", NoButton2));
+            AddClickListener(airdropOptions[0], () => OnImageClicked("Airdrop1"), () => OnImageEnter("Airdrop1", airdropOptions[0]), () => OnImageExit("Airdrop1", airdropOptions[0]));
+            AddClickListener(airdropOptions[1], () => OnImageClicked("Airdrop2"), () => OnImageEnter("Airdrop2", airdropOptions[1]), () => OnImageExit("Airdrop2", airdropOptions[1]));
+            AddClickListener(airdropOptions[2], () => OnImageClicked("Airdrop3"), () => OnImageEnter("Airdrop3", airdropOptions[2]), () => OnImageExit("Airdrop3", airdropOptions[2]));
             Debug.Log($"IsOwner: {IsOwner}, IsServer: {IsServer}, OwnerClientId: {OwnerClientId}");
             /*if (NetworkManager.Singleton.IsServer)
             {
@@ -300,10 +341,10 @@ public class LocalScript : NetworkBehaviour
             }*/
             UAATSliderButton = UAATSlider.transform.Find("Button")?.gameObject;
             if (UAATSliderButton) {
-                AddClickListener(UAATSliderButton, () => OnImageClicked("UAATOK"), () => OnImageEnter("UAATOK"), () => OnImageExit("UAATOK"));
+                AddClickListener(UAATSliderButton, () => OnImageClicked("UAATOK"), () => OnImageEnter("UAATOK", UAATSliderButton), () => OnImageExit("UAATOK", UAATSliderButton));
             }
             UAATSlider.onValueChanged.AddListener(UpdateSliderText);
-            AddClickListener(XButton3, () => OnImageClicked("X3"), () => OnImageEnter("X3"), () => OnImageExit("X3"));
+            AddClickListener(XButton3, () => OnImageClicked("X3"), () => OnImageEnter("X", XButton3), () => OnImageExit("X", XButton3));
         }
     }
     void ChangeVolume(float val) {
@@ -342,11 +383,16 @@ public class LocalScript : NetworkBehaviour
     {
         if (imageName == "Search")
         {
-            buttonClicked = 1;
+            if (!searchDisabled) {
+                buttonClicked = 1;
+            }
+            
         }
         else if (imageName == "Use")
         {
-            buttonClicked = 2;
+            if (!useDisabled) {
+                buttonClicked = 2;
+            }
         }
         else if (imageName == "OK")
         {
@@ -355,6 +401,21 @@ public class LocalScript : NetworkBehaviour
         else if (imageName == "OK2")
         {
             buttonClicked = 8;
+        }
+        else if (imageName == "OK3")
+        {
+            buttonClicked = 10;
+        }
+        else if (imageName == "OK4")
+        {
+            ToggleDurability(null);
+        }
+        else if (imageName == "OK5")
+        {
+            buttonClicked = 13;
+        }
+        else if (imageName == "OK6") {
+            buttonClicked = 14;
         }
         else if (imageName == "X")
         {
@@ -372,9 +433,17 @@ public class LocalScript : NetworkBehaviour
         {
             buttonClicked = 7;
         }
+        else if (imageName == "X4") 
+        {
+            buttonClicked = 11;
+        }
         else if (imageName == "No")
         {
             buttonClicked = 9;
+        }
+        else if (imageName == "No2") 
+        {
+            buttonClicked = 12;
         }
         else if (imageName == "Airdrop1")
         {
@@ -408,106 +477,111 @@ public class LocalScript : NetworkBehaviour
             }
         }
     }
-    void OnImageEnter(string imageName)
+    void OnImageEnter(string imageName, GameObject btn)
     {
         GameObject buttonObject = null;
         if (imageName == "Search")
         {
-            buttonObject = searchButton;
-            buttonObject.GetComponent<Image>().sprite = buttons[1];
+            /*buttonObject = searchButton;
+            buttonObject.GetComponent<Image>().sprite = buttons[1];*/
+            if (!searchDisabled) {
+                btn.GetComponent<Image>().sprite = buttons[1];
+            }
         }
         else if (imageName == "Use")
         {
-            buttonObject = useButton;
-            if (!useDisabled)
-                buttonObject.GetComponent<Image>().sprite = buttons[3];
+            //buttonObject = useButton;
+            if (!useDisabled) {
+                //buttonObject.GetComponent<Image>().sprite = buttons[3];
+                btn.GetComponent<Image>().sprite = buttons[3];
+            }
         }
         else if (imageName == "OK")
         {
-            OKButton.GetComponent<Image>().sprite = buttons[5];
-        }
-        else if (imageName == "OK2") 
-        {
-            OKButton2.GetComponent<Image>().sprite = buttons[5];
+            btn.GetComponent<Image>().sprite = buttons[5];
         }
         else if (imageName == "X")
         {
-            XButton.GetComponent<Image>().sprite = buttons[7];
-        }
-        else if (imageName == "X2")
-        {
-            XButton2.GetComponent<Image>().sprite = buttons[7];
+            btn.GetComponent<Image>().sprite = buttons[7];
         } else if (imageName == "UAATOK") {
-            UAATSliderButton.GetComponent<Image>().sprite = buttons[5];
-        } else if (imageName == "X3") {
-            XButton3.GetComponent<Image>().sprite = buttons[7];
+            btn.GetComponent<Image>().sprite = buttons[5];
         }
         else if (imageName == "No") {
             if (NoButtonMode == 1) {
-                NoButton.GetComponent<Image>().sprite = buttons[9];
+                btn.GetComponent<Image>().sprite = buttons[9];
             } else if (NoButtonMode == 2) {
-                NoButton.GetComponent<Image>().sprite = buttons[11];
+                btn.GetComponent<Image>().sprite = buttons[11];
+            }
+        }
+        else if (imageName == "No2") {
+            if (NoButtonMode2 == 1) {
+                btn.GetComponent<Image>().sprite = buttons[9];
+            } else if (NoButtonMode2 == 2) {
+                btn.GetComponent<Image>().sprite = buttons[11];
             }
         }
         if (imageName == "Search" || imageName == "Use")
         {
-            if (!(imageName == "Use" && useDisabled))
+            if (!((imageName == "Use" && useDisabled) || (imageName == "Search" && searchDisabled)))
             {
-                Color color = buttonObject.GetComponent<Image>().color;
+                Color color = btn.GetComponent<Image>().color;
                 color.a = 1;
-                buttonObject.GetComponent<Image>().color = color;
+                btn.GetComponent<Image>().color = color;
             } 
         }
     }
-    void OnImageExit(string imageName)
+    void OnImageExit(string imageName, GameObject btn)
     {
         GameObject buttonObject = null;
         if (imageName == "Search")
         {
-            buttonObject = searchButton;
-            buttonObject.GetComponent<Image>().sprite = buttons[0];
+            /*buttonObject = searchButton;
+            buttonObject.GetComponent<Image>().sprite = buttons[0];*/
+            if (!searchDisabled) {
+                btn.GetComponent<Image>().sprite = buttons[0];
+            }
         }
         else if (imageName == "Use")
         {
-            buttonObject = useButton;
-            if (!useDisabled)
-                buttonObject.GetComponent<Image>().sprite = buttons[2];
+            //buttonObject = useButton;
+            if (!useDisabled) {
+                //buttonObject.GetComponent<Image>().sprite = buttons[2];
+                btn.GetComponent<Image>().sprite = buttons[2];
+            }
         }
         else if (imageName == "OK")
         {
-            OKButton.GetComponent<Image>().sprite = buttons[4];
-        }
-        else if (imageName == "OK2")
-        {
-            OKButton2.GetComponent<Image>().sprite = buttons[4];
+            btn.GetComponent<Image>().sprite = buttons[4];
         }
         else if (imageName == "X")
         {
-            XButton.GetComponent<Image>().sprite = buttons[6];
-        }
-        else if (imageName == "X2") 
-        {
-            XButton2.GetComponent<Image>().sprite = buttons[6];
+            btn.GetComponent<Image>().sprite = buttons[6];
         } else if (imageName == "UAATOK") {
-            UAATSliderButton.GetComponent<Image>().sprite = buttons[4];
-        } else if (imageName == "X3") {
-            XButton3.GetComponent<Image>().sprite = buttons[6];
+            btn.GetComponent<Image>().sprite = buttons[4];
         }
         else if (imageName == "No")
         {
             if (NoButtonMode == 1) {
-                NoButton.GetComponent<Image>().sprite = buttons[8];
+                btn.GetComponent<Image>().sprite = buttons[8];
             } else if (NoButtonMode == 2) {
-                NoButton.GetComponent<Image>().sprite = buttons[10];
+                btn.GetComponent<Image>().sprite = buttons[10];
+            }
+        }
+        else if (imageName == "No2")
+        {
+            if (NoButtonMode2 == 1) {
+                btn.GetComponent<Image>().sprite = buttons[8];
+            } else if (NoButtonMode2 == 2) {
+                btn.GetComponent<Image>().sprite = buttons[10];
             }
         }
         if (imageName == "Search" || imageName == "Use")
         {
-            if (!(imageName == "Use" && useDisabled))
+            if (!((imageName == "Use" && useDisabled) || (imageName == "Search" && searchDisabled)))
             {
-                Color color = buttonObject.GetComponent<Image>().color;
+                Color color = btn.GetComponent<Image>().color;
                 color.a = (166f / 255f);
-                buttonObject.GetComponent<Image>().color = color;
+                btn.GetComponent<Image>().color = color;
             }
         }
     }
@@ -543,12 +617,12 @@ public class LocalScript : NetworkBehaviour
     {
         
     }
-    public void AddItem(string name, List<int> itemClass, int rarity, int addToInv, List<float> weaponInfo, List<float> healingInfo, int cooldown, List<int> specific, bool usable, int takeFromInv, int maxStack, float movesChange, List<float> toolInfo, List<int> functions, List<float> armorInfo, List<float> trapInfo, List<string> specialNotes, List<int> soundIndexes, int drawSoundIndex, List<int> bulCostIndexes, int playSoundConsecutive, int maxUseAtATime, List<int> terrainRequirements, List<float> terrainChances, List<int> addAfterUse, List<int> prerequisites, List<int> effectsExclude, List<float> formatInfo)
+    public void AddItem(string name, List<int> itemClass, int rarity, int addToInv, List<float> weaponInfo, List<float> healingInfo, int cooldown, int maxDurability, List<int> durabilityDamageReasons, List<float> durabilityDamages, List<int> specific, bool usable, int takeFromInv, int maxStack, float movesChange, List<float> toolInfo, List<int> functions, List<float> armorInfo, List<float> trapInfo, List<string> specialNotes, List<int> soundIndexes, int drawSoundIndex, List<int> bulCostIndexes, int playSoundConsecutive, int maxUseAtATime, List<int> terrainRequirements, List<float> terrainChances, List<int> addAfterUse, List<int> prerequisites, List<int> effectsExclude, List<float> formatInfo, List<int> modifiableItems, List<float> modifierInfo)
     {
         itemStrings.Add(new List<string> {name});
-        itemIntLists.Add(new List<List<int>> {itemClass, specific, soundIndexes, bulCostIndexes, functions, terrainRequirements, addAfterUse, prerequisites, effectsExclude});
-        itemInts.Add(new List<int> {rarity, cooldown, takeFromInv, maxStack, playSoundConsecutive, maxUseAtATime, addToInv, drawSoundIndex});
-        itemInfos.Add(new List<List<float>> {weaponInfo, healingInfo, toolInfo, armorInfo, trapInfo, terrainChances, formatInfo});
+        itemIntLists.Add(new List<List<int>> {itemClass, specific, soundIndexes, bulCostIndexes, functions, terrainRequirements, addAfterUse, prerequisites, effectsExclude, modifiableItems, durabilityDamageReasons});
+        itemInts.Add(new List<int> {rarity, cooldown, takeFromInv, maxStack, playSoundConsecutive, maxUseAtATime, addToInv, drawSoundIndex, maxDurability});
+        itemInfos.Add(new List<List<float>> {weaponInfo, healingInfo, toolInfo, armorInfo, trapInfo, terrainChances, formatInfo, modifierInfo, durabilityDamages});
         itemBools.Add(new List<bool> {usable});
         itemFloats.Add(new List<float> {movesChange});
         itemStringLists.Add(new List<List<string>> {specialNotes});
@@ -561,6 +635,7 @@ public class LocalScript : NetworkBehaviour
             2 = "Healing"
             3 = "Tool"
             4 = "Armor"
+            5 = "Modifier"
             Specific:
             1 = "Gun"
             2 = "Bomb"
@@ -581,6 +656,7 @@ public class LocalScript : NetworkBehaviour
             17 = "Triggers trap"
             18 = "Luck"
             19 = "Powerup"
+            20 = "Attack modifier"
             */
             /*
             Rarity:
@@ -596,12 +672,20 @@ public class LocalScript : NetworkBehaviour
             /*
             weaponInfo: {
             0. range, 1. damage, 2. bullet spread, 3. fire num, 4. bullet speed, 5. stop in place(0, 1), 6. homing, 
-            7. suppressed(0, 1), 8. vision increase, 9. blast radius, 10. fuse time(seconds), 11. fire rate(seconds), 12. elevation increase, 13. bounce (0, 1), 14. explosion type
+            7. suppressed(0, 1), 8. vision increase, 9. blast radius, 10. fuse time(seconds), 11. fire rate(seconds), 12. elevation increase, 13. bounce (0, 1), 14. explosion type,
+            15. max health damage
             }
             healingInfo: {healing, healing time, max health healing}
             toolInfo: {triggers effect(0, 1), effect length, vision increase, stun length, movesChange, stun mode, luck, powerup(0, 1, 2), book rarity}
-            armorInfo: {armorSlot, armorPercentage, vision increase, xray(0, 1)}
+            armorInfo: {armorSlot, armorPercentage, vision increase, xray(0, 1), gasProtection}
             trapInfo: {type, damage, blast radius, costume index, fake blast radius}
+            modifierInfo: {armor pierce}
+            durabilityDamageReasons:
+            1 = take damage
+            2 = gas
+            durabilityDamages:
+            positive = coefficient
+            negative = base damage
             */
             /*
             Functions:
@@ -617,6 +701,7 @@ public class LocalScript : NetworkBehaviour
             10 = "Luck"
             11 = "UAV"
             12 = "Powerup"
+            13 = "Armor pierce" (should be modifier)
             */
             //maxStack = -1 represents infinity
             /*
@@ -631,45 +716,48 @@ public class LocalScript : NetworkBehaviour
     IEnumerator AddItems()
     {
         totalItems = 0;
-        AddItem("Beretta", new List<int>{1}, 3, 1, new List<float>{5, 20, 5, 1, 20, 0, 0, 0, 0, 0, 0, 0.2f, 0, 0, 0}, new List<float>{}, 0, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{2}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{46, 32, 264, 188});
-        AddItem("Bandages", new List<int>{2}, 2, 1, new List<float>{}, new List<float>{20, 1, 0}, 0, new List<int>{7}, true, 1, -1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{3, 4}, -1, new List<int>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{23, 23, 200, 112});
-        AddItem("MP5", new List<int>{1}, 4, 1, new List<float>{4, 8, 10, 3, 10, 0, 0, 0, 0, 0, 0, 0.05f, 0, 0, 0}, new List<float>{}, 0, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{5}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{87, 35, 276, 188});
-        AddItem("AWP", new List<int>{1}, 8, 1, new List<float>{12, 49, 3, 1, 50, 0, 0, 0, 5, 0, 0, 1, 0, 0, 0}, new List<float>{}, 2, new List<int>{1}, true, 0, 1, -1, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{6}, 24, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{148, 32, 260, 296});
-        AddItem("Grenade", new List<int>{1}, 3, 1, new List<float>{5, 70, 5, 1, 5, 1, 0, 0, 0, 5, 0.5f, 0.2f, 1, 1, 1}, new List<float>{}, 0, new List<int>{2}, true, 1, 3, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{7}, 25, new List<int>{2}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{14, 23, 284, 224});
-        AddItem("Karambit", new List<int>{1}, 5, 1, new List<float>{1, 50, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0.3f, 0, 0, 0}, new List<float>{}, 1, new List<int>{3}, true, 0, 1, 1, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{10, 11, 12}, 26, new List<int>{3, 4, 5, 6}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{24, 30, 278, 260});
-        AddItem("Invis Pot", new List<int>{3}, 4, 1, new List<float>{}, new List<float>{}, 2, new List<int>{4}, true, 1, -1, 0, new List<float>{1, 2, 0, 0, 0, 0, 0, 0, 0}, new List<int>{1}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{14}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{22, 30, 260, 148}); //tool
-        AddItem("Binoculars", new List<int>{3}, 3, 1, new List<float>{}, new List<float>{}, 5, new List<int>{5}, true, 0, 1, 0, new List<float>{1, 1, 10, 0, 0, 0, 0, 0, 0}, new List<int>{2}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{23, 11, 215, 184}); //tool
-        AddItem("Health Kit", new List<int>{2}, 7, 1, new List<float>{}, new List<float>{100, 1, 0}, 3, new List<int>{7}, true, 1, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{3, 4}, -1, new List<int>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{40, 25, 250, 160});
-        AddItem("Smoke Bomb", new List<int>{1, 3}, 2, 1, new List<float>{4, 0, 10, 1, 5, 1, 0, 0, 0, 4, 0.5f, 0.3f, 1, 1, 0}, new List<float>{}, 0, new List<int>{4, 6, 8}, true, 1, 5, 0, new List<float>{0, 3, 0, 0, 0, 0, 0, 0, 0}, new List<int>{3}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{7}, 25, new List<int>{7}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{12, 23, 252, 292}); //tool
-        AddItem("Flashbang", new List<int>{1, 3}, 4, 1, new List<float>{5, 0, 5, 1, 5, 1, 0, 0, 0, 0, 0.5f, 0.3f, 1, 1, 0}, new List<float>{}, 0, new List<int>{9}, true, 1, 4, 0, new List<float>{0, 0, 0, 1, 0, 1, 0, 0, 0}, new List<int>{4}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{7}, 25, new List<int>{8}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{12, 26, 205, 220}); //tool
-        AddItem("Water Bottle", new List<int>{2}, 1, 1, new List<float>{}, new List<float>{10, 1, 0}, 0, new List<int>{7}, true, 1, -1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{14, 4}, -1, new List<int>{}, 2, 5, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{9, 24, 270, 188});
-        AddItem("Butterfly Knife", new List<int>{1}, 6, 1, new List<float>{1, 30, 10, 2, 1, 0, 0, 0, 0, 0, 0, 0.3f, 0, 0, 0}, new List<float>{}, 1, new List<int>{3}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{10, 11, 12}, 27, new List<int>{3, 4, 5, 6}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{15, 43, 325, 256});
-        AddItem("Radar", new List<int>{3}, 1, 1, new List<float>{}, new List<float>{}, 3, new List<int>{10}, true, 1, 2, 0, new List<float>{0, 0, 0, 0, 0, 0, 0, 0, 0}, new List<int>{5}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{21}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{40, 46, 256, 188}); //tool
-        AddItem("Desert Eagle", new List<int>{1}, 7, 1, new List<float>{5, 49, 6, 1, 40, 0, 0, 0, 0, 0, 0, 1f, 0, 0, 0}, new List<float>{}, 2, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{22, 23}, 28, new List<int>{1}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{56, 37, 265, 268});
-        AddItem("Rhino Helmet", new List<int>{4}, 5, 1, new List<float>{}, new List<float>{}, 0, new List<int>{11}, false, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{1, 0.1f, 0, 0}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{45, 42, 260, 112});
-        AddItem("Vital Signs", new List<int>{3}, 1, 1, new List<float>{}, new List<float>{}, 10, new List<int>{12}, true, 1, 1, 0, new List<float>{1, 10, 0, 0, 0, 0, 0, 0, 0}, new List<int>{6}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{34}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{54, 41, 276, 220}); //tool
-        AddItem("Stimpak", new List<int>{2}, 5, 1, new List<float>{}, new List<float>{25, 1, 15}, 2, new List<int>{7}, true, 1, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{35, 4}, -1, new List<int>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{36, 33, 258, 148});
-        AddItem("Kevlar Vest", new List<int>{4}, 6, 1, new List<float>{}, new List<float>{}, 0, new List<int>{11}, false, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{2, 0.2f, 0, 0}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{44, 55, 255, 112});
-        AddItem("Landmine", new List<int>{1}, 3, 3, new List<float>{4, 99, 0, 1, 5, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1}, new List<float>{}, 0, new List<int>{2, 13}, true, 1, 10, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{1, 99, 0, 0, 3}, new List<string>{}, new List<int>{7, 36}, -1, new List<int>{9}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{50, 30, 245, 296});
-        AddItem("Tactical Trousers", new List<int>{4}, 6, 1, new List<float>{}, new List<float>{}, 0, new List<int>{11}, false, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{3, 0.15f, 0, 0}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{57, 95, 370, 112});
-        AddItem("SWAT Boots", new List<int>{4}, 5, 1, new List<float>{}, new List<float>{}, 0, new List<int>{11}, false, 0, 1, 1, new List<float>{}, new List<int>{}, new List<float>{4, 0.05f, 0, 0}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{70, 74, 245, 148});
-        AddItem("M4A1", new List<int>{1}, 8, 1, new List<float>{8, 19, 5, 3, 25, 0, 0, 0, 0, 0, 0, 0.06f, 0, 0, 0}, new List<float>{}, 2, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{38}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{111, 34, 285, 224});
-        AddItem("Energy Drink", new List<int>{3}, 2, 1, new List<float>{}, new List<float>{}, 2, new List<int>{14}, true, 1, -1, 0, new List<float>{1, 2, 0, 0, 10, 0, 0, 0, 0}, new List<int>{7}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{14, 39}, -1, new List<int>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{18, 39, 265, 184}); //tool
-        AddItem("Grappling Gun", new List<int>{1, 3}, 3, 1, new List<float>{20, 0, 5, 1, 10, 1, 0, 0, 0, 0, 0, 1f, 2, 0, 0}, new List<float>{}, 1, new List<int>{15}, true, 1, 2, 0, new List<float>{0, 0, 0, 0, 0, 0, 0, 0, 0}, new List<int>{8}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{40}, -1, new List<int>{10}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{78, 33, 280, 332}); //tool
-        AddItem("Energy Orb", new List<int>{1}, 4, 1, new List<float>{7, 25, 10, 1, 5, 0, 20, 0, 0, 4, 0, 0.2f, 4, 0, 2}, new List<float>{}, 0, new List<int>{2}, true, 1, 5, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{42}, -1, new List<int>{11}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{47, 35, 230, 332});
-        AddItem("Snowball", new List<int>{1, 3}, 1, 1, new List<float>{3, 0, 10, 1, 5, 0, 0, 0, 0, 4, 0, 0.7f, 1, 0, 3}, new List<float>{}, 0, new List<int>{9, 16}, true, 1, 3, 0, new List<float>{0, 0, 0, 2, 0, 2, 0, 0, 0}, new List<int>{4}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{42}, -1, new List<int>{12}, 1, 1, new List<int>{4}, new List<float>{0.5f}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{37, 37, 388, 292}); //tool
-        AddItem("C4", new List<int>{1}, 3, 1, new List<float>{4, 100, 5, 1, 5, 1, 0, 0, 0, 5, 0, 2f, 1, 1, 1}, new List<float>(), 0, new List<int>{2, 13}, true, 1, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{2, 100, 5, 1, 5}, new List<string>{}, new List<int>{7, 48}, -1, new List<int>{13}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{29}, new List<int>{}, new List<int>{}, new List<float>{34, 40, 272, 296});
-        AddItem("Detonator", new List<int>{3}, 0, 0, new List<float>{}, new List<float>{}, 0, new List<int>{17}, true, 1, -1, 0, new List<float>{0, 0, 0, 0, 0, 0, 0, 0, 0}, new List<int>{9}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{18, 35, 344, 179}); //tool
-        AddItem("MP5+", new List<int>{1}, 8, 1, new List<float>{6, 20, 8, 3, 15, 0, 0, 1, 2, 0, 0, 0.05f, 0, 0, 0}, new List<float>{}, 2, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{50}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{-3}, new List<int>{3}, new List<int>{}, new List<float>{108, 40, 283, 340});
-        AddItem("Thermal Vision Goggles", new List<int>{4}, 5, 1, new List<float>{}, new List<float>{}, 0, new List<int>{11}, false, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{1, 0, 1, 1}, new List<float>{}, new List<string>{}, new List<int>{51}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{43, 28, 305, 201});
-        AddItem("4-Leaf Clover", new List<int>{3}, 3, 0, new List<float>{}, new List<float>{}, 0, new List<int>{18}, false, 0, 0, 0, new List<float>{1, 5, 0, 0, 0, 0, 3, 0, 0}, new List<int>{10}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{52}, -1, new List<int>{}, 1, 0, new List<int>{1, 5, 6, 7, 8}, new List<float>{-1, -1, -1, -1, -1}, new List<int>{}, new List<int>{}, new List<int>{10}, new List<float>{25, 37, 536, 188}); //tool
-        AddItem("UAV", new List<int>{3}, 1, 1, new List<float>{}, new List<float>{}, 3, new List<int>{10}, true, 1, 1, 0, new List<float>{1, 3, 0, 0, 0, 0, 0, 0, 0}, new List<int>{11}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{53}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{79, 68, 348, 224}); //tool
-        AddItem("Book", new List<int>{3}, 2, 1, new List<float>{}, new List<float>{}, 0, new List<int>{19}, true, 1, -1, 0, new List<float>{0, 0, 0, 0, 0, 0, 0, 1, 5}, new List<int>{12}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{38, 40, 244, 152}); //tool
-        AddItem("Message in a Floating Bottle", new List<int>{3}, 1, 0, new List<float>{}, new List<float>{}, 0, new List<int>{19}, false, 0, 0, 0, new List<float>{0, 0, 0, 0, 0, 0, 0, 2, 1}, new List<int>{12}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 0, 0, new List<int>{2}, new List<float>{0.5f}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{39, 14, 305, 265}); //tool
-        AddItem("AK-47", new List<int>{1}, 5, 1, new List<float>{6, 20, 8, 2, 30, 0, 0, 0, 0, 0, 0, 0.1f, 0, 0, 0}, new List<float>{}, 1, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{64}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{100, 30, 223, 224});
-        AddItem("AK-74", new List<int>{1}, 8, 1, new List<float>{9, 19, 6, 3, 25, 0, 0, 0, 0, 0, 0, 0.06f, 0, 0, 0}, new List<float>{}, 1, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{65}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{-36}, new List<int>{36}, new List<int>{}, new List<float>{105, 29, 303, 268});
-        AddItem("Meat Stick", new List<int>{2}, 4, 1, new List<float>{}, new List<float>{40, 1, 0}, 2, new List<int>{7}, true, 1, 2, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{66, 4}, -1, new List<int>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{51, 45, 215, 148});
-        AddItem("Spikes", new List<int>{4}, 4, 1, new List<float>{}, new List<float>{}, 0, new List<int>{11}, false, 0, 1, 3, new List<float>{}, new List<int>{}, new List<float>{4, 0, 0, 0}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{56, 28, 331, 80});
+        AddItem("Beretta", new List<int>{1}, 3, 1, new List<float>{5, 20, 5, 1, 20, 0, 0, 0, 0, 0, 0, 0.2f, 0, 0, 0, 0}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{2}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{46, 32, 264, 188}, new List<int>{}, new List<float>{});
+        AddItem("Bandages", new List<int>{2}, 2, 1, new List<float>{}, new List<float>{20, 1, 0}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{7}, true, 1, -1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{3, 4}, -1, new List<int>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{23, 23, 200, 112}, new List<int>{}, new List<float>{});
+        AddItem("MP5", new List<int>{1}, 4, 1, new List<float>{4, 8, 10, 3, 10, 0, 0, 0, 0, 0, 0, 0.05f, 0, 0, 0, 0}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{5}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{87, 35, 276, 188}, new List<int>{}, new List<float>{});
+        AddItem("AWP", new List<int>{1}, 8, 1, new List<float>{12, 49, 3, 1, 50, 0, 0, 0, 5, 0, 0, 1, 0, 0, 0, 0}, new List<float>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{1}, true, 0, 1, -1, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{6}, 24, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{148, 32, 260, 296}, new List<int>{}, new List<float>{});
+        AddItem("Grenade", new List<int>{1}, 3, 1, new List<float>{5, 70, 5, 1, 5, 1, 0, 0, 0, 5, 0.5f, 0.2f, 1, 1, 1, 0}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{2}, true, 1, 3, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{7}, 25, new List<int>{2}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{14, 23, 284, 224}, new List<int>{}, new List<float>{});
+        AddItem("Karambit", new List<int>{1}, 5, 1, new List<float>{1, 50, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0.3f, 0, 0, 0, 0}, new List<float>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{3}, true, 0, 1, 1, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{10, 11, 12}, 26, new List<int>{3, 4, 5, 6}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{24, 30, 278, 260}, new List<int>{}, new List<float>{});
+        AddItem("Invis Pot", new List<int>{3}, 4, 1, new List<float>{}, new List<float>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{4}, true, 1, -1, 0, new List<float>{1, 2, 0, 0, 0, 0, 0, 0, 0}, new List<int>{1}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{14}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{22, 30, 260, 148}, new List<int>{}, new List<float>{}); //tool
+        AddItem("Binoculars", new List<int>{3}, 3, 1, new List<float>{}, new List<float>{}, 5, 1, new List<int>{}, new List<float>{}, new List<int>{5}, true, 0, 1, 0, new List<float>{1, 1, 10, 0, 0, 0, 0, 0, 0}, new List<int>{2}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{23, 11, 215, 184}, new List<int>{}, new List<float>{}); //tool
+        AddItem("Health Kit", new List<int>{2}, 7, 1, new List<float>{}, new List<float>{100, 1, 0}, 3, 1, new List<int>{}, new List<float>{}, new List<int>{7}, true, 1, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{3, 4}, -1, new List<int>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{40, 25, 250, 160}, new List<int>{}, new List<float>{});
+        AddItem("Smoke Bomb", new List<int>{1, 3}, 2, 1, new List<float>{4, 0, 10, 1, 5, 1, 0, 0, 0, 4, 0.5f, 0.3f, 1, 1, 0, 0}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{4, 6, 8}, true, 1, 5, 0, new List<float>{0, 3, 0, 0, 0, 0, 0, 0, 0}, new List<int>{3}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{7}, 25, new List<int>{7}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{12, 23, 252, 292}, new List<int>{}, new List<float>{}); //tool
+        AddItem("Flashbang", new List<int>{1, 3}, 4, 1, new List<float>{5, 0, 5, 1, 5, 1, 0, 0, 0, 0, 0.5f, 0.3f, 1, 1, 0, 0}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{9}, true, 1, 4, 0, new List<float>{0, 0, 0, 1, 0, 1, 0, 0, 0}, new List<int>{4}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{7}, 25, new List<int>{8}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{12, 26, 205, 220}, new List<int>{}, new List<float>{}); //tool
+        AddItem("Water Bottle", new List<int>{2}, 1, 1, new List<float>{}, new List<float>{10, 1, 0}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{7}, true, 1, -1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{14, 4}, -1, new List<int>{}, 2, 5, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{9, 24, 270, 188}, new List<int>{}, new List<float>{});
+        AddItem("Butterfly Knife", new List<int>{1}, 6, 1, new List<float>{1, 30, 10, 2, 1, 0, 0, 0, 0, 0, 0, 0.3f, 0, 0, 0, 0}, new List<float>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{3}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{10, 11, 12}, 27, new List<int>{3, 4, 5, 6}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{15, 43, 325, 256}, new List<int>{}, new List<float>{});
+        AddItem("Radar", new List<int>{3}, 1, 1, new List<float>{}, new List<float>{}, 3, 1, new List<int>{}, new List<float>{}, new List<int>{10}, true, 1, 2, 0, new List<float>{0, 0, 0, 0, 0, 0, 0, 0, 0}, new List<int>{5}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{21}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{40, 46, 256, 188}, new List<int>{}, new List<float>{}); //tool
+        AddItem("Desert Eagle", new List<int>{1}, 7, 1, new List<float>{5, 49, 6, 1, 40, 0, 0, 0, 0, 0, 0, 1f, 0, 0, 0, 0}, new List<float>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{22, 23}, 28, new List<int>{1}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{56, 37, 265, 268}, new List<int>{}, new List<float>{});
+        AddItem("Rhino Helmet", new List<int>{4}, 5, 1, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{11}, false, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{1, 0.1f, 0, 0, 0}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{45, 42, 260, 112}, new List<int>{}, new List<float>{});
+        AddItem("Vital Signs", new List<int>{3}, 1, 1, new List<float>{}, new List<float>{}, 10, 1, new List<int>{}, new List<float>{}, new List<int>{12}, true, 1, 1, 0, new List<float>{1, 10, 0, 0, 0, 0, 0, 0, 0}, new List<int>{6}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{34}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{54, 41, 276, 220}, new List<int>{}, new List<float>{}); //tool
+        AddItem("Stimpak", new List<int>{2}, 5, 1, new List<float>{}, new List<float>{25, 1, 15}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{7}, true, 1, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{35, 4}, -1, new List<int>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{36, 33, 258, 148}, new List<int>{}, new List<float>{});
+        AddItem("Kevlar Vest", new List<int>{4}, 6, 1, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{11}, false, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{2, 0.2f, 0, 0, 0}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{44, 55, 255, 112}, new List<int>{}, new List<float>{});
+        AddItem("Landmine", new List<int>{1}, 3, 3, new List<float>{4, 99, 0, 1, 5, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{2, 13}, true, 1, 10, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{1, 99, 0, 0, 3}, new List<string>{}, new List<int>{7, 36}, -1, new List<int>{9}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{50, 30, 245, 296}, new List<int>{}, new List<float>{});
+        AddItem("Tactical Trousers", new List<int>{4}, 6, 1, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{11}, false, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{3, 0.15f, 0, 0, 0}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{57, 95, 370, 112}, new List<int>{}, new List<float>{});
+        AddItem("SWAT Boots", new List<int>{4}, 5, 1, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{11}, false, 0, 1, 1, new List<float>{}, new List<int>{}, new List<float>{4, 0.05f, 0, 0, 0}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{70, 74, 245, 148}, new List<int>{}, new List<float>{});
+        AddItem("M4A1", new List<int>{1}, 8, 1, new List<float>{8, 19, 5, 3, 25, 0, 0, 0, 0, 0, 0, 0.06f, 0, 0, 0, 0}, new List<float>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{38}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{111, 34, 285, 224}, new List<int>{}, new List<float>{});
+        AddItem("Energy Drink", new List<int>{3}, 2, 1, new List<float>{}, new List<float>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{14}, true, 1, -1, 0, new List<float>{1, 2, 0, 0, 10, 0, 0, 0, 0}, new List<int>{7}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{14, 39}, -1, new List<int>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{18, 39, 265, 184}, new List<int>{}, new List<float>{}); //tool
+        AddItem("Grappling Gun", new List<int>{1, 3}, 3, 1, new List<float>{20, 0, 5, 1, 10, 1, 0, 0, 0, 0, 0, 1f, 2, 0, 0, 0}, new List<float>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{15}, true, 1, 2, 0, new List<float>{0, 0, 0, 0, 0, 0, 0, 0, 0}, new List<int>{8}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{40}, -1, new List<int>{10}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{78, 33, 280, 332}, new List<int>{}, new List<float>{}); //tool
+        AddItem("Energy Orb", new List<int>{1}, 4, 1, new List<float>{7, 25, 10, 1, 5, 0, 20, 0, 0, 4, 0, 0.2f, 4, 0, 2, 0}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{2}, true, 1, 5, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{42}, -1, new List<int>{11}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{47, 35, 230, 332}, new List<int>{}, new List<float>{});
+        AddItem("Snowball", new List<int>{1, 3}, 1, 1, new List<float>{3, 0, 10, 1, 5, 0, 0, 0, 0, 4, 0, 0.7f, 1, 0, 3, 0}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{9, 16}, true, 1, 3, 0, new List<float>{0, 0, 0, 2, 0, 2, 0, 0, 0}, new List<int>{4}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{42}, -1, new List<int>{12}, 1, 1, new List<int>{4}, new List<float>{0.5f}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{37, 37, 388, 292}, new List<int>{}, new List<float>{}); //tool
+        AddItem("C4", new List<int>{1}, 3, 1, new List<float>{4, 100, 5, 1, 5, 1, 0, 0, 0, 5, 0, 2f, 1, 1, 1, 0}, new List<float>(), 0, 1, new List<int>{}, new List<float>{}, new List<int>{2, 13}, true, 1, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{2, 100, 5, 1, 5}, new List<string>{}, new List<int>{7, 48}, -1, new List<int>{13}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{29}, new List<int>{}, new List<int>{}, new List<float>{34, 40, 272, 296}, new List<int>{}, new List<float>{});
+        AddItem("Detonator", new List<int>{3}, 0, 0, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{17}, true, 1, -1, 0, new List<float>{0, 0, 0, 0, 0, 0, 0, 0, 0}, new List<int>{9}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{18, 35, 344, 179}, new List<int>{}, new List<float>{}); //tool
+        AddItem("MP5+", new List<int>{1}, 8, 1, new List<float>{6, 20, 8, 3, 15, 0, 0, 1, 2, 0, 0, 0.05f, 0, 0, 0, 0}, new List<float>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{50}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{-3}, new List<int>{3}, new List<int>{}, new List<float>{108, 40, 283, 340}, new List<int>{}, new List<float>{});
+        AddItem("Thermal Vision Goggles", new List<int>{4}, 5, 1, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{11}, false, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{1, 0, 1, 1, 0}, new List<float>{}, new List<string>{}, new List<int>{51}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{43, 28, 305, 201}, new List<int>{}, new List<float>{});
+        AddItem("4-Leaf Clover", new List<int>{3}, 3, 0, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{18}, false, 0, 0, 0, new List<float>{1, 5, 0, 0, 0, 0, 3, 0, 0}, new List<int>{10}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{52}, -1, new List<int>{}, 1, 0, new List<int>{1, 5, 6, 7, 8}, new List<float>{-1, -1, -1, -1, -1}, new List<int>{}, new List<int>{}, new List<int>{10}, new List<float>{25, 37, 536, 188}, new List<int>{}, new List<float>{}); //tool
+        AddItem("UAV", new List<int>{3}, 1, 1, new List<float>{}, new List<float>{}, 3, 1, new List<int>{}, new List<float>{}, new List<int>{10}, true, 1, 1, 0, new List<float>{1, 3, 0, 0, 0, 0, 0, 0, 0}, new List<int>{11}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{53}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{79, 68, 348, 224}, new List<int>{}, new List<float>{}); //tool
+        AddItem("Book", new List<int>{3}, 2, 1, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{19}, true, 1, -1, 0, new List<float>{0, 0, 0, 0, 0, 0, 0, 1, 5}, new List<int>{12}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{38, 40, 244, 152}, new List<int>{}, new List<float>{}); //tool
+        AddItem("Message in a Floating Bottle", new List<int>{3}, 1, 0, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{19}, false, 0, 0, 0, new List<float>{0, 0, 0, 0, 0, 0, 0, 2, 1}, new List<int>{12}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 0, 0, new List<int>{2}, new List<float>{0.5f}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{39, 14, 305, 265}, new List<int>{}, new List<float>{}); //tool
+        AddItem("AK-47", new List<int>{1}, 5, 1, new List<float>{6, 20, 8, 2, 30, 0, 0, 0, 0, 0, 0, 0.1f, 0, 0, 0, 0}, new List<float>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{64}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{100, 30, 223, 224}, new List<int>{}, new List<float>{});
+        AddItem("AK-74", new List<int>{1}, 8, 1, new List<float>{9, 19, 6, 3, 25, 0, 0, 0, 0, 0, 0, 0.06f, 0, 0, 0, 0}, new List<float>{}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{65}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{-36}, new List<int>{36}, new List<int>{}, new List<float>{105, 29, 303, 268}, new List<int>{}, new List<float>{});
+        AddItem("Meat Stick", new List<int>{2}, 4, 1, new List<float>{}, new List<float>{40, 1, 0}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{7}, true, 1, 2, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{66, 4}, -1, new List<int>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{51, 45, 215, 148}, new List<int>{}, new List<float>{});
+        AddItem("Spikes", new List<int>{4}, 4, 1, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{11}, false, 0, 1, 3, new List<float>{}, new List<int>{}, new List<float>{4, 0, 0, 0, 0}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{56, 28, 331, 80}, new List<int>{}, new List<float>{});
+        AddItem("Armor Piercing Rounds", new List<int>{5}, 6, 1, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{20}, false, 1, 4, 0, new List<float>{}, new List<int>{13}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{44, 32, 331, 197}, new List<int>{1, 3, 4, 15, 23, 30, 36, 37, 41}, new List<float>{1f});
+        AddItem("Beretta+", new List<int>{1}, 8, 1, new List<float>{7, 20, 3, 2, 30, 0, 0, 0, 0, 0, 0, 0.2f, 0, 0, 0, 4}, new List<float>{}, 2, 1, new List<int>{}, new List<float>{}, new List<int>{1}, true, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{}, new List<float>{}, new List<string>{}, new List<int>{2}, -1, new List<int>{1}, 1, 1, new List<int>{}, new List<float>{}, new List<int>{-1}, new List<int>{1}, new List<int>{}, new List<float>{64, 48, 378, 340}, new List<int>{}, new List<float>{});
+        AddItem("Gas Mask", new List<int>{4}, 7, 1, new List<float>{}, new List<float>{}, 0, 1, new List<int>{}, new List<float>{}, new List<int>{11}, false, 0, 1, 0, new List<float>{}, new List<int>{}, new List<float>{1, 0, 0, 0, 0.9f}, new List<float>{}, new List<string>{}, new List<int>{}, -1, new List<int>{}, 1, 0, new List<int>{}, new List<float>{}, new List<int>{}, new List<int>{}, new List<int>{}, new List<float>{44, 41, 316, 124}, new List<int>{}, new List<float>{});
         yield return null;
     }
     [ClientRpc] 
@@ -686,6 +774,7 @@ public class LocalScript : NetworkBehaviour
     IEnumerator StartGameRpc()
     {
         StartCoroutine(PlayMusic());
+        
         Debug.Log("Game Start");
         //yield return null;
         //yield return new WaitForSeconds(0.2f);
@@ -713,8 +802,12 @@ public class LocalScript : NetworkBehaviour
             //Debug.Log("count: " + count);
         }
         if (IsHost) {
-            Destroy(relay.joinCodeText);
+            //Destroy(relay.joinCodeText);
+            if (joinCodeText) {
+                Destroy(joinCodeText);
+            }
         }
+
         if (!amSpectator) {
             while (myPlayerNum == 0)
             {
@@ -722,7 +815,7 @@ public class LocalScript : NetworkBehaviour
             }
         }
         //Debug.Log("Run once");
-        StartCoroutine(CreateMessageText("Game has started!", 200, 200, 1, true));
+        StartCoroutine(CreateMessageText("Game has started!", 200, 200, 1, 0, true, false));
         if (IsClient)
         {
             Debug.Log("IsClient");
@@ -754,18 +847,18 @@ public class LocalScript : NetworkBehaviour
                 //INVENTORY.Add(7); //invis
                 //INVENTORY.Add(8); //bino
                 //INVENTORY.Add(9);
-                //INVENTORY.Add(10); //smoke
+                //INVENTORY.Add(GetNewII(10)); //smoke
                 //INVENTORY.Add(11); //flashbang
                 //for (int i = 0; i < 5; i++) INVENTORY.Add(12);
                 //INVENTORY.Add(12);
                 //INVENTORY.Add(13); //bfk
                 //INVENTORY.Add(14);
-                //INVENTORY.Add(15);
+                //INVENTORY.Add(15); //deagle
                 //INVENTORY.Add(16); //rhino
                 //INVENTORY.Add(17); //vitals
                 //INVENTORY.Add(18); //stim
-                //INVENTORY.Add(19);
-                //INVENTORY.Add(20); //mine
+                //INVENTORY.Add(19); //vest
+                //for (int i = 0; i < 3; i++) INVENTORY.Add(GetNewII(20)); //mine
                 //INVENTORY.Add(21);
                 //INVENTORY.Add(22);
                 //INVENTORY.Add(23); //m4a1
@@ -778,12 +871,15 @@ public class LocalScript : NetworkBehaviour
                 //INVENTORY.Add(30); //mp5+
                 //INVENTORY.Add(31); //thermal
                 //INVENTORY.Add(32); //clover 
-                //for (int i = 0; i < 2; i++) INVENTORY.Add(33); //uav
+                //for (int i = 0; i < 2; i++) INVENTORY.Add(GetNewII(33)); //uav
                 //for (int i = 0; i < 7; i++) INVENTORY.Add(34); //book
                 //INVENTORY.Add(36);
                 //INVENTORY.Add(37); //ak74
                 //INVENTORY.Add(38);
                 //INVENTORY.Add(39);
+                //for (int i = 0; i < 4; i++) INVENTORY.Add(40);
+                //INVENTORY.Add(GetNewII(41)); //beretta+
+                //INVENTORY.Add(GetNewII(42)); //gas mask
                 //bookInventory.Add(1);
                 //bookInventory.Add(2);
                 //bookInventory.Add(3);
@@ -795,7 +891,12 @@ public class LocalScript : NetworkBehaviour
         Vector3 newScale = new Vector3();
         if (!amSpectator) {
             myPlayerScript = myPlayerObject.GetComponent<PlayerScript>();
-            myPosition = UnityEngine.Random.Range(1, GRID.Count + 1);
+            if (LocalScript.gamemode == 5) {
+                TutorialIcons.SetActive(true);
+                myPosition = 7;
+            } else {
+                myPosition = UnityEngine.Random.Range(1, GRID.Count + 1);
+            }
             Debug.Log(myPosition);
             
             SetCharacterPosition(myPlayerObject, myPosition);
@@ -811,7 +912,7 @@ public class LocalScript : NetworkBehaviour
             Debug.Log("playerPositionList length: " + playerPositionList.Count);
             Debug.Log("number: " + (myPlayerNum - 1));
             playerPositionList[myPlayerNum - 1] = myPosition;
-            yield return StartCoroutine(Vision(0, smokes, myEffects, myEffectStrengths));
+            yield return StartCoroutine(Vision(0, smokes, true, myEffects, myEffectStrengths));
         }
         if (IsServer) {
             /*int nonBotNum = CountNonBots(); //this is needed if IsServer is true but IsClient is not true, AKA running on a dedicated server
@@ -834,16 +935,26 @@ public class LocalScript : NetworkBehaviour
                         botScript.maxHP = maxHealth;
                         botScript.HP = botScript.maxHP;
                         
-                        botScript.position = UnityEngine.Random.Range(1, GRID.Count + 1);
+                        if (LocalScript.gamemode == 5) {
+                            botScript.position = 25;
+                        } else {
+                            botScript.position = UnityEngine.Random.Range(1, GRID.Count + 1);
+                        }
                         SetCharacterPosition(obj, botScript.position);
                         botScript.mode = 1;
+                        //botScript.inventory.Add(GetNewII(1));
                         //botScript.inventory.Add(2);
                         //botScript.inventory.Add(3);
                         //botScript.inventory.Add(5);
                         //botScript.inventory.Add(10);
                         //botScript.inventory.Add(11);
                         //botScript.inventory.Add(13);
+                        //botScript.inventory.Add(15);
+                        //botScript.inventory.Add(19);
+                        //botScript.inventory.Add(GetNewII(23));
                         //botScript.inventory.Add(28);
+                        //for (int i = 0; i < 4; i++) botScript.inventory.Add(40);
+                        //botScript.inventory.Add(41);
                         //botScript.botBookInventory.Add(6);
                         PlayerScript pScript = obj.GetComponent<PlayerScript>();
                         //StartCoroutine(pScript.InitiateCostume(2));
@@ -853,7 +964,9 @@ public class LocalScript : NetworkBehaviour
                         botScript.lScript = this;
                         botScript.InitializeMysteryBuildings(GRID);
                         botScript.InitializeDataLists(GRID);
-                        botScript.InitializeBotBrain();
+                        if (gamemode == 4) {
+                            yield return StartCoroutine(botScript.InitializeBotBrain());
+                        }
                         for (int i = 0; i < playerPositionList.Count; i++) {
                             botScript.knownPlayerPositions.Add(0);
                             botScript.lastKnownPlayerPositions.Add(0);
@@ -861,7 +974,7 @@ public class LocalScript : NetworkBehaviour
                             botScript.potentialPlayerPositions.Add(null);
                             botScript.potentialPlayerVGs.Add(null);
                             botScript.compoundPlayerVGs.Add(null);
-                            botScript.potentialPlayerInvs.Add(new List<int>());
+                            botScript.potentialPlayerInvs.Add(new List<InventoryItem>());
                             botScript.UAVPlayerPositions.Add(0);
                             botScript.playerHealthsVisible.Add(false);
                             botScript.knownPlayerHealths.Add(0);
@@ -869,9 +982,18 @@ public class LocalScript : NetworkBehaviour
                             botScript.allPlayerModes.Add(new List<float>{1, 0, 0});
                             botScript.allPlayerDataLists.Add(new List<float>());
                             botScript.UpdatePlayerDataList(i + 1);
+                            
                             // doesn't necessarily need to be network if not only bots, because it's only needed to make decisions, and only the server needs it to have this
                         }
-                        
+                        if (LocalScript.gamemode == 1 || LocalScript.gamemode == 2 || LocalScript.gamemode == 3 || LocalScript.gamemode == 5) {
+                            botScript.NNBot = false;
+                        } else if (LocalScript.gamemode == 4) {
+                            if (botScript.playerNum == 1) {
+                                botScript.NNBot = false;
+                            } else if (botScript.playerNum == 2) {
+                                botScript.NNBot = true;
+                            }
+                        }
                         botScript.UpdateMyPositionInList();
                         botScript.targetQuadrant = botScript.currentQuadrant;
                         
@@ -939,8 +1061,11 @@ public class LocalScript : NetworkBehaviour
                 SetCharacterPosition(enemyObject, enemyPosition);
                 
                 //enemyObject.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(GRIDX[enemyPosition - 1], GRIDY[enemyPosition - 1], Camera.main.nearClipPlane));
-                
-                StartCoroutine(enemyScript.InitiateCostume(2, playerCostumes[1]));
+                if (LocalScript.gamemode == 5) {
+                    StartCoroutine(enemyScript.InitiateCostume(2, playerCostumes[3]));
+                } else {
+                    StartCoroutine(enemyScript.InitiateCostume(2, playerCostumes[1]));
+                }
                 newScale = enemyObject.transform.localScale;
                 newScale.x = tileWidth * 0.9f; // * limitCoefficientX;
                 newScale.y = tileHeight * 0.9f; // * limitCoefficientY;
@@ -994,33 +1119,45 @@ public class LocalScript : NetworkBehaviour
             }
             
         }
-        InputAction sKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/s");
-        sKeyAction.performed += ctx =>
-        {
-            //Debug.Log("S key pressed!");
-            StartCoroutine(ToggleStatsBook(false, UnityEngine.Random.Range(0, totalItems) + 1));
-        };
-        sKeyAction.Enable();
-
-        InputAction rightArrowAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/rightArrow");
-        rightArrowAction.performed += ctx =>
-        {
-            StartCoroutine(FlipThruStatsBook(1));
-            StartCoroutine(FlipThruRollChances(1));
-            StartCoroutine(FlipThruBookInventory(1));
-        };
-        rightArrowAction.Enable();
-
-        InputAction leftArrowAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/leftArrow");
-        leftArrowAction.performed += ctx =>
-        {
-            StartCoroutine(FlipThruStatsBook(-1));
-            StartCoroutine(FlipThruRollChances(-1));
-            StartCoroutine(FlipThruBookInventory(-1));
-        };
-        leftArrowAction.Enable();
-
-        if (!amSpectator) {
+        if (LocalScript.gamemode != 5) {
+            if (amSpectator) {
+                EnableActions(new List<int>{1, 2, 3, 6, 7, 9, 10});
+            } else {
+                EnableActions(new List<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+            }
+        }
+    }
+    void EnableActions(List<int> actions) {
+        if (actions.Contains(1)) {
+            InputAction sKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/s");
+            sKeyAction.performed += ctx =>
+            {
+                //Debug.Log("S key pressed!");
+                StartCoroutine(ToggleStatsBook(false, UnityEngine.Random.Range(0, totalItems) + 1));
+            };
+            sKeyAction.Enable();
+        }
+        if (actions.Contains(2)) {
+            InputAction rightArrowAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/rightArrow");
+            rightArrowAction.performed += ctx =>
+            {
+                StartCoroutine(FlipThruStatsBook(1));
+                StartCoroutine(FlipThruRollChances(1));
+                StartCoroutine(FlipThruBookInventory(1));
+            };
+            rightArrowAction.Enable();
+        }
+        if (actions.Contains(3)) {
+            InputAction leftArrowAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/leftArrow");
+            leftArrowAction.performed += ctx =>
+            {
+                StartCoroutine(FlipThruStatsBook(-1));
+                StartCoroutine(FlipThruRollChances(-1));
+                StartCoroutine(FlipThruBookInventory(-1));
+            };
+            leftArrowAction.Enable();
+        }
+        if (actions.Contains(4)) {
             InputAction iKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/i");
             iKeyAction.performed += ctx =>
             {
@@ -1028,7 +1165,8 @@ public class LocalScript : NetworkBehaviour
                 StartCoroutine(ToggleInventory());
             };
             iKeyAction.Enable();
-
+        }
+        if (actions.Contains(5)) {
             InputAction rKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/r");
             rKeyAction.performed += ctx =>
             {
@@ -1036,22 +1174,23 @@ public class LocalScript : NetworkBehaviour
             };
             rKeyAction.Enable();
         }
-        
-        InputAction lKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/l");
-        lKeyAction.performed += ctx =>
-        {
-            StartCoroutine(ToggleRollChances());
-        };
-        lKeyAction.Enable();
-
-        InputAction bKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/b");
-        bKeyAction.performed += ctx =>
-        {
-            StartCoroutine(ToggleBookInventory());
-        };
-        bKeyAction.Enable();
-
-        if (!amSpectator) {
+        if (actions.Contains(6)) {
+            InputAction lKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/l");
+            lKeyAction.performed += ctx =>
+            {
+                StartCoroutine(ToggleRollChances());
+            };
+            lKeyAction.Enable();
+        }
+        if (actions.Contains(7)) {
+            InputAction bKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/b");
+            bKeyAction.performed += ctx =>
+            {
+                StartCoroutine(ToggleBookInventory());
+            };
+            bKeyAction.Enable();
+        }
+        if (actions.Contains(8)) {
             InputAction cKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/c");
             cKeyAction.performed += ctx =>
             {
@@ -1059,20 +1198,22 @@ public class LocalScript : NetworkBehaviour
             };
             cKeyAction.Enable();
         }
-
-        InputAction tKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/t");
-        tKeyAction.performed += ctx =>
-        {
-            StartCoroutine(ToggleTurnsText());
-        };
-        tKeyAction.Enable();
-
-        InputAction vKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/v");
-        vKeyAction.performed += ctx => 
-        {
-            StartCoroutine(ToggleVolume());
-        };
-        vKeyAction.Enable();
+        if (actions.Contains(9)) {
+            InputAction tKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/t");
+            tKeyAction.performed += ctx =>
+            {
+                StartCoroutine(ToggleTurnsText());
+            };
+            tKeyAction.Enable();
+        }
+        if (actions.Contains(10)) {
+            InputAction vKeyAction = new InputAction(type: InputActionType.Button, binding: "<Keyboard>/v");
+            vKeyAction.performed += ctx => 
+            {
+                StartCoroutine(ToggleVolume());
+            };
+            vKeyAction.Enable();
+        }
     }
     IEnumerator UpdateEnemyHealthText(int index, int hp, int maxHp) {
         if (index + 1 != myPlayerNum) {
@@ -1113,12 +1254,37 @@ public class LocalScript : NetworkBehaviour
         count += spectatorList.Count; //all spectators are nonBots
         return count;
     }
-    IEnumerator OpenInventory() {
-        List<List<int>> ND = UsableNoDupe(INVENTORY);
+    bool showDurabilityOpen = false;
+    public GameObject showDurability;
+    InventoryItem currentDurabilityII;
+    void ShowDurability(InventoryItem item) {
+        showDurability.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = itemStrings[item.itemNum - 1][0] + " durability is " + item.durability + "/" + item.maxDurability + ".";
+        showDurability.transform.Find("OK4").GetComponent<Image>().sprite = buttons[4];
+        showDurability.SetActive(true);
+    }
+    void ToggleDurability(InventoryItem? item) {
+        if (showDurabilityOpen) {
+            if (item == null || CompareInventoryItems(item.Value, currentDurabilityII)) {
+                showDurability.SetActive(false);
+                showDurabilityOpen = false;
+            } else {
+                ShowDurability(item.Value);
+                currentDurabilityII = item.Value;
+                showDurabilityOpen = true;
+            }
+        } else {
+            ShowDurability(item.Value);
+            currentDurabilityII = item.Value;
+            showDurabilityOpen = true;
+        }
+    }
+    public Sprite[] durabilityBarCostumes;
+    IEnumerator OpenInventory(List<InventoryItem> inv) {
+        (List<InventoryItem> items, List<int> counts) ND = NoDupe(inv);
         //UND -> ND
-        List<int> invItems = ND[0];
+        List<InventoryItem> invItems = ND.items;
         //FU2 -> invItems
-        List<int> invItemsCount = ND[1];
+        List<int> invItemsCount = ND.counts;
         //FUCount -> invItemsCount
         GameObject invEmpty = inventoryDisplayScroll.transform.Find("InventoryEmpty").gameObject;
         GameObject invLabel = inventoryDisplayScroll.transform.Find("InventoryLabel").gameObject;
@@ -1129,7 +1295,8 @@ public class LocalScript : NetworkBehaviour
             invLabel.SetActive(true);
             //viewport.SetActive(true);
             for (int i = 0; i < invItems.Count; i++) {
-                int index = invItems[i] - 1;
+                InventoryItem II = invItems[i];
+                int index = II.itemNum - 1;
                 if (itemIntLists[index][0].Contains(4)) {
                     int armorSlot = Mathf.RoundToInt(itemInfos[index][3][0]);
                     GameObject armorElement = null;
@@ -1163,6 +1330,21 @@ public class LocalScript : NetworkBehaviour
                     });
                     GameObject count = armorElement.transform.Find("Count").gameObject;
                     count.SetActive(false);
+                    GameObject durabilityBar = armorElement.transform.Find("DurabilityBar").gameObject;
+                    if (II.durability != II.maxDurability) {
+                        float durabilityPercent = (float)II.durability / II.maxDurability;
+                        //Debug.Log("II.durability = " + II.durability);
+                        durabilityBar.GetComponent<Image>().sprite = durabilityBarCostumes[Mathf.RoundToInt((durabilityBarCostumes.Length - 1) * durabilityPercent)];
+                        durabilityBar.SetActive(true);
+                        Button duraBtn = durabilityBar.GetComponent<Button>();
+                        duraBtn.enabled = true;
+                        duraBtn.onClick.RemoveAllListeners();
+                        duraBtn.onClick.AddListener(() => {
+                            ToggleDurability(II);
+                        });
+                    } else {
+                        durabilityBar.SetActive(false);
+                    }
                 } else {
                     GameObject newElement = Instantiate(elementPrefab, inventoryItemsTF);
                     newElement.name = "Button_" + i;
@@ -1229,6 +1411,20 @@ public class LocalScript : NetworkBehaviour
                         countText.GetComponent<TextMeshProUGUI>().text = invItemsCount[i].ToString();
                         count.SetActive(true);
                     }
+                    GameObject durabilityBar = newElement.transform.Find("DurabilityBar").gameObject;
+                    if (II.durability != II.maxDurability) {
+                        float durabilityPercent = (float)II.durability / II.maxDurability;
+                        durabilityBar.GetComponent<Image>().sprite = durabilityBarCostumes[Mathf.RoundToInt((durabilityBarCostumes.Length - 1) * durabilityPercent)];
+                        durabilityBar.SetActive(true);
+                        Button duraBtn = durabilityBar.GetComponent<Button>();
+                        duraBtn.enabled = true;
+                        duraBtn.onClick.RemoveAllListeners();
+                        duraBtn.onClick.AddListener(() => {
+                            ToggleDurability(II);
+                        });
+                    } else {
+                        durabilityBar.SetActive(false);
+                    }
                 }
                 
             }
@@ -1240,7 +1436,7 @@ public class LocalScript : NetworkBehaviour
             //viewport.SetActive(false);
         }
         for (int i = 1; i <= 4; i++) {
-            if (!InventoryContainsArmor(INVENTORY, i)) {
+            if (!InventoryContainsArmor(inv, i)) {
                 //reset slot
                 GameObject armorElement = null;
                 if (i == 1) {
@@ -1270,6 +1466,8 @@ public class LocalScript : NetworkBehaviour
                 btn.onClick.RemoveAllListeners();
                 GameObject count = armorElement.transform.Find("Count").gameObject;
                 count.SetActive(false);
+                GameObject durabilityBar = armorElement.transform.Find("DurabilityBar").gameObject;
+                durabilityBar.SetActive(false);
             }
         }
         inventoryDisplayScroll.SetActive(true);
@@ -1393,9 +1591,9 @@ public class LocalScript : NetworkBehaviour
         cooldownsDisplay.SetActive(true);
         yield return null;
     }
-    public bool InventoryContainsArmor(List<int> inv, int armorSlot) {
-        foreach (int item in inv) {
-            int index = item - 1;
+    public bool InventoryContainsArmor(List<InventoryItem> inv, int armorSlot) {
+        foreach (InventoryItem item in inv) {
+            int index = item.itemNum - 1;
             if (itemIntLists[index][0].Contains(4)) {
                 if (Mathf.RoundToInt(itemInfos[index][3][0]) == armorSlot) {
                     return true;
@@ -1404,9 +1602,10 @@ public class LocalScript : NetworkBehaviour
         }
         return false;
     }
-    public float GetArmorCoefficient(List<int> inv) {
+    public float GetArmorCoefficient(List<InventoryItem> inv) {
         float returnVal = 1;
-        foreach (int item in inv) {
+        foreach (InventoryItem II in inv) {
+            int item = II.itemNum;
             int index = item - 1;
             if (itemIntLists[index][0].Contains(4)) {
                 returnVal -= itemInfos[index][3][1];
@@ -1441,7 +1640,7 @@ public class LocalScript : NetworkBehaviour
                 StartCoroutine(CloseInventory());
                 inventoryOpen = false;
             } else {
-                StartCoroutine(OpenInventory());
+                StartCoroutine(OpenInventory(INVENTORY));
                 inventoryOpen = true;
                 if (bookInventoryOpen) {
                     yield return StartCoroutine(ToggleBookInventory());
@@ -1675,7 +1874,7 @@ public class LocalScript : NetworkBehaviour
         yield return null;
     }
     IEnumerator AnimateAirdrop(int pos, int index) {
-        StartCoroutine(CreateMessageText("Airdrop inbound!", 300, 300, 1, true));
+        StartCoroutine(CreateMessageText("Airdrop inbound!", 300, 300, 1, 0, true, false));
         StartCoroutine(PlaySound(sounds[57]));
         GameObject airdrop = Instantiate(AirDropPF, new Vector2(GRIDX[pos - 1], GRIDY[pos - 1] + tileHeight), Quaternion.identity);
         if (airdropGOs[index] != null) {
@@ -1726,7 +1925,11 @@ public class LocalScript : NetworkBehaviour
             if (IsServer)
             {
                 //StartCoroutine(CreateOrderedPlayerList());
-                TURN.Value = UnityEngine.Random.Range(1, playerList.Count + 1);
+                if (LocalScript.gamemode == 5) { //only works if the Server and CLient are the same
+                    TURN.Value = 1;
+                } else {
+                    TURN.Value = UnityEngine.Random.Range(1, playerList.Count + 1);
+                }
                 StartCoroutine(FirstTurn());
                 Debug.Log("First turn!");
             }
@@ -1734,22 +1937,28 @@ public class LocalScript : NetworkBehaviour
     }
     IEnumerator FirstTurn() {
         yield return StartCoroutine(ClearActions(1, null));
-        NewTurnClientRpc(0, TURN.Value, actions, new float[0], localDamages, new int[0], new int[0], 0, 0, false, TURNS.Value);
+        NewTurnClientRpc(0, TURN.Value, actions, new float[0], modifiers, localDamages, localMHDamages, new int[0], new int[0], 0, 0, false, TURNS.Value); //technically shouldn't be MY data (actions, modifiers, etc) but they're all default anyway
         //Debug.Log("First turn");
     }
     [ClientRpc]
-    public void NewTurnClientRpc(int prevPlayer, int newTurn, float[] a, float[] BDD, float[] LDs, int[] TI, int[] SI, int hp, int maxHp, bool skipped, int turns)
+    public void NewTurnClientRpc(int prevPlayer, int newTurn, float[] a, float[] BDD, float[] m, float[] LDs, float[] LMDs, int[] TI, int[] SI, int hp, int maxHp, bool skipped, int turns)
     {
-        StartCoroutine(NewTurn(prevPlayer, newTurn, a, BDD, LDs, TI, SI, hp, maxHp, skipped, turns));
+        StartCoroutine(NewTurn(prevPlayer, newTurn, a, BDD, m, LDs, LMDs, TI, SI, hp, maxHp, skipped, turns));
     }
     int extraSearches;
     IEnumerator SearchUse()
     {
         yield return StartCoroutine(ClearActions(1, null));
         searching = false;
+        useing = false;
         searchButton.GetComponent<Image>().sprite = buttons[0];
         useButton.GetComponent<Image>().sprite = buttons[2];
         Color color = searchButton.GetComponent<Image>().color;
+        if (searchDisabled) {
+            color = SetBrightness(color, 0.75f); //FSU Color
+        } else {
+            color = SetBrightness(color, 1);
+        }
         color.a = (166f / 255f);
         searchButton.GetComponent<Image>().color = color;
         color = useButton.GetComponent<Image>().color;
@@ -1759,30 +1968,41 @@ public class LocalScript : NetworkBehaviour
         searchButton.SetActive(true);
         useButton.SetActive(true);
         buttonClicked = 0;
-        if (!useDisabled) {
-            while (buttonClicked == 0)
-            {
-                yield return null;
-            }
-        } else {
+        //if (!useDisabled) {
+        while (buttonClicked == 0)
+        {
+            yield return null;
+        }
+        /*} else {
             while (buttonClicked == 0 || buttonClicked == 2) 
             {
                 yield return null;
             }
-        }
+        }*/
         if (replayable3 != 0) {
             replayable3 = 0;
             Debug.Log("replayable3 is false");
+        }
+        if (replayable9) {
+            replayable9 = false;
+            R9Mode = 0;
         }
         searchButton.SetActive(false);
         useButton.SetActive(false);
         if (buttonClicked == 1)
         {
-            extraSearches = 0;
-            extraSearches += Mathf.RoundToInt(FindHighestBookEffectAmt(bookInventory, 3));
-            rejectedItems.Clear();
-            yield return StartCoroutine(Search());
-            //searchused = true;
+            if (LocalScript.gamemode == 5 && (TURNS.Value == 2 || TURNS.Value == 3)) {
+                searchDisabled = true;
+                StartCoroutine(ShakeSU(1));
+                StartCoroutine(FlashSU(1));
+                StartCoroutine(SearchUse());
+            } else {
+                extraSearches = 0;
+                extraSearches += Mathf.RoundToInt(FindHighestBookEffectAmt(bookInventory, 3));
+                rejectedItems.Clear();
+                yield return StartCoroutine(Search());
+                //searchused = true;
+            }
         } else if (buttonClicked == 2) {
             StartCoroutine(UseHelper());
             /*if (Use()) {
@@ -1791,8 +2011,9 @@ public class LocalScript : NetworkBehaviour
             }*/
         }
     }
-    int FindFirstArmorInInv(List<int> inv, int armorSlot) {
-        foreach (int item in inv) {
+    int FindFirstArmorInInv(List<InventoryItem> inv, int armorSlot) {
+        foreach (InventoryItem II in inv) {
+            int item = II.itemNum;
             int index = item - 1;
             if (itemIntLists[index][0].Contains(4)) {
                 if (Mathf.RoundToInt(itemInfos[index][3][0]) == armorSlot) {
@@ -1918,7 +2139,9 @@ public class LocalScript : NetworkBehaviour
             int landRarity = GetLandRarity(GRID[myPosition - 1]);
             landRarity += GetLuck(myEffects, myEffectStrengths);
             searchYield = GetSearchYield(landRarity, GRID[myPosition - 1], viableItems);//UnityEngine.Random.Range(0, searchItemCostumes.Length) + 1; (better to use totalItems than searchItemCostumes.Length) //1+
-            
+            if (LocalScript.gamemode == 5 && TURNS.Value == 1) {
+                StartCoroutine(CreateMessageText("You can press and hold the Space Bar to skip the searching animation.", 350, 350, 2, 8, false, true));
+            }
             for (int i = 0; i < searchLoops; i++)
             {
                 if (Keyboard.current != null && Keyboard.current.spaceKey.isPressed) {
@@ -1950,8 +2173,10 @@ public class LocalScript : NetworkBehaviour
             OKButton.GetComponent<Image>().sprite = buttons[4];
             XButton.GetComponent<Image>().sprite = buttons[6];
             OKButton.SetActive(true);
-            XButton.SetActive(true);
-            
+            if (!(LocalScript.gamemode == 5 && TURNS.Value == 1)) {
+                XButton.SetActive(true);
+            }
+
             RectTransform frameRect = searchFrame.GetComponent<RectTransform>();
             RectTransform imageRect = searchItem.GetComponent<Image>().GetComponent<RectTransform>();
             /*float frameHeightWorld = 499f * searchFrame.GetComponent<RectTransform>().localScale.y;
@@ -2011,9 +2236,10 @@ public class LocalScript : NetworkBehaviour
     public bool IsPermanentWeapon(int index) {
         return (itemIntLists[index][0].Contains(1) && itemInts[index][2] == 0);
     }
-    public int CountPermWeaponsInInv(List<int> inv) {
+    public int CountPermWeaponsInInv(List<InventoryItem> inv) {
         int count = 0;
-        foreach (int item in inv) {
+        foreach (InventoryItem II in inv) {
+            int item = II.itemNum;
             if (IsPermanentWeapon(item - 1)) {
                 count++;
             }
@@ -2122,9 +2348,9 @@ public class LocalScript : NetworkBehaviour
         btn.onClick.AddListener(() => {
             OnInventoryElementClick(index);
         });
+        buttonClicked = 0;
         btn.enabled = true;
         acceptOrReroll.SetActive(true);
-        buttonClicked = 0;
         while (buttonClicked == 0)
         {
             yield return null;
@@ -2138,7 +2364,7 @@ public class LocalScript : NetworkBehaviour
                     keep = result;
                 }));
             } else {
-                INVENTORY.Remove(CWTDCLicked);
+                RemoveFromIIList(INVENTORY, CWTDCLicked);
             }
             //INVENTORY.Remove(FindFirstArmorInInv(INVENTORY, Mathf.RoundToInt(itemInfos[searchYield - 1][3][0])));
         } else if (buttonClicked == 9) {
@@ -2146,61 +2372,163 @@ public class LocalScript : NetworkBehaviour
         }
         callback(keep);
     }
+    public int FindLowestDuraIndex(List<InventoryItem> inv, int item) {
+        int lowestDurability = 0;
+        int lowestIndex = -1;
+        bool firstSet = true;
+        for (int i = 0; i < inv.Count; i++) {
+            if (inv[i].itemNum == item) {
+                if (inv[i].durability < inv[i].maxDurability) {
+                    if (firstSet) {
+                        lowestDurability = inv[i].durability;
+                        lowestIndex = i;
+                        firstSet = false;
+                    } else {
+                        if (inv[i].durability < lowestDurability) {
+                            lowestDurability = inv[i].durability;
+                            lowestIndex = i;
+                        }
+                    }
+                }
+            }
+        }
+        return lowestIndex;
+    }
+    IEnumerator ReplaceDurability(int index, bool isAirdrop, System.Action<bool> callback) {
+        bool keep = true;
+        OKButton5.GetComponent<Image>().sprite = buttons[4];
+        GameObject GBDText = getBetterDurability.transform.Find("Text").gameObject;
+        GBDText.GetComponent<TMP_Text>().text = "You already have " + itemStrings[index][0] + ", but this will replace it with a new one. Would you like to proceed?";
+        if (isAirdrop) {
+            GBDText.GetComponent<TMP_Text>().text += " (Back to airdrop if no)";
+            NoButtonMode2 = 2;
+            NoButton2.GetComponent<Image>().sprite = buttons[10];
+        } else {
+            GBDText.GetComponent<TMP_Text>().text += " (Reroll if no)";
+            NoButtonMode2 = 1;
+            NoButton2.GetComponent<Image>().sprite = buttons[8];
+        }
+        GameObject element = getBetterDurability.transform.Find("Element").gameObject;
+        Image innerImage = element.transform.Find("Image").GetComponent<Image>();
+        InventoryItem II = INVENTORY[FindLowestDuraIndex(INVENTORY, index + 1)];
+        int wornOutIndex = II.itemNum - 1;
+        innerImage.sprite = searchItemCostumes[wornOutIndex];
+
+        TextMeshProUGUI elmtText = element.GetComponentInChildren<TextMeshProUGUI>();
+        if (elmtText != null) elmtText.text = itemStrings[wornOutIndex][0];
+        Button btn = element.transform.Find("Hitbox").GetComponent<Button>();
+        
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(() => {
+            OnInventoryElementClick(wornOutIndex);
+        });
+        buttonClicked = 0;
+        btn.enabled = true;
+        GameObject durabilityBar = element.transform.Find("DurabilityBar").gameObject;
+        if (II.durability != II.maxDurability) {
+            float durabilityPercent = (float)II.durability / II.maxDurability;
+            durabilityBar.GetComponent<Image>().sprite = durabilityBarCostumes[Mathf.RoundToInt((durabilityBarCostumes.Length - 1) * durabilityPercent)];
+            durabilityBar.SetActive(true);
+            Button duraBtn = durabilityBar.GetComponent<Button>();
+            duraBtn.enabled = true;
+            duraBtn.onClick.RemoveAllListeners();
+            duraBtn.onClick.AddListener(() => {
+                ToggleDurability(II);
+            });
+        } else {
+            durabilityBar.SetActive(false);
+        }
+        getBetterDurability.SetActive(true);
+        while (buttonClicked == 0)
+        {
+            yield return null;
+        }
+        getBetterDurability.SetActive(false);
+        if (buttonClicked == 13) {
+            keep = true;
+        } else if (buttonClicked == 12) {
+            keep = false;
+        }
+        callback(keep);
+        yield return null;
+    }
     int NoButtonMode = 0;
+    int NoButtonMode2 = 0;
     IEnumerator AcceptSearch(int searchYield, bool isAirdrop, System.Action<bool> callback) {
         bool dontConclude = false;
         bool keep = true;
-        if (itemIntLists[searchYield - 1][0].Contains(4)) {
-            if (InventoryContainsArmor(INVENTORY, Mathf.RoundToInt(itemInfos[searchYield - 1][3][0]))) {
-                OKButton2.GetComponent<Image>().sprite = buttons[4];
-                
-                GameObject AORText = acceptOrReroll.transform.Find("Text").gameObject;
-                AORText.GetComponent<TMP_Text>().text = "You're already wearing " + itemStrings[FindFirstArmorInInv(INVENTORY, Mathf.RoundToInt(itemInfos[searchYield - 1][3][0])) - 1][0] + ", would you like to switch?";
-                if (isAirdrop) {
-                    AORText.GetComponent<TMP_Text>().text += " (Back to airdrop if no)";
-                    NoButtonMode = 2;
-                    NoButton.GetComponent<Image>().sprite = buttons[10];
-                } else {
-                    AORText.GetComponent<TMP_Text>().text += " (Reroll if no)";
-                    NoButtonMode = 1;
-                    NoButton.GetComponent<Image>().sprite = buttons[8];
-                }
-                GameObject element = acceptOrReroll.transform.Find("Element").gameObject;
-                Image innerImage = element.transform.Find("Image").GetComponent<Image>();
-                innerImage.sprite = searchItemCostumes[searchYield - 1];
+        if (CountInIntList(GetInvIntList(INVENTORY), searchYield) + itemInts[searchYield - 1][6] <= itemInts[searchYield - 1][3]) {
+            if (itemIntLists[searchYield - 1][0].Contains(4)) {
+                if (InventoryContainsArmor(INVENTORY, Mathf.RoundToInt(itemInfos[searchYield - 1][3][0]))) {
+                    OKButton2.GetComponent<Image>().sprite = buttons[4];
+                    
+                    GameObject AORText = acceptOrReroll.transform.Find("Text").gameObject;
+                    AORText.GetComponent<TMP_Text>().text = "You're already wearing " + itemStrings[FindFirstArmorInInv(INVENTORY, Mathf.RoundToInt(itemInfos[searchYield - 1][3][0])) - 1][0] + ", would you like to switch?";
+                    if (isAirdrop) {
+                        AORText.GetComponent<TMP_Text>().text += " (Back to airdrop if no)";
+                        NoButtonMode = 2;
+                        NoButton.GetComponent<Image>().sprite = buttons[10];
+                    } else {
+                        AORText.GetComponent<TMP_Text>().text += " (Reroll if no)";
+                        NoButtonMode = 1;
+                        NoButton.GetComponent<Image>().sprite = buttons[8];
+                    }
+                    GameObject element = acceptOrReroll.transform.Find("Element").gameObject;
+                    Image innerImage = element.transform.Find("Image").GetComponent<Image>();
+                    innerImage.sprite = searchItemCostumes[searchYield - 1];
 
-                TextMeshProUGUI elmtText = element.GetComponentInChildren<TextMeshProUGUI>();
-                if (elmtText != null) elmtText.text = itemStrings[searchYield - 1][0];
-                Button btn = element.transform.Find("Hitbox").GetComponent<Button>();
-                
-                btn.onClick.RemoveAllListeners();
-                btn.onClick.AddListener(() => {
-                    OnInventoryElementClick(searchYield - 1);
-                });
-                btn.enabled = true;
-                acceptOrReroll.SetActive(true);
-                buttonClicked = 0;
-                while (buttonClicked == 0)
-                {
-                    yield return null;
+                    TextMeshProUGUI elmtText = element.GetComponentInChildren<TextMeshProUGUI>();
+                    if (elmtText != null) elmtText.text = itemStrings[searchYield - 1][0];
+                    Button btn = element.transform.Find("Hitbox").GetComponent<Button>();
+                    
+                    btn.onClick.RemoveAllListeners();
+                    btn.onClick.AddListener(() => {
+                        OnInventoryElementClick(searchYield - 1);
+                    });
+                    btn.enabled = true;
+                    acceptOrReroll.SetActive(true);
+                    buttonClicked = 0;
+                    while (buttonClicked == 0)
+                    {
+                        yield return null;
+                    }
+                    if (buttonClicked == 8) {
+                        keep = true;
+                        RemoveFromIIList(INVENTORY, FindFirstArmorInInv(INVENTORY, Mathf.RoundToInt(itemInfos[searchYield - 1][3][0])));
+                    } else if (buttonClicked == 9) {
+                        keep = false;
+                    }
+                    acceptOrReroll.SetActive(false);
                 }
-                if (buttonClicked == 8) {
-                    keep = true;
-                    INVENTORY.Remove(FindFirstArmorInInv(INVENTORY, Mathf.RoundToInt(itemInfos[searchYield - 1][3][0])));
-                } else if (buttonClicked == 9) {
-                    keep = false;
-                }
-                acceptOrReroll.SetActive(false);
             }
-        }
-        if (IsPermanentWeapon(searchYield - 1)) {
-            if (CountPermWeaponsInInv(INVENTORY) + itemInts[searchYield - 1][6] - CountNegativePermWeaponsInIntList(itemIntLists[searchYield - 1][6]) > maxWeapons) {
-                yield return StartCoroutine(MaxWeaponsReached(searchYield - 1, isAirdrop, result => {
+            if (IsPermanentWeapon(searchYield - 1)) {
+                if (CountPermWeaponsInInv(INVENTORY) + itemInts[searchYield - 1][6] - CountNegativePermWeaponsInIntList(itemIntLists[searchYield - 1][6]) > maxWeapons) {
+                    yield return StartCoroutine(MaxWeaponsReached(searchYield - 1, isAirdrop, result => {
+                        keep = result;
+                    }));
+                }
+            }
+        } else {
+            int replaceNum = Math.Min(InvCountImperfect(INVENTORY, searchYield), itemInts[searchYield - 1][6]);
+            if (replaceNum > 0) {
+                yield return StartCoroutine(ReplaceDurability(searchYield - 1, isAirdrop, result => {
                     keep = result;
+                    if (!keep) {
+                        rejectedItems.Add(searchYield);
+                    }
                 }));
             }
         }
         if (keep) {
+            int replaceNum = Math.Min(InvCountImperfect(INVENTORY, searchYield), itemInts[searchYield - 1][6]);
+            if (replaceNum > 0) {
+                for (int i = 0; i < replaceNum; i++) {
+                    int removeIdx = FindLowestDuraIndex(INVENTORY, searchYield);
+                    if (removeIdx != -1) {
+                        INVENTORY.RemoveAt(removeIdx);
+                    }
+                }
+            }
             if (itemInts[searchYield - 1][6] == 0) {
                 if (!itemBools[searchYield - 1][0] && itemIntLists[searchYield - 1][2].Count > 0) {
                     StartCoroutine(ItemSound(searchYield - 1));
@@ -2216,8 +2544,8 @@ public class LocalScript : NetworkBehaviour
                 }
             }
             for (int i = 0; i < itemInts[searchYield - 1][6]; i++) {
-                if (itemInts[searchYield - 1][3] == -1 || CountInIntList(INVENTORY, searchYield) + 1 <= itemInts[searchYield - 1][3]) {
-                    INVENTORY.Add(searchYield);
+                if (itemInts[searchYield - 1][3] == -1 || CountInIntList(GetInvIntList(INVENTORY), searchYield) + 1 <= itemInts[searchYield - 1][3]) {
+                    INVENTORY.Add(GetNewII(searchYield));
                     if (!itemBools[searchYield - 1][0] && itemIntLists[searchYield - 1][2].Count > 0) {
                         StartCoroutine(ItemSound(searchYield - 1));
                     }
@@ -2236,16 +2564,11 @@ public class LocalScript : NetworkBehaviour
             List<int> AAU = itemIntLists[searchYield - 1][6];
             foreach (int a in AAU) {
                 if (a < 0) {
-                    INVENTORY.Remove(-a);
+                    RemoveFromIIList(INVENTORY, -a);
                 }
             }
             armorCoefficient = GetArmorCoefficient(INVENTORY);
-            if (inventoryOpen) {
-                foreach (Transform child in inventoryItemsTF) {
-                    GameObject.Destroy(child.gameObject);
-                }
-                StartCoroutine(OpenInventory());
-            }
+            UpdateInventory(INVENTORY);
         } else {
             if (!isAirdrop) {
                 rejectedItems.Add(searchYield);
@@ -2255,13 +2578,13 @@ public class LocalScript : NetworkBehaviour
         callback(dontConclude);
     }
     int CWTDCLicked = 0;
-    IEnumerator ChooseWeaponToDrop(List<int> inv) {
+    IEnumerator ChooseWeaponToDrop(List<InventoryItem> inv) {
         foreach (Transform child in CWTDTF) {
             GameObject.Destroy(child.gameObject);
         }
         CWTDCLicked = 0;
         for (int i = 0; i < inv.Count; i++) {
-            int index = inv[i] - 1;
+            int index = inv[i].itemNum - 1;
             if (IsPermanentWeapon(index)) {
                 GameObject newElement = Instantiate(elementPrefab, CWTDTF);
                 newElement.name = "Button_" + i;
@@ -2307,7 +2630,13 @@ public class LocalScript : NetworkBehaviour
         }
         return returnVal;
     }
+    InventoryItem GetNewII(int item) {
+        return new InventoryItem(item, itemInts[item - 1][8]);
+    }
     public int GetSearchYield(int landRarity, int terrain, List<int> viableItems) { //returns 1+
+        if (LocalScript.gamemode == 5 && TURNS.Value == 1 && TURN.Value == 1) {
+            return 23;
+        }
         Debug.Log("land rarity: " + landRarity);
         //List<int> viableItems = GetViableItems(inv, t, fx);
         List<int> weightedRarityList = GetWRL(landRarity);
@@ -2401,11 +2730,30 @@ public class LocalScript : NetworkBehaviour
         Debug.Log("Mythic: " + ((float) weightedList[7] / sum).ToString("P1"));*/
         return retList;
     }
-    public List<int> GetViableItems(List<int> inv, int terrain, List<int> fx, bool airdrop, List<int> airdropSearchYields, List<int> RI) { //returns 0+
+    public List<int> GetInvIntList(List<InventoryItem> inv) {
+        List<int> retList = new List<int>();
+        foreach (InventoryItem i in inv) {
+            retList.Add(i.itemNum);
+        }
+        return retList;
+    }
+    public int InvCountImperfect(List<InventoryItem> inv, int item) {
+        int retVal = 0;
+        foreach (InventoryItem II in inv) {
+            if (II.itemNum == item) {
+                if (II.durability < II.maxDurability) {
+                    retVal += 1;
+                }
+            }
+        }
+        return retVal;
+    }
+    public List<int> GetViableItems(List<InventoryItem> IIInv, int terrain, List<int> fx, bool airdrop, List<int> airdropSearchYields, List<int> RI) { //returns 0+
+        List<int> inv = GetInvIntList(IIInv);
         List<int> retList = new List<int>();
         for (int i = 0; i < itemStrings.Count; i++) {
             bool addable = true;
-            if (itemInts[i][6] == 0) {
+            if (itemInts[i][6] == 0) { //addToInv
                 //retList.Add(i);
                 //addable still true
             } else { //assuming itemInts[i][6] >= 1
@@ -2419,7 +2767,11 @@ public class LocalScript : NetworkBehaviour
                         //retList.Add(i);
                         //addable still true
                     } else {
-                        addable = false;
+                        if (InvCountImperfect(IIInv, i + 1) > 0) {
+                            //addable still true
+                        } else {
+                            addable = false;
+                        }
                     }
                 }
             }
@@ -2519,35 +2871,36 @@ public class LocalScript : NetworkBehaviour
             }
         }));
     }
-    List<List<int>> UsableNoDupe(List<int> FU) {
-        List<int> noDupe = new List<int>(FU);
+    (List<InventoryItem> items, List<int> counts) NoDupe(List<InventoryItem> FU) {
+        List<InventoryItem> noDupe = new List<InventoryItem>(FU);
         List<int> noDupeCount = new List<int>();
         for (int i = 0; i < noDupe.Count; i++) {
-            int amount = CountInIntList(noDupe, noDupe[i]);
+            int amount = CountInIIList(noDupe, noDupe[i]);
             noDupeCount.Add(amount);
             for (int j = i + 1; j < noDupe.Count; j++) {
-                if (noDupe[i] == noDupe[j]) {
+                if (CompareInventoryItems(noDupe[i], noDupe[j])) {
                     noDupe.RemoveAt(j);
                     j--;
                 }
             }
         }
-        return new List<List<int>> {noDupe, noDupeCount};
+        return (noDupe, noDupeCount);
     }
     bool goBackToUse;
     IEnumerator Use(System.Action<bool> callback) {
+        useing = true;
         bool success = false;
-        List<int> FU = FindUsable(INVENTORY);
-        List<List<int>> UND = UsableNoDupe(FU);
-        List<int> FU2 = UND[0];
-        List<int> FUCount = UND[1];
+        List<InventoryItem> FU = FindUsable(INVENTORY);
+        (List<InventoryItem> items, List<int> counts) UND = NoDupe(FU);
+        List<InventoryItem> FU2 = UND.items;
+        List<int> FUCount = UND.counts;
         if (FU2.Count > 0) {
             //do stuff
             foreach (Transform child in useOptionsTF) {
                 GameObject.Destroy(child.gameObject);
             }
             for (int i = 0; i < FU2.Count; i++) {
-                int index = FU2[i] - 1;
+                int index = FU2[i].itemNum - 1;
                 GameObject newElement = Instantiate(elementPrefab, useOptionsTF);
                 newElement.name = "Button_" + i;
 
@@ -2562,7 +2915,7 @@ public class LocalScript : NetworkBehaviour
                     btn.enabled = true;
                     btn.onClick.RemoveAllListeners();
                     btn.onClick.AddListener(() => {
-                        OnElementClick(index);
+                        OnElementClick(index, newElement, btn);
                     });
                     CD.SetActive(false);
                 } else {
@@ -2606,7 +2959,7 @@ public class LocalScript : NetworkBehaviour
                 success = false;
             } else if (buttonClicked == 6) {
                 goBackToUse = false;
-                yield return StartCoroutine(UseItem(useItem, actions, bulDirDeg, trapIndexes, smokeIndexes, 1, null, myPosition, myPlayerNum, new Vector2(), 0, 0, null, result => {
+                yield return StartCoroutine(UseItem(useItem, actions, bulDirDeg, modifiers, trapIndexes, smokeIndexes, 1, null, myPosition, myPlayerNum, new Vector2(), 0, 0, null, result => {
                     if (result) {
                         success = true;
                         //Debug.Log("success!");
@@ -2624,9 +2977,9 @@ public class LocalScript : NetworkBehaviour
             //success = true;
         } else {
             useDisabled = true;
-            StartCoroutine(CreateMessageText("You have no usable items!", 200, 200, 1, false));
-            StartCoroutine(ShakeUse());
-            StartCoroutine(FlashUse());
+            StartCoroutine(CreateMessageText("You have no usable items!", 200, 200, 1, 0, false, false));
+            StartCoroutine(ShakeSU(2));
+            StartCoroutine(FlashSU(2));
             StartCoroutine(SearchUse());
             success = false;
         }
@@ -2641,16 +2994,18 @@ public class LocalScript : NetworkBehaviour
             success = true;
         } else {
             useDisabled = true;
-            StartCoroutine(ShakeUse());
-            StartCoroutine(FlashUse());
+            StartCoroutine(ShakeSU(2));
+            StartCoroutine(FlashSU(2));
             StartCoroutine(SearchUse());
             success = false;
         }
         return success;
     }*/
     float[] actions;
+    float[] modifiers;
     [SerializeField]
     float[] localDamages;
+    float[] localMHDamages;
     /* 
     0. playerNum (1+)
     1. useItem (1+)
@@ -2715,16 +3070,173 @@ public class LocalScript : NetworkBehaviour
         if (itemIntLists[index][1].Contains(16)) bomb = 2;
         return bomb;
     }
+    (List<InventoryItem> items, List<int> counts) ItemModifiable(int item, (List<InventoryItem> items, List<int> counts) mdfrs) {
+        List<InventoryItem> list1 = new List<InventoryItem>();
+        List<int> list2 = new List<int>();
+        for (int i = 0; i < mdfrs.items.Count; i++) {
+            //Debug.Log("mdfrs[0][i] = " + mdfrs[0][i]);
+            List<int> modifiableItems = itemIntLists[mdfrs.items[i].itemNum - 1][9];
+            if (modifiableItems.Contains(item)) {
+                list1.Add(mdfrs.items[i]);
+                list2.Add(mdfrs.counts[i]);
+            }
+        }
+        return (list1, list2);
+    }
+    (List<InventoryItem> items, List<int> counts) FindModifiers((List<InventoryItem> items, List<int> counts) ND) {
+        List<InventoryItem> list1 = new List<InventoryItem>();
+        List<int> list2 = new List<int>();
+        List<InventoryItem> IIList = ND.items;
+        for (int i = 0; i < IIList.Count; i++) {
+            InventoryItem II = IIList[i];
+            int item = II.itemNum;
+            if (itemIntLists[item - 1][0].Contains(5)) {
+                list1.Add(II);
+                list2.Add(Math.Min(ND.counts[i], itemInts[item - 1][5])); //could cause differences if seperated by durability
+            }
+        }
+        return (list1, list2);
+    }
+    void SetBtnColor(Button btn, float red, float green, float blue, Color ogc1, Color ogc2, Color ogc3, Color ogc4, Color ogc5) {
+        ColorBlock cb = btn.colors;
+        Color c1 = cb.normalColor;
+        c1.r = Mathf.Clamp01(ogc1.r + red);
+        c1.g = Mathf.Clamp01(ogc1.g + green);
+        c1.b = Mathf.Clamp01(ogc1.b + blue);
+        Color c2 = cb.highlightedColor;
+        c2.r = Mathf.Clamp01(ogc2.r + red);
+        c2.g = Mathf.Clamp01(ogc2.g + green);
+        c2.b = Mathf.Clamp01(ogc2.b + blue);
+        Color c3 = cb.pressedColor;
+        c3.r = Mathf.Clamp01(ogc3.r + red);
+        c3.g = Mathf.Clamp01(ogc3.g + green);
+        c3.b = Mathf.Clamp01(ogc3.b + blue);
+        Color c4 = cb.selectedColor;
+        c4.r = Mathf.Clamp01(ogc4.r + red);
+        c4.g = Mathf.Clamp01(ogc4.g + green);
+        c4.b = Mathf.Clamp01(ogc4.b + blue);
+        Color c5 = cb.disabledColor;
+        c5.r = Mathf.Clamp01(ogc5.r + red);
+        c5.g = Mathf.Clamp01(ogc5.g + green);
+        c5.b = Mathf.Clamp01(ogc5.b + blue);
+        cb.normalColor = c1;
+        cb.highlightedColor = c2;
+        cb.pressedColor = c3;
+        cb.selectedColor = c4;
+        cb.disabledColor = c5;
+        btn.colors = cb;
+    }
+    IEnumerator ChooseModifiers((List<InventoryItem> items, List<int> counts) IM, System.Action<List<bool>> callback) {
+        foreach (Transform child in modifierOptionsTF) {
+            GameObject.Destroy(child.gameObject);
+        }
+        List<bool> selected = new List<bool>();
+        List<InventoryItem> IM2 = IM.items;
+        for (int i = 0; i < IM2.Count; i++) {
+            selected.Add(false);
+        }
+        List<int> IMCount = IM.counts;
+        for (int i = 0; i < IM2.Count; i++) {
+            int index = IM2[i].itemNum - 1;
+            GameObject newElement = Instantiate(elementPrefab, modifierOptionsTF);
+            newElement.name = "Button_" + i;
+
+            Image innerImage = newElement.transform.Find("Image").GetComponent<Image>();
+            innerImage.sprite = searchItemCostumes[index];
+
+            TextMeshProUGUI elmtText = newElement.GetComponentInChildren<TextMeshProUGUI>();
+            if (elmtText != null) elmtText.text = itemStrings[index][0];
+            GameObject CD = newElement.transform.Find("Cooldown").gameObject;
+            Button btn = newElement.transform.Find("Hitbox").GetComponent<Button>();
+            ColorBlock cb = btn.colors;
+            Color ogc1 = cb.normalColor;
+            Color ogc2 = cb.highlightedColor;
+            Color ogc3 = cb.pressedColor;
+            Color ogc4 = cb.selectedColor;
+            Color ogc5 = cb.disabledColor;
+            SetBtnColor(btn, 1, 0, 0, ogc1, ogc2, ogc3, ogc4, ogc5);
+            int currentI = i;
+            btn.enabled = true;
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(() => {
+                if (selected[currentI]) {
+                    selected[currentI] = false;
+                    SetBtnColor(btn, 1, 0, 0, ogc1, ogc2, ogc3, ogc4, ogc5);
+                } else {
+                    selected[currentI] = true;
+                    SetBtnColor(btn, 0, 1, 0, ogc1, ogc2, ogc3, ogc4, ogc5);
+                }
+            });
+            CD.SetActive(false);
+            
+
+            GameObject count = newElement.transform.Find("Count").gameObject;
+            if (IMCount[i] == 1) {
+                count.SetActive(false);
+            } else {
+                GameObject countOutline = count.transform.Find("CountOutline").gameObject;
+                GameObject countText = countOutline.transform.Find("CountText").gameObject;
+                countText.GetComponent<TextMeshProUGUI>().text = IMCount[i].ToString();
+                count.SetActive(true);
+            }
+            GameObject info = newElement.transform.Find("Info").gameObject;
+            Button btn2 = info.transform.Find("Hitbox").GetComponent<Button>();
+            btn2.enabled = true;
+            btn2.onClick.RemoveAllListeners();
+            btn2.onClick.AddListener(() => {
+                OnInventoryElementClick(index);
+                Debug.Log("btn2 clicked");
+            });
+            info.SetActive(true);
+        }
+        buttonClicked = 0;
+        OKButton3.GetComponent<Image>().sprite = buttons[4];
+        XButton4.GetComponent<Image>().sprite = buttons[6];
+        modifierOptionsScroll.SetActive(true);
+        
+        
+        while (buttonClicked == 0) {
+            yield return null;
+        }
+        modifierOptionsScroll.SetActive(false);
+        if (buttonClicked == 11) {
+            for (int i = 0; i < selected.Count; i++) {
+                selected[i] = false;
+            }
+        }
+        callback(selected);
+        yield return null;
+    }
     List<float> bulDirDeg = new List<float>();
     List<int>  trapIndexes = new List<int>();
     List<int> smokeIndexes = new List<int>();
     List<int> bulStops = new List<int>();
     List<int> bombStops = new List<int>();
     float localDamage;
-    public IEnumerator UseItem(int index, float[] a, List<float> b, List<int> ti, List<int> si, int mode, BotScript BS, int myP, int myPnum, Vector2 targetPos, int target, int botUAAT, List<float> FMDD, System.Action<bool> callback) {
+    public IEnumerator UseItem(int index, float[] a, List<float> b, float[] m, List<int> ti, List<int> si, int mode, BotScript BS, int myP, int myPnum, Vector2 targetPos, int target, int botUAAT, List<float> FMDD, System.Action<bool> callback) {
         /* mode 1 is player, mode 2 is bot*/
         a[0] = myPnum;
         a[1] = index + 1;
+        (List<InventoryItem> items, List<int> counts) IM = (null, null);
+        List<bool> IMSelected = new List<bool>();
+        if (mode == 1) {
+            (List<InventoryItem> items, List<int> counts) ND = NoDupe(INVENTORY);
+            (List<InventoryItem> items, List<int> counts) mdfrs = FindModifiers(ND);
+            IM = ItemModifiable(index + 1, mdfrs);
+            //Debug.Log("IM[0] count = " + IM[0].Count);
+            if (IM.items.Count > 0) {
+                yield return StartCoroutine(ChooseModifiers(IM, result => {
+                    IMSelected = result;
+                }));
+            }
+        } else if (mode == 2) {
+            (List<InventoryItem> items, List<int> counts) ND = NoDupe(BS.inventory);
+            (List<InventoryItem> items, List<int> counts) mdfrs = FindModifiers(ND);
+            IM = ItemModifiable(index + 1, mdfrs);
+            for (int i = 0; i < IM.items.Count; i++) {
+                IMSelected.Add(true);
+            }
+        }
         bool stillPlaySound = true;
         if (mode == 2) {
             stillPlaySound = false;
@@ -2744,12 +3256,12 @@ public class LocalScript : NetworkBehaviour
                 int countTriggerables = CTOTGrid(traps, 2, myPlayerNum);
                 List<int> foundTriggerable = null;
                 if (countTriggerables == 0) {
-                    StartCoroutine(CreateMessageText("You have no traps to trigger, how'd you even get this detonator?", 300, 200, 1, false));
+                    StartCoroutine(CreateMessageText("You have no traps to trigger, how'd you even get this detonator?", 300, 200, 1, 0, false, false));
                     //success is false (or at least not true) (meaning you don't set it to true)
                 } else if (countTriggerables == 1) {
                     foundTriggerable = FindFirstTrapOfType(traps, 2, myPlayerNum);
                 } else {
-                    StartCoroutine(CreateMessageText("Choose which trap you want to trigger!", 300, 200, 2, false));
+                    StartCoroutine(CreateMessageText("Choose which trap you want to trigger!", 300, 200, 2, 1, false, false));
                     while (!(Mouse.current.leftButton.wasPressedThisFrame && mouseIndex != 0 && FFTOTIndex(traps[mouseIndex - 1], 2, myPlayerNum) != -1))
                         yield return null;
                     foundTriggerable = new List<int>();
@@ -2787,7 +3299,7 @@ public class LocalScript : NetworkBehaviour
                 targetV = targetPos;
             }
             if (mode == 1) {
-                yield return StartCoroutine(VisionHouse(itemInfos[index][0][8], smokes, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
+                yield return StartCoroutine(VisionHouse(itemInfos[index][0][8], smokes, true, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
             } else if (mode == 2) {
                 yield return StartCoroutine(BS.BotVisionHouse(false, 0));
                 /*Vector2? potentialNewTarget = BS.ChangeTarget(target);
@@ -2818,13 +3330,16 @@ public class LocalScript : NetworkBehaviour
             if (Mathf.RoundToInt(itemInfos[index][0][7]) == 1) suppressed = 1;
             if (mode == 1) {
                 if (itemIntLists[index][1].Contains(1)) {
-                    StartCoroutine(CreateMessageText("Click where you'd like to shoot", 300, 200, 2, false));
+                    StartCoroutine(CreateMessageText("Click where you'd like to shoot", 300, 200, 2, 1, false, false));
+                    if (LocalScript.gamemode == 5 && TURNS.Value == 3) {
+                        StartCoroutine(CreateMessageText("Click on the enemy to shoot him!", 200, 200, 2, 1, false, true));
+                    }
                 }
                 if (bomb == 1 || bomb == 2 || smoke == 1 || stunMode != 0) {
-                    StartCoroutine(CreateMessageText("Click where you'd like to throw", 300, 200, 2, false));
+                    StartCoroutine(CreateMessageText("Click where you'd like to throw", 300, 200, 2, 1, false, false));
                 }
                 if (knife == 1) {
-                    StartCoroutine(CreateMessageText("Click where you'd like to swing", 300, 200, 2, false));
+                    StartCoroutine(CreateMessageText("Click where you'd like to swing", 300, 200, 2, 1, false, false));
                 }
                 //Debug.Log("Click where you'd like to ...");
             }
@@ -2871,7 +3386,7 @@ public class LocalScript : NetworkBehaviour
                 }
                 
                 bul.transform.localScale = new Vector3(tileWidth * 5, tileHeight * 5, 1);
-                StartCoroutine(BulletMove(index, bul, angleDeg, itemInfos[index][0][4], itemInfos[index][0][0], myElevation + itemInfos[index][0][12], myP, myPnum, ogMode, itemInfos[index][0][1], Mathf.RoundToInt(itemInfos[index][0][13]), bomb, itemInfos[index][0][10], itemInfos[index][0][9], itemInfos[index][0][5], diff.magnitude, knife, hitSound, smoke, stunMode, trap, changeLoc, 0, 0, suppressed, false, false, BS));
+                StartCoroutine(BulletMove(index, bul, null, angleDeg, itemInfos[index][0][4], itemInfos[index][0][0], myElevation + itemInfos[index][0][12], myP, myPnum, ogMode, itemInfos[index][0][1], itemInfos[index][0][15], Mathf.RoundToInt(itemInfos[index][0][13]), bomb, itemInfos[index][0][10], itemInfos[index][0][9], itemInfos[index][0][5], diff.magnitude, knife, hitSound, smoke, stunMode, trap, changeLoc, 0, 0, suppressed, false, false, BS));
                 //Debug.Log("bulmove");
                 if (mode == 1) {
                     StartCoroutine(ItemSound(index));
@@ -2913,6 +3428,15 @@ public class LocalScript : NetworkBehaviour
             //a[29] is playerNum no matter what
             //a[30] is for number of airdrops
             a[31] = smoke;
+            a[32] = itemInfos[index][0][15];
+            for (int i = 0; i < IMSelected.Count; i++) {
+                if (IMSelected[i]) {
+                    int itm = IM.items[i].itemNum;
+                    if (itemIntLists[itm - 1][4].Contains(13)) {
+                        m[0] = itemInfos[itm - 1][7][0];
+                    }
+                }
+            }
             if (mode == 1) {
                 while (bulDone != itemInfos[index][0][3]) {
                     yield return null;
@@ -2944,14 +3468,24 @@ public class LocalScript : NetworkBehaviour
                         int shotsHit = CountInIntList(bulStops, 3);
                         String msg;
                         if (itemInfos[index][0][3] == 1) {
-                            msg = "You hit " + shotsHit + " out of " + itemInfos[index][0][3] + " shot!";
+                            msg = "ou hit " + shotsHit + " out of " + itemInfos[index][0][3] + " shot!";
                         } else {
-                            msg = "You hit " + shotsHit + " out of " + itemInfos[index][0][3] + " shots!";
+                            msg = "ou hit " + shotsHit + " out of " + itemInfos[index][0][3] + " shots!";
                         }
-                        StartCoroutine(CreateMessageText(msg, 0, -100, 1, false));
+                        if (LocalScript.gamemode == 5 && TURNS.Value == 3) {
+                            msg = "Nice, y" + msg;
+                            StartCoroutine(CreateMessageText(msg, -100, -100, 1, 0, false, true));
+                        } else {
+                            msg = "Y" + msg;
+                            StartCoroutine(CreateMessageText(msg, 0, -100, 1, 0, false, false));
+                        }
                     }
                     else {
-                        StartCoroutine(CreateMessageText("You missed...", 0, -100, 1, false));
+                        if (LocalScript.gamemode == 5 && TURNS.Value == 3) {
+                            StartCoroutine(CreateMessageText("You missed, but it's ok, you're still learning!", -100, -100, 1, 0, false, true));
+                        } else {
+                            StartCoroutine(CreateMessageText("You missed...", 0, -100, 1, 0, false, false));
+                        }
                     }
                 } 
                 if (bomb == 1 && triggerTrap == 0) {
@@ -2963,7 +3497,7 @@ public class LocalScript : NetworkBehaviour
                     StartCoroutine(PlayerObjectEffects(myPlayerNum, myEffects, smokes));
                 }
                 if (trap == 1) {
-                    StartCoroutine(CreateMessageText("Trap has been planted", 200, 100, 1, false));
+                    StartCoroutine(CreateMessageText("Trap has been planted", 200, 100, 1, 0, false, false));
                     //StartCoroutine(PlaySound(sounds[37]));
                 }
             } else if (mode == 2) {
@@ -2977,6 +3511,19 @@ public class LocalScript : NetworkBehaviour
                 }
             }
             success = true;
+            if (success) {
+                for (int i = 0; i < IMSelected.Count; i++) {
+                    if (IMSelected[i]) {
+                        int itm = IM.items[i].itemNum;
+                        //there can be more nuances added for the following section, but they are not needed currently
+                        if (mode == 1) {
+                            yield return StartCoroutine(RemoveItems(INVENTORY, itm - 1, IM.counts[i]));
+                        } else if (mode == 2) {
+                            yield return StartCoroutine(RemoveItems(BS.inventory, itm - 1, IM.counts[i]));
+                        }
+                    }
+                }
+            }
         }
         a[24] = triggerTrap;
         
@@ -3010,7 +3557,7 @@ public class LocalScript : NetworkBehaviour
                     if (maxHealthChange == 0) {
                         if (Mathf.RoundToInt(itemInfos[index][1][1]) == 1) {
                             if (HEALTH >= maxHealth) {
-                                StartCoroutine(CreateMessageText("You're already at max health!", 200, 150, 1, false));
+                                StartCoroutine(CreateMessageText("You're already at max health!", 200, 150, 1, 0, false, false));
                                 success2 = false;
                                 success = false;
                             }
@@ -3019,7 +3566,7 @@ public class LocalScript : NetworkBehaviour
                 }
                 if (success2) {
                     int maxUAAT = itemInts[index][5];
-                    int countInInv = CountInIntList(INVENTORY, index + 1);
+                    int countInInv = CountInIntList(GetInvIntList(INVENTORY), index + 1);
                     //maxUAAT = min(itemInts[index][5], countInInv)
                     if (itemInts[index][5] == -1) {
                         maxUAAT = countInInv;
@@ -3077,7 +3624,7 @@ public class LocalScript : NetworkBehaviour
                             else
                                 HEALTH += healing;
                             UpdateHealthText(HEALTH, maxHealth);
-                            StartCoroutine(CreateMessageText("You are healed", 200, 150, 1, false));
+                            StartCoroutine(CreateMessageText("You are healed", 200, 150, 1, 0, false, false));
                             StartCoroutine(ItemSound(index)); 
                             if (useAtATime > 1) {
                                 yield return new WaitForSeconds(1f);
@@ -3155,15 +3702,10 @@ public class LocalScript : NetworkBehaviour
                 List<int> AAU = itemIntLists[index][6];
                 foreach (int i in AAU) {
                     if (i > 0) {
-                        INVENTORY.Add(i);
+                        INVENTORY.Add(GetNewII(i));
                     }
                 }
-                if (inventoryOpen) {
-                    foreach (Transform child in inventoryItemsTF) {
-                        GameObject.Destroy(child.gameObject);
-                    }
-                    StartCoroutine(OpenInventory());
-                }
+                UpdateInventory(INVENTORY);
                 if (cooldownsOpen) {
                     foreach (Transform child in cooldownItemsTF) {
                         GameObject.Destroy(child.gameObject);
@@ -3178,7 +3720,7 @@ public class LocalScript : NetworkBehaviour
                 List<int> AAU = itemIntLists[index][6];
                 foreach (int i in AAU) {
                     if (i > 0) {
-                        BS.inventory.Add(i);
+                        BS.inventory.Add(GetNewII(i));
                     }
                 }
             }
@@ -3394,6 +3936,9 @@ public class LocalScript : NetworkBehaviour
             }
             if (bookSearchYield != 0) {
                 BS.botBookInventory.Add(bookSearchYield);
+            }
+            if (BS.trainingModeActivated) {
+                BS.botBrain.Backpropagate(BS.botBrain.moveHistory[BS.botBrain.moveHistory.Count - 1], columns.Value, rows.Value, new List<int>{0, 1, 2}, new List<float>{2.5f, 2.5f, 2.5f});
             }
         }
         yield return null;
@@ -3678,9 +4223,9 @@ public class LocalScript : NetworkBehaviour
             } else {
                 msg = "You hit " + bombsHit + " enemies!";
             }
-            StartCoroutine(CreateMessageText(msg, 0, -100, 1, false));
+            StartCoroutine(CreateMessageText(msg, 0, -100, 1, 0, false, false));
         } else {
-            StartCoroutine(CreateMessageText("You missed... with a bomb...", 0, -100, 1, false));
+            StartCoroutine(CreateMessageText("You missed... with a bomb...", 0, -100, 1, 0, false, false));
         }
         yield return null;
     }
@@ -3752,15 +4297,15 @@ public class LocalScript : NetworkBehaviour
                     int dist = Mathf.RoundToInt(FindDistance(myPos, enemyPos));
                     if (playerPositionList.Count > 2) {
                         if (dist == 1) {
-                            StartCoroutine(CreateMessageText("An enemy is about " + dist + " block away!", 300, 200, 1, false));
+                            StartCoroutine(CreateMessageText("An enemy is about " + dist + " block away!", 300, 200, 1, 0, false, false));
                         } else {
-                            StartCoroutine(CreateMessageText("An enemy is about " + dist + " blocks away!", 300, 200, 1, false));
+                            StartCoroutine(CreateMessageText("An enemy is about " + dist + " blocks away!", 300, 200, 1, 0, false, false));
                         }
                     } else {
                         if (dist == 1) {
-                            StartCoroutine(CreateMessageText("The enemy is about " + dist + " block away!", 300, 200, 1, false));
+                            StartCoroutine(CreateMessageText("The enemy is about " + dist + " block away!", 300, 200, 1, 0, false, false));
                         } else {
-                            StartCoroutine(CreateMessageText("The enemy is about " + dist + " blocks away!", 300, 200, 1, false));
+                            StartCoroutine(CreateMessageText("The enemy is about " + dist + " blocks away!", 300, 200, 1, 0, false, false));
                         }
                     }
                     yield return new WaitForSeconds(0.5f);
@@ -3835,22 +4380,21 @@ public class LocalScript : NetworkBehaviour
         musicSource.PlayOneShot(clip);
         yield return new WaitForSeconds(clip.length);
     }
-    IEnumerator RemoveItems(List<int> inv, int index, int uaat) {
+    IEnumerator RemoveItems(List<InventoryItem> inv, int index, int uaat) {
         for (int h = 0; h < uaat; h++) {
             for (int i = 0; i < itemInts[index][2]; i++) {
-                yield return StartCoroutine(TryRemoveFromInv(inv, index));
+                RemoveFromIIList(inv, index + 1);
             }
         }
         yield return null;
     }
-    IEnumerator TryRemoveFromInv(List<int> inv, int index) {
+    public void RemoveFromIIList(List<InventoryItem> inv, int item) {
         for (int i = 0; i < inv.Count; i++) {
-            if (inv[i] == index + 1) {
+            if (inv[i].itemNum == item) {
                 inv.RemoveAt(i);
-                break;
+                return;
             }
         }
-        yield return null;
     }
     public int CountInIntList(List<int> list, int target) {
         int count = 0;
@@ -3859,6 +4403,15 @@ public class LocalScript : NetworkBehaviour
                 count++;
         }
         return count; 
+    }
+    public int CountInIIList(List<InventoryItem> list, InventoryItem target) {
+        int count = 0;
+        for (int i = 0; i < list.Count; i++) {
+            if (CompareInventoryItems(list[i], target)) {
+                count++;
+            }
+        }
+        return count;
     }
     void RenderLine(Vector2 start, Vector2 end) {
         lineRenderer.positionCount = 2;
@@ -3919,7 +4472,7 @@ public class LocalScript : NetworkBehaviour
     public float GetHilltopCoe() {
         return 0.5f;
     }
-    public IEnumerator BulletMove(int itemIndex, GameObject bul, float angleDeg, float speed, float range, float startingElevation, int position, int playerNum, int mode, float damage, int bounce, int bomb, float fuseTime, float blastRadius, float stopInPlace, float distanceClicked, int knife, int hitSound, int smoke, int stunMode, int trap, int changeLoc, int trapIndex, int smokeIndex, int suppressed, bool replay, bool LR6Smoke, BotScript BS) {
+    public IEnumerator BulletMove(int itemIndex, GameObject bul, float[] m, float angleDeg, float speed, float range, float startingElevation, int position, int playerNum, int mode, float damage, float MHDamage, int bounce, int bomb, float fuseTime, float blastRadius, float stopInPlace, float distanceClicked, int knife, int hitSound, int smoke, int stunMode, int trap, int changeLoc, int trapIndex, int smokeIndex, int suppressed, bool replay, bool LR6Smoke, BotScript BS) {
         /*mode:
         1 = player useitem
         2 = player replay
@@ -3965,8 +4518,9 @@ public class LocalScript : NetworkBehaviour
             while (distanceTraveled < goalDistance) {
                 for (int i = 0; i < speed; i++) {
                     if (distanceTraveled < goalDistance) {
-                        bul.transform.position += (Vector3)(new Vector2(Mathf.Cos(angleDeg * Mathf.Deg2Rad), Mathf.Sin(angleDeg * Mathf.Deg2Rad)) * 1 * Time.deltaTime); //this may cause lagginess to change outcomes, best to implement a math calculation first
-                        float DT = Time.deltaTime;
+                        float DT = 1 * Time.deltaTime;
+                        bul.transform.position += (Vector3)(new Vector2(Mathf.Cos(angleDeg * Mathf.Deg2Rad), Mathf.Sin(angleDeg * Mathf.Deg2Rad)) * DT); //this may cause lagginess to change outcomes, best to implement a math calculation first
+                        
                         distanceTraveled += DT;
                         
                         int index = GetIndexFromWorldCoords(new Vector2(bul.transform.position.x, bul.transform.position.y)); //index is 1+
@@ -4137,9 +4691,11 @@ public class LocalScript : NetworkBehaviour
                             foreach (int p in MPPI) {
                                 if (mode == 1) {
                                     localDamages[p - 1] += damage;
+                                    localMHDamages[p - 1] += MHDamage;
                                     Debug.Log("changed my localDamages");
                                 } else if (mode == 4) {
                                     BS.myLocalDamages[p - 1] += damage;
+                                    BS.myLocalMHDamages[p - 1] += MHDamage;
                                 }
                             }
                             //localDamage += damage;
@@ -4148,19 +4704,22 @@ public class LocalScript : NetworkBehaviour
                         if (mode == 2) {
                             if (MPPI.Contains(myPlayerNum)) {
                                 if (!replay) {
-                                    healthCalculation -= armorCoefficient * damage;
+                                    healthCalculation -= Mathf.Clamp01(armorCoefficient + m[0]) * damage;
+                                    maxHealthCalculation -= Mathf.Clamp01(armorCoefficient + m[0]) * MHDamage;
                                     //yield return StartCoroutine(CheckHealth());
-                                    UpdateHealthText(Mathf.RoundToInt(healthCalculation), maxHealth);
+                                    UpdateHealthText(Mathf.RoundToInt(healthCalculation), Mathf.RoundToInt(maxHealthCalculation));
                                 } else {
-                                    pseudoHealth -= armorCoefficient * damage;
-                                    UpdateHealthText(Mathf.RoundToInt(pseudoHealth), maxHealth);
+                                    pseudoHealth -= Mathf.Clamp01(armorCoefficient + m[0]) * damage;
+                                    pseudoMaxHealth -= Mathf.Clamp01(armorCoefficient + m[0]) * MHDamage;
+                                    UpdateHealthText(Mathf.RoundToInt(pseudoHealth), Mathf.RoundToInt(pseudoMaxHealth));
                                 }
                                 
                             }
                         } 
                         if (mode == 3) {
                             if (MPPI.Contains(BS.playerNum)) {
-                                BS.HPCalculation -= BS.armorCoefficient * damage;
+                                BS.HPCalculation -= Mathf.Clamp01(BS.armorCoefficient + m[0]) * damage;
+                                //could do maxHPCalculation here but HPCalculation isn't even used
                                 //yield return StartCoroutine(CheckHealth());
                                 //UpdateHealthText(Mathf.RoundToInt(healthCalculation), maxHealth);
                             }
@@ -4218,6 +4777,9 @@ public class LocalScript : NetworkBehaviour
                 yield return new WaitForSeconds(fuseTime);
                 //Destroy(bul);
                 bul.GetComponent<SpriteRenderer>().enabled = false;
+                if (index == 0) {
+                    index = BackBulFromEdge(new Vector2(bul.transform.position.x, bul.transform.position.y), angleDeg);
+                }
                 if (index != 0) {
                     yield return StartCoroutine(ExplodeBomb(index, blastRadius, damage, bounce, MPPI, playerNum, Mathf.RoundToInt(itemInfos[itemIndex][0][14]), bomb, replay, mode, BS));
                 }
@@ -4282,7 +4844,7 @@ public class LocalScript : NetworkBehaviour
                             currentSmokes = new List<float>(prevSmokes2);
                         }
                     }
-                    yield return StartCoroutine(UpdateIsSmoked(currentSmokes));
+                    yield return StartCoroutine(UpdateIsSmoked(currentSmokes, !(mode == 2 && replay)));
                 }
             } else if (mode == 3 || mode == 4) {
                 int index = GetIndexFromWorldCoords(new Vector2(bul.transform.position.x, bul.transform.position.y));
@@ -4339,7 +4901,7 @@ public class LocalScript : NetworkBehaviour
                         }
                         //Debug.Log("USTAW1");
                         StartCoroutine(Flashbang());
-                        StartCoroutine(CreateMessageText("You got stunned!", 0, -100, 1, false));
+                        StartCoroutine(CreateMessageText("You got stunned!", 0, -100, 1, 0, false, false));
                         if (!replay) {
                             YSTEServerRpc(playerNum);
                         }
@@ -4371,7 +4933,7 @@ public class LocalScript : NetworkBehaviour
                             }
                             //Debug.Log("USTAW1");
                             
-                            StartCoroutine(CreateMessageText("You got stunned!", 0, -100, 1, false));
+                            StartCoroutine(CreateMessageText("You got stunned!", 0, -100, 1, 0, false, false));
                             if (!replay) {
                                 YSTEServerRpc(playerNum);
                                 if (frozenTurns == 0) {
@@ -4414,7 +4976,7 @@ public class LocalScript : NetworkBehaviour
             if (mode == 1) {
                 yield return StartCoroutine(Grapple(myPlayerObject, myPosition, index, new Vector2(bul.transform.position.x, bul.transform.position.y)));
                 myPosition = index;
-                yield return StartCoroutine(VisionHouse(0, smokes, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
+                yield return StartCoroutine(VisionHouse(0, smokes, true, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
                 VCSpriterenderer.enabled = false;
                 //UpdatePositionServerRpc(myPlayerObject.GetComponent<NetworkObject>(), myPosition, true);
                 playerPositionList[myPlayerNum - 1] = myPosition;
@@ -4683,9 +5245,11 @@ public class LocalScript : NetworkBehaviour
                             bombStops.Add(j + 1);
                             if (mode == 1) {
                                 localDamages[j] += damageList[i];
+                                //could be localMHDamages here but doesn't apply yet
                                 //Debug.Log("Player " + (j + 1) + " took " + damageList[i] + " bomb damage");
                             } else if (mode == 4) {
                                 BS.myLocalDamages[j] += damageList[i];
+                                //could be myLocalMHDamages here but doesn't apply yet
                             }
                         }
                     }
@@ -4696,11 +5260,13 @@ public class LocalScript : NetworkBehaviour
                     if (binaryList[myPosition - 1] == 1) {
                         if (!replay) {
                             healthCalculation -= armorCoefficient * damageList[myPosition - 1];
+                            //could do maxHealthCalculation here but doesn't apply yet
                             myLocalDamage += damageList[myPosition - 1];
                             //yield return StartCoroutine(CheckHealth());
                             UpdateHealthText(Mathf.RoundToInt(healthCalculation), maxHealth);
                         } else {
                             pseudoHealth -= armorCoefficient * damageList[myPosition - 1];
+                            //could do pseudoMaxHealth here but doesn't apply yet
                             UpdateHealthText(Mathf.RoundToInt(pseudoHealth), maxHealth);
                         }
                         if ((bounce == 0 && MPPI.Contains(myPlayerNum))) {
@@ -4714,6 +5280,7 @@ public class LocalScript : NetworkBehaviour
             if (mode == 3) {
                 if (binaryList[BS.position - 1] == 1) {
                     BS.HPCalculation -= BS.armorCoefficient * damageList[BS.position - 1];
+                    //could do maxHPCalculation here but HPCalculation isn't even used
                     BS.myLD += damageList[BS.position - 1];
                 }
             }
@@ -4777,6 +5344,7 @@ public class LocalScript : NetworkBehaviour
         }
         VCSpriterenderer.enabled = true;
         RenderLine(new Vector2(xIteration, yIteration), bulPos);
+        bool[] IS = SmokeList(smokes);
         for (int i = 0; i < repeats; i++) {
             //add
             xIteration += xChange;
@@ -4786,7 +5354,7 @@ public class LocalScript : NetworkBehaviour
             int index = GetIndexFromWorldCoords(new Vector2(xIteration, yIteration));
             float myElevation = FindElevation(GRID[index - 1], 1);
             float myVision = FindVision(GRID[index - 1], INVENTORY, myEffects, myEffectStrengths);
-            StartCoroutine(CreateFOVRaycast(new Vector3(xIteration, yIteration, Camera.main.nearClipPlane), myElevation, myVision, smokes));
+            StartCoroutine(CreateFOVRaycast(new Vector3(xIteration, yIteration, Camera.main.nearClipPlane), myElevation, myVision, smokes, IS));
 
             yield return null;
         }
@@ -4849,7 +5417,7 @@ public class LocalScript : NetworkBehaviour
     [ClientRpc]
     void YSTEClientRpc(int pnum) {
         if (pnum == myPlayerNum) {
-            StartCoroutine(CreateMessageText("You stunned the enemy!", 0, -100, 1, false));
+            StartCoroutine(CreateMessageText("You stunned the enemy!", 0, -100, 1, 0, false, false));
         }
     }
     bool USTAWConfirm = false;
@@ -5095,9 +5663,19 @@ public class LocalScript : NetworkBehaviour
         }
         yield return null;
     }
-    void OnElementClick(int index) {
-        useItem = index;
-        buttonClicked = 6;
+    void OnElementClick(int index, GameObject newElement, Button btn) {
+        if (LocalScript.gamemode == 5 && TURNS.Value == 2 && index != 1) {
+            StartCoroutine(CreateMessageText("Wrong one buddy", -200, -200, 6, 0, false, true));
+            Color c = newElement.GetComponent<Image>().color;
+            c.r = 90f / 255f;
+            c.g = 90f / 255f;
+            c.b = 90f / 255f;
+            newElement.GetComponent<Image>().color = c;
+            btn.enabled = false;
+        } else {
+            useItem = index;
+            buttonClicked = 6;
+        }
     }
     void OnInventoryElementClick(int index) {
         StartCoroutine(ToggleStatsBook(true, index + 1));
@@ -5110,55 +5688,109 @@ public class LocalScript : NetworkBehaviour
     void OnCWTDClick(int index) {
         CWTDCLicked = index + 1;
     }
-    IEnumerator ShakeUse() {
+    IEnumerator ShakeSU(int button) {
+        GameObject myButton = null;
+        if (button == 1) {
+            myButton = searchButton;
+        } else if (button == 2) {
+            myButton = useButton;
+        }
         float shake = 0.1f; 
-        float angle = 0;
-        float OGXMin = useButton.GetComponent<RectTransform>().anchorMin.x;
-        float OGYMin = useButton.GetComponent<RectTransform>().anchorMin.y;
-        float OGXMax = useButton.GetComponent<RectTransform>().anchorMax.x;
-        float OGYMax = useButton.GetComponent<RectTransform>().anchorMax.y;
-        for (int i = 0; i < 400; i++) {
-            if (!searching) {
-                useButton.GetComponent<RectTransform>().anchorMin = new Vector2(OGXMin - (shake * (Mathf.Sin(angle))), OGYMin);
-                useButton.GetComponent<RectTransform>().anchorMax = new Vector2(OGXMax - (shake * (Mathf.Sin(angle))), OGYMax);
-                shake *= 0.99f;
-                angle += 0.1f;
-                yield return null;
-            } else {
-                break;
+        float angle = 0f;
+        float OGXMin = myButton.GetComponent<RectTransform>().anchorMin.x;
+        float OGYMin = myButton.GetComponent<RectTransform>().anchorMin.y;
+        float OGXMax = myButton.GetComponent<RectTransform>().anchorMax.x;
+        float OGYMax = myButton.GetComponent<RectTransform>().anchorMax.y;
+        float duration = 5f;
+        float elapsed = 0f;
+        float angleSpeed = 6f;
+        float decayFactor = 0.99f;
+        bool myBool = false;
+        while (elapsed < duration) {
+            if (button == 1) {
+                myBool = useing;
+            } else if (button == 2) {
+                myBool = searching;
             }
+            if (myBool) break;
+
+            myButton.GetComponent<RectTransform>().anchorMin = new Vector2(OGXMin - (shake * (Mathf.Sin(angle))), OGYMin);
+            myButton.GetComponent<RectTransform>().anchorMax = new Vector2(OGXMax - (shake * (Mathf.Sin(angle))), OGYMax);
+            float dt = Time.deltaTime;
+            shake *= Mathf.Pow(decayFactor, dt * 60f);
+            angle += angleSpeed * dt;
+            elapsed += dt;
+            yield return null;
         }
-        useButton.GetComponent<RectTransform>().anchorMin = new Vector2(OGXMin, OGYMin);
-        useButton.GetComponent<RectTransform>().anchorMax = new Vector2(OGXMax, OGYMax);
+        myButton.GetComponent<RectTransform>().anchorMin = new Vector2(OGXMin, OGYMin);
+        myButton.GetComponent<RectTransform>().anchorMax = new Vector2(OGXMax, OGYMax);
     }
-    IEnumerator FlashUse() {
+    IEnumerator FlashSU(int button) {
+        GameObject myButton = null;
+        if (button == 1) {
+            myButton = searchButton;
+        } else if (button == 2) {
+            myButton = useButton;
+        }
+        int costumeAddend = 0;
+        if (button == 1) {
+            costumeAddend = -2;
+        } else if (button == 2) {
+            costumeAddend = 0;
+        }
+        bool myBool = false;
         for (int i = 0; i < 2; i++) {
-            useButton.GetComponent<Image>().sprite = buttons[2];
-            if (searching) 
+            myButton.GetComponent<Image>().sprite = buttons[2 + costumeAddend];
+            if (button == 1) {
+                myBool = useing;
+            } else if (button == 2) {
+                myBool = searching;
+            }
+            if (myBool) 
                 break;
             yield return new WaitForSeconds(0.2f);
-            if (searching) 
+            if (button == 1) {
+                myBool = useing;
+            } else if (button == 2) {
+                myBool = searching;
+            }
+            if (myBool) 
                 break;
-            useButton.GetComponent<Image>().sprite = buttons[3];
-            if (searching) 
+            myButton.GetComponent<Image>().sprite = buttons[3 + costumeAddend];
+            if (button == 1) {
+                myBool = useing;
+            } else if (button == 2) {
+                myBool = searching;
+            }
+            if (myBool) 
                 break;
             yield return new WaitForSeconds(0.2f);
-            if (searching) 
+            if (button == 1) {
+                myBool = useing;
+            } else if (button == 2) {
+                myBool = searching;
+            }
+            if (myBool) 
                 break;
         }
-        useButton.GetComponent<Image>().sprite = buttons[2];
-        if (!searching) {
-            Color color = useButton.GetComponent<Image>().color;
-            color = SetBrightness(color, 0.75f);
+        myButton.GetComponent<Image>().sprite = buttons[2 + costumeAddend];
+        if (button == 1) {
+            myBool = useing;
+        } else if (button == 2) {
+            myBool = searching;
+        }
+        if (!myBool) {
+            Color color = myButton.GetComponent<Image>().color;
+            color = SetBrightness(color, 0.75f); //FSU Color
             color.a = (166f / 255f);
-            useButton.GetComponent<Image>().color = color;
+            myButton.GetComponent<Image>().color = color;
             //Debug.Log("Use dimmed");
         }
     }
-    List<int> FindUsable(List<int> inv) {
-        List<int> usables = new List<int>();
+    List<InventoryItem> FindUsable(List<InventoryItem> inv) {
+        List<InventoryItem> usables = new List<InventoryItem>();
         for (int i = 0; i < inv.Count; i++) {
-            if (itemBools[inv[i] - 1][0] == true) 
+            if (itemBools[inv[i].itemNum - 1][0] == true) 
                 usables.Add(inv[i]);
         }
         return usables;
@@ -5200,6 +5832,10 @@ public class LocalScript : NetworkBehaviour
     bool replayable4 = false;
     bool replayable5 = false;
     bool replayable6 = false;
+    bool replayable7 = false;
+    bool replayable8 = false;
+    bool replayable9 = false;
+    int R9Mode = 0;
     bool R6Smoke = false;
     bool replaying = false;
     bool replaying2 = false;
@@ -5207,6 +5843,8 @@ public class LocalScript : NetworkBehaviour
     bool replaying4 = false;
     bool replaying5 = false;
     bool replaying6 = false;
+    bool replaying7 = false;
+    bool replaying8 = false;
     IEnumerator ReplayEnemyAction() {
         //Debug.Log("Replayable: " + replayable);
         bool compoundBool = replayable2 && (CountTrues(enemyHealthsVisible) >= 1); //compoundBool = replayable2 && at least one enemy health is showing
@@ -5218,10 +5856,16 @@ public class LocalScript : NetworkBehaviour
         bool localReplaying3 = false;
         bool localReplaying4 = false;
         bool localReplaying6 = false;
+        bool localReplaying7 = false;
+        bool localReplaying8 = false;
+        bool localReplaying9 = false;
         bool LR6Smoke = false;
         int initReplayable3 = replayable3;
         bool initReplayable5 = replayable5;
         bool initReplayable6 = replayable6;
+        bool initReplayable7 = replayable7;
+        bool initReplayable8 = replayable8;
+        bool initReplayable9 = replayable9;
         bool initR6Smoke = R6Smoke;
         bool initReplaying5 = replaying5;
         bool initReplaying6 = replaying6;
@@ -5230,12 +5874,18 @@ public class LocalScript : NetworkBehaviour
         bool enemyActioned = false;
         List<int> PDH = new List<int>(playersDeltaHealth);
         List<int> EWO = new List<int>(effectsWornOff);
+        if (initReplayable9) {
+            localReplaying9 = true;
+            UpdateInventory(prevInv);
+            Debug.Log("Update Inventory with prevInv");
+            //yield return new WaitForSeconds(1);
+        }
         if (initReplayable6 && !initReplaying6 && !initReplaying) {
             if (EWO.Contains(2)) {
                 replaying6 = true;
                 localReplaying6 = true;
                 ewo2 = true;
-                yield return StartCoroutine(VisionHouse(0, smokes, prevEnemyEffects2, 0, 0, prevPlayerPositionList, prevMyEffects, prevMyEffectStrengths)); //prevEnemyEffects is for enemy using and prevEnemyEffects2 is for enemy wearing off
+                yield return StartCoroutine(VisionHouse(0, smokes, false, prevEnemyEffects2, 0, 0, prevPlayerPositionList, prevMyEffects, prevMyEffectStrengths)); //prevEnemyEffects is for enemy using and prevEnemyEffects2 is for enemy wearing off
             }
             if (EWO.Contains(6)) {
                 replaying6 = true;
@@ -5300,7 +5950,7 @@ public class LocalScript : NetworkBehaviour
                 trapsTemp[prevTrapPosition - 1] = prevListTraps;
                 yield return StartCoroutine(RenderTraps(trapsTemp));
                 if (initReplayable3 == 1 || initReplayable3 == 3) {
-                    UpdateHealthText(Mathf.RoundToInt(pseudoHealth), maxHealth);
+                    UpdateHealthText(Mathf.RoundToInt(pseudoHealth), Mathf.RoundToInt(pseudoMaxHealth));
                 }
             }
         }
@@ -5330,6 +5980,16 @@ public class LocalScript : NetworkBehaviour
                 playerList[myPlayerNum - 1].GetComponent<SpriteRenderer>().sprite = playerCostumes[0];
             }
         }
+        if (initReplayable7 && !replaying7) {
+            replaying7 = true;
+            localReplaying7 = true;
+        }
+        if (initReplayable8 && !replaying8) {
+            replaying8 = true;
+            localReplaying8 = true;
+            UpdateGases(prevGas);
+        }
+        //Debug.Log("replayable8 is " + replayable8);
         if (replayable && !replaying) {
             replaying = true;
             Debug.Log("Replaying");
@@ -5341,7 +6001,7 @@ public class LocalScript : NetworkBehaviour
                 if (Mathf.RoundToInt(EAMemory[31]) == 1) {
                     smokeThrown = true;
                 }
-                yield return StartCoroutine(EnemyAction(EAMemory, EBMemory, null, TIMemory, SIMemory, true, localReplaying4, ewo2, smokeThrown, LR6Smoke, result => {
+                yield return StartCoroutine(EnemyAction(EAMemory, EBMemory, EMMemory, ELDMemory, ELMDMemory, TIMemory, SIMemory, true, localReplaying4, ewo2, smokeThrown, LR6Smoke, localReplaying7, result => {
                     boring = result;
                     /*if (!boring) {
                         Debug.Log("Boring1");
@@ -5365,18 +6025,63 @@ public class LocalScript : NetworkBehaviour
                 yield return new WaitForSeconds(0.5f);
             }
         }
+        if (localReplaying9) {
+            if (!enemyActioned) {
+                yield return new WaitForSeconds(0.2f); //\A
+                List<InventoryItem> prevPrevInv = new List<InventoryItem>(prevInv);
+                if (R9Mode == 1) {
+                    List<int> broken = DecreaseDurabilityInInv(prevInv, 2, 0);
+                    NotifyBrokenItems(prevInv, broken);
+                } else if (R9Mode == 2) {
+                    List<int> totalBroken = new List<int>();
+                    for (int i = 0; i < prevListTraps.Count; i++) {
+                        List<float> currentTrap = prevListTraps[i];
+                        if (currentTrap[0] != myPlayerNum) {
+                            if (currentTrap[1] == 1) {
+                                List<int> broken = DecreaseDurabilityInInv(prevInv, 1, currentTrap[2]);
+                                totalBroken.AddRange(broken);
+                                RemoveFromInvAt(prevInv, broken);
+                            }
+                        }
+                    }
+                    NotifyBrokenItems(prevPrevInv, totalBroken);
+                }
+                prevInv = prevPrevInv;
+            }
+            UpdateInventory(INVENTORY);
+        }
+        if (localReplaying7) {
+            if (!enemyActioned) {
+                UpdateHealthText(Mathf.RoundToInt(pseudoHealth), Mathf.RoundToInt(pseudoMaxHealth));
+                yield return new WaitForSeconds(0.2f); //\A
+                UpdateHealthText(HEALTH, maxHealth);
+            }
+            StartCoroutine(CreateMessageText("Gas is hurting you!", -100, -250, 1, 0, false, false));
+            StartCoroutine(PlaySound(sounds[69]));
+            replaying7 = false;
+        }
+        if (localReplaying8) {
+            if (!(enemyActioned || (localReplaying7 && !enemyActioned))) {
+                yield return new WaitForSeconds(0.2f); //\A
+            }
+            
+            StartCoroutine(CreateMessageText("Gas is closing in!", 250, 250, 1, 0, true, false));
+            StartCoroutine(PlaySound(sounds[68]));
+            UpdateGases(CloneNLF(GAS));
+            replaying8 = false;
+        }
         if (localReplaying6) {
             yield return new WaitForSeconds(0.2f);
             if (EWO.Contains(2)) {
-                yield return StartCoroutine(VisionHouse(0, smokes, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
+                yield return StartCoroutine(VisionHouse(0, smokes, false, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
             }
             if (EWO.Contains(6)) {
                 yield return StartCoroutine(VitalsStatus(myPlayerNum, myEffects, 1, 1, enemyHealthsVisible, null));
             }
             if (LR6Smoke) {
                 //yield return new WaitForSeconds(0.2f);
-                yield return StartCoroutine(UpdateIsSmoked(smokes));
-                yield return StartCoroutine(VisionHouse(0, smokes, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
+                yield return StartCoroutine(UpdateIsSmoked(smokes, false));
+                yield return StartCoroutine(VisionHouse(0, smokes, false, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
                 Debug.Log("LR6Smoke");
                 //if (!enemyActioned) {
                 yield return StartCoroutine(PlayerObjectEffects(myPlayerNum, myEffects, smokes));
@@ -5428,34 +6133,45 @@ public class LocalScript : NetworkBehaviour
         yield return null;
     }
     IEnumerator ShowPrevSmokes(bool ewo2, bool LR4, int EA20, int EA0, List<float> currentPrevSmokes, int enemyPosition) {
-        yield return StartCoroutine(UpdateIsSmoked(currentPrevSmokes));
+        yield return StartCoroutine(UpdateIsSmoked(currentPrevSmokes, false));
         if (!ewo2) {
             if (LR4) {
                 if (EA20 == 1) {
-                    yield return StartCoroutine(VisionHouse(0, currentPrevSmokes, prevEnemyEffects2, EA0, enemyPosition, playerPositionList, myEffects, myEffectStrengths));
+                    yield return StartCoroutine(VisionHouse(0, currentPrevSmokes, false, prevEnemyEffects2, EA0, enemyPosition, playerPositionList, myEffects, myEffectStrengths));
                 } else {
-                    yield return StartCoroutine(VisionHouse(0, currentPrevSmokes, prevEnemyEffects2, 0, 0, playerPositionList, myEffects, myEffectStrengths));
+                    yield return StartCoroutine(VisionHouse(0, currentPrevSmokes, false, prevEnemyEffects2, 0, 0, playerPositionList, myEffects, myEffectStrengths));
                 }
             } else {
                 if (EA20 == 1) {
-                    yield return StartCoroutine(VisionHouse(0, currentPrevSmokes, enemyEffects, EA0, enemyPosition, playerPositionList, myEffects, myEffectStrengths));
+                    yield return StartCoroutine(VisionHouse(0, currentPrevSmokes, false, enemyEffects, EA0, enemyPosition, playerPositionList, myEffects, myEffectStrengths));
                 } else {
-                    yield return StartCoroutine(VisionHouse(0, currentPrevSmokes, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
+                    yield return StartCoroutine(VisionHouse(0, currentPrevSmokes, false, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
                 }
             }
         }
     }
+    public void RemoveFromInvAt(List<InventoryItem> inv, List<int> indices) {
+        for (int i = indices.Count - 1; i >= 0; i--) {
+            inv.RemoveAt(indices[i]);
+        }
+    }
+    bool R9Future = false;
     float myLocalDamage = 0;
     float[] EAMemory;
     float[] EBMemory;
+    float[] EMMemory;
+    float[] ELDMemory;
+    float[] ELMDMemory;
     int[] TIMemory;
     int[] SIMemory;
     int prevPseudoHealth;
+    int prevPseudoMaxHealth;
     List<float> prevSmokes;
     List<float> prevSmokes2;
     int bulDone = 0;
     float healthCalculation;
-    IEnumerator EnemyAction(float[] EA, float[] EB, float[] ELDs, int[] ETI, int[] ESI, bool replay, bool LR4, bool ewo2, bool smokeThrown, bool LR6Smoke, System.Action<bool> callback) {
+    float maxHealthCalculation;
+    IEnumerator EnemyAction(float[] EA, float[] EB, float[] EM, float[] ELDs, float[] ELMDs, int[] ETI, int[] ESI, bool replay, bool LR4, bool ewo2, bool smokeThrown, bool LR6Smoke, bool LR7, System.Action<bool> callback) {
         bool nothingInteresting = true;
         if (Mathf.RoundToInt(EA[28]) == 0) {
             int enemyPosition = playerPositionList[Mathf.RoundToInt(EA[0]) - 1];
@@ -5489,7 +6205,8 @@ public class LocalScript : NetworkBehaviour
             }
             if (replay) {
                 prevPseudoHealth = Mathf.RoundToInt(pseudoHealth);
-                UpdateHealthText(Mathf.RoundToInt(pseudoHealth), maxHealth);
+                prevPseudoMaxHealth = Mathf.RoundToInt(pseudoMaxHealth);
+                UpdateHealthText(Mathf.RoundToInt(pseudoHealth), Mathf.RoundToInt(pseudoMaxHealth));
                 
                 if (Mathf.RoundToInt(EA[20]) == 1) {
                     /*if (LR4) {
@@ -5504,8 +6221,10 @@ public class LocalScript : NetworkBehaviour
                 }
             } else {
                 pseudoHealth = HEALTH;
+                pseudoMaxHealth = maxHealth;
                 healthCalculation = HEALTH;
-                armorCoefficient = GetArmorCoefficient(INVENTORY); //be wary if bullets can break armor or sm
+                maxHealthCalculation = maxHealth;
+                armorCoefficient = GetArmorCoefficient(INVENTORY); //be wary if bullets can break armor or sm //should be good
             }
             if (!replay) {
                 prevSmokes = new List<float>(smokes);
@@ -5569,7 +6288,7 @@ public class LocalScript : NetworkBehaviour
                     smokeI = ESI[i];
                     Debug.Log("smokeI = " + smokeI);
                 }
-                StartCoroutine(BulletMove(Mathf.RoundToInt(EA[1]) - 1, bul, angleDeg, EA[6], EA[5], EA[7], enemyPosition, Mathf.RoundToInt(EA[0]), 2, EA[4], Mathf.RoundToInt(EA[9]), Mathf.RoundToInt(EA[10]), EA[11], EA[12], EA[13], EA[14], Mathf.RoundToInt(EA[15]), Mathf.RoundToInt(EA[16]), Mathf.RoundToInt(EA[17]), Mathf.RoundToInt(EA[18]), Mathf.RoundToInt(EA[19]), Mathf.RoundToInt(EA[20]), trapI, smokeI, Mathf.RoundToInt(EA[27]), replay, LR6Smoke, null));
+                StartCoroutine(BulletMove(Mathf.RoundToInt(EA[1]) - 1, bul, EM, angleDeg, EA[6], EA[5], EA[7], enemyPosition, Mathf.RoundToInt(EA[0]), 2, EA[4], EA[32], Mathf.RoundToInt(EA[9]), Mathf.RoundToInt(EA[10]), EA[11], EA[12], EA[13], EA[14], Mathf.RoundToInt(EA[15]), Mathf.RoundToInt(EA[16]), Mathf.RoundToInt(EA[17]), Mathf.RoundToInt(EA[18]), Mathf.RoundToInt(EA[19]), Mathf.RoundToInt(EA[20]), trapI, smokeI, Mathf.RoundToInt(EA[27]), replay, LR6Smoke, null));
                 //Debug.Log("bulmove2");
                 StartCoroutine(ItemSound(Mathf.RoundToInt(EA[1]) - 1));
                 StartCoroutine(ItemCostume(Mathf.RoundToInt(EA[1]) - 1, bul, i));
@@ -5579,7 +6298,7 @@ public class LocalScript : NetworkBehaviour
                 yield return null;
             }
             if (itemIntLists[Mathf.RoundToInt(EA[1]) - 1][4].Contains(11)) {
-                StartCoroutine(CreateMessageText("The enemy is tracking you!", 300, 200, 1, false));
+                StartCoroutine(CreateMessageText("The enemy is tracking you!", 300, 200, 1, 0, false, false));
                 if (replay) {
                     nothingInteresting = false;
                     Debug.Log("NI4");
@@ -5598,9 +6317,9 @@ public class LocalScript : NetworkBehaviour
                     if (LR6Smoke) {
                         currentSmokes = new List<float>(prevSmokes2);
                     }
-                    yield return StartCoroutine(UpdateIsSmoked(currentSmokes));
+                    yield return StartCoroutine(UpdateIsSmoked(currentSmokes, !LR6Smoke));
                     if (!amSpectator) {
-                        yield return StartCoroutine(VisionHouse(0, currentSmokes, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths)); //notice how this might happen twice
+                        yield return StartCoroutine(VisionHouse(0, currentSmokes, !LR6Smoke, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths)); //notice how this might happen twice
                     }
                 }
                 SetCharacterPosition(playerList[Mathf.RoundToInt(EA[0]) - 1], playerPositionList[Mathf.RoundToInt(EA[0]) - 1]);
@@ -5610,6 +6329,10 @@ public class LocalScript : NetworkBehaviour
             }
             if (replay) {
                 pseudoHealth = prevPseudoHealth;
+                pseudoMaxHealth = prevPseudoMaxHealth;
+                if (LR7) {
+                    yield return new WaitForSeconds(0.2f);
+                }
                 UpdateHealthText(HEALTH, maxHealth);
                 List<float> currentSmokes = new List<float>(smokes);
                 if (LR6Smoke) {
@@ -5618,8 +6341,8 @@ public class LocalScript : NetworkBehaviour
                 if (smokeThrown) {
                     if (Mathf.RoundToInt(EA[20]) != 1) {
                         if (!ewo2) {
-                            yield return StartCoroutine(UpdateIsSmoked(currentSmokes));
-                            StartCoroutine(VisionHouse(0, currentSmokes, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths)); //notice how this might happen twice
+                            yield return StartCoroutine(UpdateIsSmoked(currentSmokes, !LR6Smoke));
+                            StartCoroutine(VisionHouse(0, currentSmokes, !LR6Smoke, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths)); //notice how this might happen twice
                             //yield return new WaitForSeconds(0.2f);
                         }
                     }
@@ -5630,12 +6353,35 @@ public class LocalScript : NetworkBehaviour
                     //HEALTH = Mathf.RoundToInt(healthCalculation);
                     Debug.Log("myLocalDamage = " + myLocalDamage);
                     //HEALTH -= Mathf.RoundToInt(myLocalDamage * armorCoefficient);
-                    HEALTH -= Mathf.RoundToInt(armorCoefficient * ELDs[myPlayerNum - 1]);
+                    HEALTH -= Mathf.RoundToInt(Mathf.Clamp01(armorCoefficient + EM[0]) * ELDs[myPlayerNum - 1]);
+                    maxHealth -= Mathf.RoundToInt(Mathf.Clamp01(armorCoefficient + EM[0]) * ELMDs[myPlayerNum - 1]);
+                    if (HEALTH > maxHealth) {
+                        HEALTH = maxHealth;
+                    }
+                    
                     //Debug.Log("health is " + HEALTH);
                     UpdateHealthText(HEALTH, maxHealth);
                     HealthsServerRpc(myPlayerNum, HEALTH, maxHealth, false, true, 1);
-                    yield return StartCoroutine(CheckHealth(1, null));
+                    //yield return StartCoroutine(CheckHealth(1, null));
                 }
+                if (replay) {
+                    List<InventoryItem> prevPrevInv = new List<InventoryItem>(prevInv);
+                    List<int> broken = DecreaseDurabilityInInv(prevInv, 1, ELDs[myPlayerNum - 1]);
+                    NotifyBrokenItems(prevInv, broken);
+                    prevInv = prevPrevInv;
+                    Debug.Log("prevInv set 3");
+                } else {
+                    prevInv = new List<InventoryItem>(INVENTORY);
+                    Debug.Log("prevInv set 1");
+                    List<int> broken = DecreaseDurabilityInInv(INVENTORY, 1, ELDs[myPlayerNum - 1]);
+                    NotifyBrokenItems(INVENTORY, broken);
+                    RemoveFromInvAt(INVENTORY, broken);
+                    //if (broken.Count > 0) {
+                    R9Future = true; //should be true whenever anything decreases
+                    //}
+                    UpdateInventory(INVENTORY);
+                }
+                
             
                 if (LR6Smoke) {
                     StartCoroutine(PlayerObjectEffects(myPlayerNum, myEffects, prevSmokes2));
@@ -5648,39 +6394,39 @@ public class LocalScript : NetworkBehaviour
             if (EA[17] == 0 && EA[18] == 0 && EA[20] == 0) {
                 if (EA[10] == 0) {
                     if (bulStops.Contains(3)) //what if it hits someone else you gotta look into that
-                        StartCoroutine(CreateMessageText("You got hit!", 0, -100, 1, false));
+                        StartCoroutine(CreateMessageText("You got hit!", 0, -100, 1, 0, false, false));
                     else {
                         if (bulStops.Count > 0)
-                            StartCoroutine(CreateMessageText("Enemy shot but missed you", 0, -100, 1, false));
+                            StartCoroutine(CreateMessageText("Enemy shot but missed you", 0, -100, 1, 0, false, false));
                     }
                 } else if (EA[10] == 1) {
                     if (EA[19] == 0) {
                         if (bombStops.Contains(myPlayerNum))
-                            StartCoroutine(CreateMessageText("You got hit!", 0, -100, 1, false));
+                            StartCoroutine(CreateMessageText("You got hit!", 0, -100, 1, 0, false, false));
                         else {
                             if (bombStops.Count > 0)
-                                StartCoroutine(CreateMessageText("Enemy hit someone else, but not you", 0, -100, 1, false));
+                                StartCoroutine(CreateMessageText("Enemy hit someone else, but not you", 0, -100, 1, 0, false, false));
                             else
-                                StartCoroutine(CreateMessageText("Enemy tried and failed to hit anyone", 0, -100, 1, false));
+                                StartCoroutine(CreateMessageText("Enemy tried and failed to hit anyone", 0, -100, 1, 0, false, false));
                         }
                     }
                 }
             }
             if (EA[18] != 0) {
-                StartCoroutine(CreateMessageText("Enemy tried to stun you!", 200, 100, 1, false));
+                StartCoroutine(CreateMessageText("Enemy tried to stun you!", 200, 100, 1, 0, false, false));
             }
             if (EA[19] == 1) {
-                StartCoroutine(CreateMessageText("Enemy planted a trap!", 200, 100, 1, false));
+                StartCoroutine(CreateMessageText("Enemy planted a trap!", 200, 100, 1, 0, false, false));
             }
             if (EA[20] != 0) {
-                StartCoroutine(CreateMessageText("The enemy has grappled", 300, 200, 1, false));
+                StartCoroutine(CreateMessageText("The enemy has grappled", 300, 200, 1, 0, false, false));
             }
-            if (!replay) {
-                StartCoroutine(CheckYouDied());
-            }
+            //if (!replay) {
+            //    StartCoroutine(CheckYouDied());
+            //}
         } else {
             //Debug.Log("Open airdrop");
-            StartCoroutine(CreateMessageText("The enemy opened an airdrop!", 250, 250, 1, true));
+            StartCoroutine(CreateMessageText("The enemy opened an airdrop!", 250, 250, 1, 0, true, false));
             if (replay) {
                 yield return StartCoroutine(OpenAirdrop(Mathf.RoundToInt(EA[28]), -1, 2));
                 nothingInteresting = false;
@@ -5711,7 +6457,7 @@ public class LocalScript : NetworkBehaviour
     IEnumerator CheckYouDied() {
         if (!amSpectator) {
             if (playerAliveList[myPlayerNum - 1] == false) {
-                StartCoroutine(CreateMessageText("You died!", 0, 0, 4, false));
+                StartCoroutine(CreateMessageText("You died!", 0, 0, 4, 0, false, true));
                 StartCoroutine(PlaySound(sounds[33]));
                 mainMenuButton.SetActive(true);
             }
@@ -5720,7 +6466,7 @@ public class LocalScript : NetworkBehaviour
         yield return null;
     }
     IEnumerator NothingInteresting() {
-        yield return StartCoroutine(CreateMessageText("Enemy did nothing interesting", 200, 200, 1, false));
+        yield return StartCoroutine(CreateMessageText("Enemy did nothing interesting", 200, 200, 1, 0, false, false));
     }
     IEnumerator ClearActions(int mode, BotScript bScript) {
         if (mode == 1) {
@@ -5728,9 +6474,17 @@ public class LocalScript : NetworkBehaviour
             for (int i = 0; i < actionsLength; i++) {
                 actions[i] = 0;
             }
+            modifiers = new float[modifiersLength];
+            for (int i = 0; i < modifiersLength; i++) {
+                modifiers[i] = 0;
+            }
             localDamages = new float[playerList.Count];
             for (int i = 0; i < localDamages.Length; i++) {
                 localDamages[i] = 0;
+            }
+            localMHDamages = new float[playerList.Count];
+            for (int i = 0; i < localMHDamages.Length; i++) {
+                localMHDamages[i] = 0;
             }
             Debug.Log("localDamages length = " + localDamages.Length);
             bulDirDeg.Clear();
@@ -5741,9 +6495,17 @@ public class LocalScript : NetworkBehaviour
             for (int i = 0; i < actionsLength; i++) {
                 bScript.myActions[i] = 0;
             }
+            bScript.myModifiers = new float[modifiersLength];
+            for (int i = 0; i < modifiersLength; i++) {
+                bScript.myModifiers[i] = 0;
+            }
             bScript.myLocalDamages = new float[playerList.Count];
             for (int i = 0; i < bScript.myLocalDamages.Length; i++) {
                 bScript.myLocalDamages[i] = 0;
+            }
+            bScript.myLocalMHDamages = new float[playerList.Count];
+            for (int i = 0; i < bScript.myLocalMHDamages.Length; i++) {
+                bScript.myLocalMHDamages[i] = 0;
             }
             bScript.myBDD.Clear();
             bScript.myTI.Clear();
@@ -5944,8 +6706,7 @@ public class LocalScript : NetworkBehaviour
             }
             else
             {
-                isSmoked = SmokeList(s);
-                if (isSmoked[myPosition - 1]) {
+                if (SmokeList(s)[myPosition - 1]) {
                     color.a = 0.25f;
                 } else {
                     color.a = 1;
@@ -5985,7 +6746,7 @@ public class LocalScript : NetworkBehaviour
                 //Debug.Log("prevSmokes2 is set");
                 replayable6 = true;
                 R6Smoke = true;
-                StartCoroutine(UpdateIsSmoked(smokes));
+                StartCoroutine(UpdateIsSmoked(smokes, true));
             }
         } else if (mode == 2) {
             if (killed.Count > 0) {
@@ -6029,15 +6790,15 @@ public class LocalScript : NetworkBehaviour
         }
     }
     IEnumerator UISPOEVH() {
-        yield return StartCoroutine(UpdateIsSmoked(smokes));
+        yield return StartCoroutine(UpdateIsSmoked(smokes, true));
         if (!amSpectator) {
             StartCoroutine(PlayerObjectEffects(myPlayerNum, myEffects, smokes));
-            StartCoroutine(VisionHouse(0, smokes, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
+            StartCoroutine(VisionHouse(0, smokes, true, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
         }
     }
-    IEnumerator VisionHouse(float addVision, List<float> s, List<List<int>> EE, int specialEnemy, int SEPos, List<int> PPL, List<int> fx, List<int> fxs) {
+    IEnumerator VisionHouse(float addVision, List<float> s, bool setIsSmoked, List<List<int>> EE, int specialEnemy, int SEPos, List<int> PPL, List<int> fx, List<int> fxs) {
         if (!amSpectator) {
-            yield return StartCoroutine(Vision(addVision, s, fx, fxs)); 
+            yield return StartCoroutine(Vision(addVision, s, setIsSmoked, fx, fxs)); 
             for (int i = 0; i < playerList.Count; i++)
             {
                 if (i + 1 != myPlayerNum)
@@ -6086,14 +6847,17 @@ public class LocalScript : NetworkBehaviour
             } 
         }
         if (mode == 1) {
-            if (inventoryOpen) {
-                foreach (Transform child in inventoryItemsTF) {
-                    GameObject.Destroy(child.gameObject);
-                }
-                StartCoroutine(OpenInventory());
-            }
+            UpdateInventory(INVENTORY);
         }
         yield return null;
+    }
+    void UpdateInventory(List<InventoryItem> inv) {
+        if (inventoryOpen) {
+            foreach (Transform child in inventoryItemsTF) {
+                GameObject.Destroy(child.gameObject);
+            }
+            StartCoroutine(OpenInventory(inv));
+        }
     }
     [ServerRpc(RequireOwnership = false)]
     void R5ServerRpc(int n) {
@@ -6130,6 +6894,7 @@ public class LocalScript : NetworkBehaviour
         }
         yield return null;
     }
+    [SerializeField]
     int GNTConfirm = 0;
     [ServerRpc(RequireOwnership = false)]
     void GNTServerRpc(int newTurn) {
@@ -6137,18 +6902,21 @@ public class LocalScript : NetworkBehaviour
     }
     [ClientRpc]
     void GNTClientRpc(int newTurn) {
-        if (newTurn == myPlayerNum) {
-            GNTConfirm++;
-        }
+        //if (newTurn == myPlayerNum) {
+        GNTConfirm++;
+        //}
     }
     bool NTCCEConfirm = false;
-    IEnumerator NewTurn(int prevPlayer, int newTurn, float[] a, float[] BDD, float[] LDs, int[] TI, int[] SI, int hp, int maxHp, bool skipped, int turns) {
+    IEnumerator NewTurn(int prevPlayer, int newTurn, float[] a, float[] BDD, float[] m, float[] LDs, float[] LMDs, int[] TI, int[] SI, int hp, int maxHp, bool skipped, int turns) {
         UpdateTurnsText(turns);
         if (newTurn == myPlayerNum) {
             //if (skippedTurns[myPlayerNum - 1] == 0) {
                 if (a[0] != myPlayerNum && a != null) {
                     EAMemory = (float[]) a.Clone();
                     EBMemory = (float[]) BDD.Clone();
+                    EMMemory = (float[]) m.Clone();
+                    ELDMemory = (float[]) LDs.Clone();
+                    ELMDMemory = (float[]) LMDs.Clone();
                     TIMemory = (int[]) TI.Clone();
                     SIMemory = (int[]) SI.Clone();
                 }
@@ -6158,6 +6926,9 @@ public class LocalScript : NetworkBehaviour
                 if (a[0] != myPlayerNum && a != null) {
                     EAMemory = (float[]) a.Clone();
                     EBMemory = (float[]) BDD.Clone();
+                    EMMemory = (float[]) m.Clone();
+                    ELDMemory = (float[]) LDs.Clone();
+                    ELMDMemory = (float[]) LMDs.Clone();
                     TIMemory = (int[]) TI.Clone();
                     SIMemory = (int[]) SI.Clone();
                 }
@@ -6181,10 +6952,11 @@ public class LocalScript : NetworkBehaviour
             if (a[28] != 0) {
                 adnum = Mathf.RoundToInt(a[30]);
             }
-            yield return StartCoroutine(AirdropAndWait(myPlayerNum, adnum, 1, myPlayerNum)); //don't forget airdrop for bot
+            yield return StartCoroutine(AirdropAndWait(myPlayerNum, adnum, 1, myPlayerNum)); 
+            
         }
         
-        yield return StartCoroutine(GeneralNewTurn(a, BDD, LDs, TI, SI, skipped));
+        yield return StartCoroutine(GeneralNewTurn(a, BDD, m, LDs, LMDs, TI, SI, skipped));
         //prevSmokes is smokes
         GNTServerRpc(newTurn);
         
@@ -6196,6 +6968,7 @@ public class LocalScript : NetworkBehaviour
                     adnum = Mathf.RoundToInt(a[30]);
                 }
                 yield return StartCoroutine(AirdropAndWait(newTurn, adnum, 2, myPlayerNum));
+                
                 //Debug.Log("After bot R5");
             }
             for (int i = 0; i < botList.Count; i++) {
@@ -6213,13 +6986,33 @@ public class LocalScript : NetworkBehaviour
                             if (a[0] != botScript.playerNum) {
                                 if (a[0] != 0) {
                                     //Debug.Log("LS bot TakeDamage");
-                                    yield return StartCoroutine(botScript.TakeDamage(a, BDD, LDs, TI, SI, columns.Value, rows.Value));
+                                    yield return StartCoroutine(botScript.TakeDamage(a, BDD, m, LDs, LMDs, TI, SI, columns.Value, rows.Value));
                                 }
                             }
-                            yield return StartCoroutine(CheckHealth(2, botScript));
+                            
                         } else {
                             botScript.EnemyOpenedAirdrop(Mathf.RoundToInt(a[0]), Mathf.RoundToInt(a[28]));
                         }
+                        if (GAS[botScript.position - 1] != 0) {
+                            float gasProtection = ScanInvGasProt(botScript.inventory);
+                            int gasDamage = Mathf.RoundToInt(GAS[botScript.position - 1] * (1 - Mathf.Clamp01(gasProtection)));
+                            List<int> broken = DecreaseDurabilityInInv(botScript.inventory, 2, 0);
+                            RemoveFromInvAt(botScript.inventory, broken);
+                            if (gasDamage != 0) {
+                                botScript.HP -= gasDamage;
+                                if (botScript.NNBot) {
+                                    if (botScript.trainingModeActivated) {
+                                        //Debug.Log("moveHistory length = " + botScript.botBrain.moveHistory.Count);
+                                        MoveMemory pastMove = botScript.botBrain.moveHistory[botScript.botBrain.moveHistory.Count - 1];
+                                        int targetX = pastMove.chosenIndex % columns.Value;
+                                        int targetY = pastMove.chosenIndex / columns.Value;
+                                        float reward = -pastMove.inputs[targetX, targetY, 6];
+                                        botScript.botBrain.Backpropagate(botScript.botBrain.moveHistory[botScript.botBrain.moveHistory.Count - 1], columns.Value, rows.Value, new List<int>{0, 2}, new List<float>{reward, reward});
+                                    }
+                                }
+                            }
+                        }
+                        yield return StartCoroutine(CheckHealth(2, botScript));
                         if (Mathf.RoundToInt(a[29]) != botScript.playerNum && Mathf.RoundToInt(a[29]) != 0) { 
                             if (Mathf.RoundToInt(a[0]) == 0) {
                                 botScript.AdjustPlayerMode(Mathf.RoundToInt(a[29]), 1, 0.1f);
@@ -6274,16 +7067,37 @@ public class LocalScript : NetworkBehaviour
                 }
             }*/
         }
-        if (newTurn == myPlayerNum) {
-            //Debug.Log("GNTInit = " + GNTConfirm);
-            while (GNTConfirm < playerList.Count) {
-                yield return null;
+        
+        //if (newTurn == myPlayerNum) {
+        Debug.Log("GNTInit = " + GNTConfirm);
+        while (GNTConfirm < playerList.Count) {
+            yield return null;
+        }
+        Debug.Log("Done waiting for GNT");
+        GNTConfirm = 0;
+        //}
+        if (IsServer) {
+            if (botList[newTurn - 1]) {
+                yield return StartCoroutine(GasAndWait(newTurn, 2, myPlayerNum));
             }
-            //Debug.Log("Done waiting for GNT");
-            GNTConfirm = 0;
         }
         if (newTurn == myPlayerNum) {
-            
+            yield return StartCoroutine(GasAndWait(myPlayerNum, 1, myPlayerNum));
+        }
+        while (!gasConfirm2) { //this piece of script here should just be the client
+            yield return null;
+        }
+        gasConfirm2 = false;
+        if (gasChanged) {
+            StartCoroutine(CreateMessageText("Gas is closing in!", 250, 250, 1, 0, true, false));
+            StartCoroutine(PlaySound(sounds[68]));
+            prevGas = new List<float>(prevGas1);
+            replayable8 = true;
+            prevGas1 = CloneNLF(GAS);
+        }
+        gasChanged = false;
+        UpdateGases(CloneNLF(GAS));
+        if (newTurn == myPlayerNum) {
             yield return StartCoroutine(ChangeCooldowns(itemsOnCooldown, 1, null));
             if (cooldownsOpen) {
                 foreach (Transform child in cooldownItemsTF) {
@@ -6302,7 +7116,7 @@ public class LocalScript : NetworkBehaviour
             }
             CELServerRpc();
             yield return StartCoroutine(PlayerObjectEffects(myPlayerNum, myEffects, smokes));
-            StartCoroutine(VisionHouse(0, smokes, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
+            StartCoroutine(VisionHouse(0, smokes, true, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
         }
         //Debug.Log("Before NTCCE");
         if (newTurn != myPlayerNum) {
@@ -6342,7 +7156,7 @@ public class LocalScript : NetworkBehaviour
                         }
                     }
                     //Debug.Log("USTAW2");
-                    TurnDoneServerRpc(newTurn, a, BDD, LDs, TI, SI, botScript.HP, botScript.maxHP, true); //passes in its own health
+                    TurnDoneServerRpc(newTurn, a, BDD, m, LDs, LMDs, TI, SI, botScript.HP, botScript.maxHP, true); //passes in its own health
                 } else {
                     StartCoroutine(NewBotTurn(newTurn, a, BDD));
                 }
@@ -6366,11 +7180,18 @@ public class LocalScript : NetworkBehaviour
                 }
                 
                 //Debug.Log("USTAW2");
-                TurnDoneServerRpc(myPlayerNum, a, BDD, LDs, TI, SI, HEALTH, maxHealth, true);
+                TurnDoneServerRpc(myPlayerNum, a, BDD, m, LDs, LMDs, TI, SI, HEALTH, maxHealth, true);
             } else {
                 StartCoroutine(MyNewTurn());
             }
         }
+    }
+    List<float> CloneNLF(NetworkList<float> list) {
+        List<float> retList = new List<float>();
+        foreach (float f in list) {
+            retList.Add(f);
+        }
+        return retList;
     }
     IEnumerator NewBotTurn(int newTurn, float[] a, float[] BDD) {
         GameObject botObject = playerList[newTurn - 1];
@@ -6382,7 +7203,19 @@ public class LocalScript : NetworkBehaviour
             yield return StartCoroutine(bScript.UpdateMode(2));
             Debug.Log("Mode before use plan = " + bScript.mode);
             bScript.CreateUsePlan();
-            yield return StartCoroutine(bScript.MoveSomewhere(columns.Value, rows.Value, GRID, 7 + ChangeMoves(bScript.inventory) + ChangeMovesEffects(bScript.botEffects, bScript.botEffectStrengths) + FindHighestBookEffectAmt(bScript.botBookInventory, 1))); //placeholder for now
+            bool tutorialMode = false;
+            if (LocalScript.gamemode == 5) {
+                if (TURNS.Value == 1) {
+                    tutorialMode = true;
+                    bScript.position = 24;
+                } else if (TURNS.Value == 2) {
+                    tutorialMode = true;
+                    bScript.position = 6;
+                }
+            } 
+            if (!tutorialMode) {
+                yield return StartCoroutine(bScript.MoveSomewhere(columns.Value, rows.Value, GRID, 7 + ChangeMoves(bScript.inventory) + ChangeMovesEffects(bScript.botEffects, bScript.botEffectStrengths) + FindHighestBookEffectAmt(bScript.botBookInventory, 1))); //placeholder for now
+            }
             //yield return new WaitForSeconds(1f);
             bScript.UpdateMyPositionInList();
             yield return StartCoroutine(SteppingOnTrap(3, 1, bScript.botTraps[bScript.position - 1], bScript.position, bScript));
@@ -6402,17 +7235,58 @@ public class LocalScript : NetworkBehaviour
             //yield return new WaitForSeconds(0.5f);
             if (playerAliveList[bScript.playerNum - 1]) {
                 Debug.Log("Mode before search use = " + bScript.mode);
+                if (LocalScript.gamemode == 5 && TURNS.Value == 1) {
+                    bScript.inventory.Add(GetNewII(15));
+                    bScript.mode = 2;
+                }
                 yield return StartCoroutine(bScript.BotSearchUse(GRID, columns.Value, rows.Value));
             }
         }
         bScript.myActions[29] = bScript.playerNum;
-        TurnDoneServerRpc(newTurn, bScript.myActions, bScript.myBDD.ToArray(), bScript.myLocalDamages, bScript.myTI.ToArray(), bScript.mySI.ToArray(), bScript.HP, bScript.maxHP, false);
+        TurnDoneServerRpc(newTurn, bScript.myActions, bScript.myBDD.ToArray(), bScript.myModifiers, bScript.myLocalDamages, bScript.myLocalMHDamages, bScript.myTI.ToArray(), bScript.mySI.ToArray(), bScript.HP, bScript.maxHP, false);
         //Debug.Log("New bot turn");
         yield return null;
     }
-    IEnumerator GeneralNewTurn(float[] enemyActions, float[] enemyBDD, float[] enemyLDs, int[] enemyTI, int[] enemySI, bool skipped) {
+    public List<int> DecreaseDurabilityInInv(List<InventoryItem> inv, int mode, float dmg) {
+        List<int> retList = new List<int>();
+        for (int i = 0; i < inv.Count; i++) {
+            InventoryItem II = inv[i];
+            int index = II.itemNum - 1;
+            int indexOfMode = itemIntLists[index][10].IndexOf(mode);
+            if (indexOfMode != -1) {
+                float durabilityDamage = itemInfos[index][8][indexOfMode];
+                if (durabilityDamage < 0) {
+                    Debug.Log("durabilityDamage is negative");
+                    Debug.Log("damage to durability is " + Mathf.RoundToInt(-1 * durabilityDamage));
+                    II.durability -= Mathf.RoundToInt(-1 * durabilityDamage);
+                } else {
+                    Debug.Log("durabilityDamage is positive");
+                    II.durability -= Mathf.RoundToInt(dmg * durabilityDamage);
+                }
+            }
+            if (II.durability <= 0) {
+                retList.Add(i);
+            }
+            inv[i] = II;
+        }
+        return retList;
+    }
+    void NotifyBrokenItems(List<InventoryItem> inv, List<int> broken) {
+        if (broken.Count > 0) {
+            string items = itemStrings[inv[broken[0]].itemNum - 1][0];
+            for (int i = 1; i < broken.Count - 1; i++) {
+                items += ", " + itemStrings[inv[broken[i]].itemNum - 1][0];
+            }
+            if (broken.Count > 1) {
+                items += " and " + itemStrings[inv[broken[broken.Count - 1]].itemNum - 1][0];
+            }
+            StartCoroutine(CreateMessageText("Your " + items + " broke!", 150, 100, 1, 0, false, false));
+            StartCoroutine(PlaySound(sounds[70]));
+        }
+    }
+    IEnumerator GeneralNewTurn(float[] enemyActions, float[] enemyBDD, float[] enemyModifiers, float[] enemyLDs, float[] enemyLMDs, int[] enemyTI, int[] enemySI, bool skipped) {
         if (!amSpectator) {
-            StartCoroutine(VisionHouse(0, smokes, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
+            StartCoroutine(VisionHouse(0, smokes, true, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
         }
         yield return StartCoroutine(ClearActions(1, null));
         if (IsServer) {
@@ -6424,18 +7298,53 @@ public class LocalScript : NetworkBehaviour
                 }
             }
         }
+        bool enemyActioned = false;
         if (enemyActions[0] != myPlayerNum) {
             if (enemyActions != null) {
                 if (enemyActions[1] != 0 || enemyActions[28] != 0) {
                     if (!skipped) {
-                        yield return StartCoroutine(EnemyAction(enemyActions, enemyBDD, enemyLDs, enemyTI, enemySI, false, false, false, false, false, result => {}));
+                        R9Future = false;
+                        yield return StartCoroutine(EnemyAction(enemyActions, enemyBDD, enemyModifiers, enemyLDs, enemyLMDs, enemyTI, enemySI, false, false, false, false, false, false, result => {}));
+                        enemyActioned = true;
                     }
                 }
             }
             
         }
+        if (!amSpectator) {
+            if (GAS[myPosition - 1] != 0) {
+                if (!enemyActioned) {
+                    pseudoHealth = HEALTH;
+                    pseudoMaxHealth = maxHealth;
+                }
+                float gasProtection = ScanInvGasProt(INVENTORY);
+                int gasDamage = Mathf.RoundToInt(GAS[myPosition - 1] * (1 - Mathf.Clamp01(gasProtection)));
+                prevInv = new List<InventoryItem>(INVENTORY);
+                Debug.Log("prevInv set 2");
+                List<int> broken = DecreaseDurabilityInInv(INVENTORY, 2, 0);
+                NotifyBrokenItems(INVENTORY, broken);
+                RemoveFromInvAt(INVENTORY, broken);
+                UpdateInventory(INVENTORY);
+                if (gasDamage != 0) {
+                    HEALTH -= gasDamage;
+                    StartCoroutine(CreateMessageText("Gas is hurting you!", -100, -250, 1, 0, false, false));
+                    StartCoroutine(PlaySound(sounds[69]));
+                    replayable7 = true;
+                }
+                
+                replayable9 = true;
+                R9Mode = 1;
+            }
+            UpdateHealthText(HEALTH, maxHealth);
+            yield return StartCoroutine(CheckHealth(1, null));
+            StartCoroutine(CheckYouDied());
+        }
         if (enemyActions[29] != myPlayerNum) {
             replayable = true;
+            if (R9Future) {
+                replayable9 = true;
+                R9Mode = 0;
+            }
             Debug.Log("replayable is true");
         }
         yield return null;
@@ -6487,11 +7396,35 @@ public class LocalScript : NetworkBehaviour
         }
         yield return StartCoroutine(SetGhostImage(turnIndicator, setGhost));
     }
+    void HighlightTutorialArrows(List<int> highlighted) {
+        GameObject arrows = TuIList[0];
+        if (highlighted.Contains(1)) {
+            arrows.transform.Find("Up").GetComponent<Image>().sprite = TuICostumes[1];
+        } else {
+            arrows.transform.Find("Up").GetComponent<Image>().sprite = TuICostumes[0];
+        }
+        if (highlighted.Contains(2)) {
+            arrows.transform.Find("Down").GetComponent<Image>().sprite = TuICostumes[1];
+        } else {
+            arrows.transform.Find("Down").GetComponent<Image>().sprite = TuICostumes[0];
+        }
+        if (highlighted.Contains(3)) {
+            arrows.transform.Find("Right").GetComponent<Image>().sprite = TuICostumes[1];
+        } else {
+            arrows.transform.Find("Right").GetComponent<Image>().sprite = TuICostumes[0];
+        }
+        if (highlighted.Contains(4)) {
+            arrows.transform.Find("Left").GetComponent<Image>().sprite = TuICostumes[1];
+        } else {
+            arrows.transform.Find("Left").GetComponent<Image>().sprite = TuICostumes[0];
+        }
+    }
+    bool iHaveChangedPos = false;
     IEnumerator MyNewTurn()
     {
         ReturnToGrid = false;
         if (playerAliveList[myPlayerNum - 1] == true) {
-            StartCoroutine(CreateMessageText("It's your turn", 100, 0, 1, false));
+            StartCoroutine(CreateMessageText("It's your turn", 100, 0, 1, 0, false, false));
             StartCoroutine(ChangeTurnsIndicator(1));
             IMovedServerRpc(myPlayerNum);
             moves = 7;
@@ -6499,20 +7432,209 @@ public class LocalScript : NetworkBehaviour
             moves += ChangeMovesEffects(myEffects, myEffectStrengths);
             moves += FindHighestBookEffectAmt(bookInventory, 1); 
             //yield return StartCoroutine(ChangeMoves());
+            if (LocalScript.gamemode == 5) {
+                if (TURNS.Value == 1) {
+                    yield return StartCoroutine(CreateMessageText("Welcome to Searchuse, a tactical, strategical turn-based game that promotes the use of intel to defeat the opponent. (Click to continue)", 100, 100, 2, 1, false, true));
+                    yield return StartCoroutine(CreateMessageText("This tutorial will help you learn the game's controls and mechanics. (Click to continue)", 100, 100, 2, 1, false, true));
+                    TuIList[0].SetActive(true);
+                    yield return StartCoroutine(CreateMessageText("Use the arrow keys to move", 100, 100, 2, 2, false, true));
+                    //TuIList[0].SetActive(false);
+                    while ((Keyboard.current.upArrowKey.isPressed || Keyboard.current.downArrowKey.isPressed || Keyboard.current.rightArrowKey.isPressed || Keyboard.current.leftArrowKey.isPressed)) {
+                        yield return null;
+                    }
+                } else if (TURNS.Value == 2) {
+                    EnableActions(new List<int>{5});
+                    yield return StartCoroutine(CreateMessageText("Ouch, this dummy packs a punch! Press R real quick to re-see that.", 100, 100, 2, 20, false, true));
+                    INVENTORY.Add(GetNewII(2));
+                    UpdateInventory(INVENTORY);
+                    yield return StartCoroutine(CreateMessageText("Here's a bandage. Let's go into that cave to hide and heal! (Click)", 100, 100, 2, 1, false, true));
+                } else if (TURNS.Value == 3) {
+                    StartCoroutine(CreateMessageText("Now we're ready to fight! Move back onto the mountain, which I'll let you figure out this time.", 250, 250, 2, 21, false, true));
+                }
+            }
             ShowMovesText(moves);
             StartCoroutine(RTG());
             StartCoroutine(RTGCheck());
             while (moves > 0)
             {
-                yield return StartCoroutine(Move());
+                bool tutorialMode = false;
+                if (LocalScript.gamemode == 5) {
+                    if (TURNS.Value == 1) {
+                        tutorialMode = true;
+                        if (moves == 7) {
+                            HighlightTutorialArrows(new List<int>{3});
+                            yield return StartCoroutine(CreateMessageText("Press the right arrow key", 100, 100, 2, 5, false, true));
+                            yield return StartCoroutine(Move(new List<int>{1, 2, 4}, new List<int>{3}));
+                        } else if (moves == 5) {
+                            HighlightTutorialArrows(new List<int>{1});
+                            yield return StartCoroutine(CreateMessageText("Now press up", 100, 100, 2, 3, false, true));
+                            yield return StartCoroutine(Move(new List<int>{2, 3, 4}, new List<int>{1}));
+                        } else if (moves == 4) {
+                            HighlightTutorialArrows(new List<int>{3});
+                            //yield return StartCoroutine(CreateMessageText("Now right again", 100, 100, 2, 5, false, true));
+                            while (!(Keyboard.current.rightArrowKey.isPressed)) {
+                                yield return null;
+                            }
+                            yield return StartCoroutine(Move(new List<int>{1, 2, 4}, new List<int>{3}));
+                        } else if (moves == 2) {
+                            HighlightTutorialArrows(new List<int>{1});
+                            //yield return StartCoroutine(CreateMessageText("And lastly up", 100, 100, 2, 3, false, true));
+                            while (!(Keyboard.current.upArrowKey.isPressed)) {
+                                yield return null;
+                            }
+                            yield return StartCoroutine(Move(new List<int>{2, 3, 4}, new List<int>{1}));
+                            TuIList[0].SetActive(false);
+                        }
+                    } else if (TURNS.Value == 2) {
+                        tutorialMode = true;
+                        TuIList[0].SetActive(true);
+                        if (moves == 7) {
+                            HighlightTutorialArrows(new List<int>{2});
+                            yield return StartCoroutine(CreateMessageText("Let's move down toward the Cave.", 100, 100, 2, 4, false, true));
+                            yield return StartCoroutine(Move(new List<int>{1, 3, 4}, new List<int>{2}));
+                        } else if (moves == 5) {
+                            yield return StartCoroutine(CreateMessageText("In Searchuse, you must use up all your moves. So instead of moving directly right into the Cave, we need to move down again to make sure the moves work.", 100, 100, 2, 4, false, true));
+                            yield return StartCoroutine(Move(new List<int>{1, 3, 4}, new List<int>{2}));
+                        } else if (moves == 3) {
+                            HighlightTutorialArrows(new List<int>{3});
+                            while (!(Keyboard.current.rightArrowKey.isPressed)) {
+                                yield return null;
+                            }
+                            yield return StartCoroutine(Move(new List<int>{1, 2, 4}, new List<int>{3}));
+                        } else if (moves == 2) {
+                            HighlightTutorialArrows(new List<int>{1});
+                            while (!(Keyboard.current.upArrowKey.isPressed)) {
+                                yield return null;
+                            }
+                            yield return StartCoroutine(Move(new List<int>{2, 3, 4}, new List<int>{1}));
+                            TuIList[0].SetActive(false);
+                        }
+                    } else if (TURNS.Value == 3) {
+                        tutorialMode = true;
+                        while (moving) {
+                            yield return null;
+                        }
+                        //Debug.Log("moves = " + moves);
+                        iHaveChangedPos = false;
+                        List<int> excluded = new List<int>{};
+                        int targetPos = 19;
+                        List<int> grid = new List<int>();
+                        List<bool> arrivable = new List<bool>();
+                        foreach (int item in GRID) {
+                            grid.Add(item);
+                            arrivable.Add(false);
+                        }
+                        List<(int index, float moves, int LMIndex)> yetToCheck = new List<(int index, float moves, int LMIndex)>(); //index is 0+, LMIndex is 0+
+                        List<(int index, float moves, int LMIndex)> alreadyChecked = new List<(int index, float moves, int LMIndex)>(); //index is 0+, LMIndex is 0+
+                        List<float> helpers = ChangePosition(0, 1, 2, moves, myPosition, grid.Count);
+                        int workedHelper = Mathf.RoundToInt(helpers[0]);
+                        float movesHelper = helpers[1];
+                        int indexHelper = Mathf.RoundToInt(helpers[2]);
+                        if (workedHelper == 1) {
+                            if (movesHelper > 0) {
+                                CreateArrivable(grid, indexHelper + 1, arrivable, yetToCheck, alreadyChecked, new List<float>{movesHelper});
+                                if (!arrivable[targetPos - 1]) {
+                                    excluded.Add(1);
+                                }
+                            } else {
+                                if (indexHelper + 1 != targetPos) {
+                                    excluded.Add(1);
+                                }
+                            }
+                            
+                        }
+                        for (int i = 0; i < arrivable.Count; i++) {
+                            arrivable[i] = false;
+                        }
+                        helpers = ChangePosition(0, -1, 2, moves, myPosition, grid.Count);
+                        workedHelper = Mathf.RoundToInt(helpers[0]);
+                        movesHelper = helpers[1];
+                        indexHelper = Mathf.RoundToInt(helpers[2]);
+                        if (workedHelper == 1) {
+                            if (movesHelper > 0) {
+                                CreateArrivable(grid, indexHelper + 1, arrivable, yetToCheck, alreadyChecked, new List<float>{movesHelper});
+                                if (!arrivable[targetPos - 1]) {
+                                    excluded.Add(2);
+                                }
+                            } else {
+                                if (indexHelper + 1 != targetPos) {
+                                    excluded.Add(2);
+                                }
+                            }
+                        }
+                        for (int i = 0; i < arrivable.Count; i++) {
+                            arrivable[i] = false;
+                        }
+                        helpers = ChangePosition(1, 0, 2, moves, myPosition, grid.Count);
+                        workedHelper = Mathf.RoundToInt(helpers[0]);
+                        movesHelper = helpers[1];
+                        indexHelper = Mathf.RoundToInt(helpers[2]);
+                        if (workedHelper == 1) {
+                            if (movesHelper > 0) {
+                                CreateArrivable(grid, indexHelper + 1, arrivable, yetToCheck, alreadyChecked, new List<float>{movesHelper});
+                                if (!arrivable[targetPos - 1]) {
+                                    excluded.Add(3);
+                                }
+                            } else {
+                                if (indexHelper + 1 != targetPos) {
+                                    excluded.Add(3);
+                                }
+                            }
+                        }
+                        for (int i = 0; i < arrivable.Count; i++) {
+                            arrivable[i] = false;
+                        }
+                        helpers = ChangePosition(-1, 0, 2, moves, myPosition, grid.Count);
+                        workedHelper = Mathf.RoundToInt(helpers[0]);
+                        movesHelper = helpers[1];
+                        indexHelper = Mathf.RoundToInt(helpers[2]);
+                        if (workedHelper == 1) {
+                            if (movesHelper > 0) {
+                                CreateArrivable(grid, indexHelper + 1, arrivable, yetToCheck, alreadyChecked, new List<float>{movesHelper});
+                                if (!arrivable[targetPos - 1]) {
+                                    excluded.Add(4);
+                                }
+                            } else {
+                                if (indexHelper + 1 != targetPos) {
+                                    excluded.Add(4);
+                                }
+                            }
+                        }
+                        Debug.Log("excluded has been changed");
+                        /*while (Keyboard.current.upArrowKey.isPressed || Keyboard.current.downArrowKey.isPressed || Keyboard.current.rightArrowKey.isPressed || Keyboard.current.leftArrowKey.isPressed) {
+                            yield return null;
+                        }*/
+                        while (!iHaveChangedPos) {
+                            yield return StartCoroutine(Move(excluded, new List<int>{}));
+                            //if (iHaveChangedPos) break;
+                        }
+                        //Debug.Log("new move");
+                    }
+                }
+                if (!tutorialMode) {
+                    yield return StartCoroutine(Move(new List<int>{}, new List<int>{}));
+                }
             }
             while (moving) {
                 yield return null;
             }
+            if (LocalScript.gamemode == 5 && TURNS.Value == 1) {
+                yield return StartCoroutine(CreateMessageText("You've moved onto a Mountain! This allows you to see farther. (Click to continue)", 100, 100, 2, 1, false, true));
+                yield return StartCoroutine(CreateMessageText("Higher elevations and double trees usually block vision. (Click)", 100, 100, 2, 1, false, true));
+                yield return StartCoroutine(CreateMessageText("You also may have noticed that some squares take away different amounts of moves. The following graphic contains specific information related to this phenomenon. (Click)", 100, 100, 2, 1, false, true));
+                GameObject TIOK = TuIList[1].transform.Find("EMOK").gameObject;
+                AddClickListener(TIOK, () => OnImageClicked("OK6"), () => OnImageEnter("OK", TIOK), () => OnImageExit("OK", TIOK));
+                buttonClicked = 0;
+                TuIList[1].SetActive(true);
+                while (buttonClicked == 0) {
+                    yield return null;
+                }
+                TuIList[1].SetActive(false);
+            }
             //yield return new WaitForSeconds(0.2f);
             VCSpriterenderer.enabled = false;
             StartCoroutine(PlayerObjectEffects(myPlayerNum, myEffects, smokes));
-            yield return StartCoroutine(VisionHouse(0, smokes, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
+            yield return StartCoroutine(VisionHouse(0, smokes, true, enemyEffects, 0, 0, playerPositionList, myEffects, myEffectStrengths));
             UpdatePositionServerRpc(myPlayerObject.GetComponent<NetworkObject>(), myPosition, true, myPlayerNum, visionGrid.ToArray());
             playerPositionList[myPlayerNum - 1] = myPosition;
             HideMovesText();
@@ -6528,17 +7650,68 @@ public class LocalScript : NetworkBehaviour
             }
             yield return StartCoroutine(CheckYouDied());
             if (playerAliveList[myPlayerNum - 1]) {
+                if (LocalScript.gamemode == 5) {
+                    if (TURNS.Value == 1) {
+                        yield return StartCoroutine(CreateMessageText("Oh no! There's an enemy! It normally looks all blue but thankfully, this one is just a test dummy. (Click)", 100, 100, 2, 1, false, true));
+                        StartCoroutine(CreateMessageText("Press search to find a weapon!", 100, 100, 2, 7, false, true));
+                    } else if (TURNS.Value == 2) {
+                        StartCoroutine(CreateMessageText("This time, press use!", 100, 100, 2, 18, false, true));
+                        //next step within the CMT coroutine
+                    } else if (TURNS.Value == 3) {
+                        StartCoroutine(CreateMessageText("Alright, now use the gun!", 100, 100, 2, 22, false, true));
+                    }
+                }
+                searchDisabled = false;
                 useDisabled = false;
                 searchused = false;
                 StartCoroutine(SearchUse());
-                while (!searchused)
+                while (!searchused) {
                     yield return null;
+                }
+                if (LocalScript.gamemode == 5) {
+                    if (TURNS.Value == 1) {
+                        yield return StartCoroutine(CreateMessageText("Nice, a good weapon! Normally, this type of loot is found on Military Bases, which have the best loot. Then it's Factories, then Houses. (Click)", 100, 100, 2, 1, false, true));
+                        EnableActions(new List<int>{2, 3, 6});
+                        yield return StartCoroutine(CreateMessageText("Press the L key to see the percentages of searching on each kind of terrain!", 100, 100, 2, 9, false, true));
+                        HighlightTutorialArrows(new List<int>{3, 4});
+                        TuIList[0].SetActive(true);
+                        yield return StartCoroutine(CreateMessageText("Use the right and left arrow keys to flip through these stats.", -325, -325, 2, 10, false, true));
+                        TuIList[0].SetActive(false);
+                        yield return StartCoroutine(CreateMessageText("Find \"House\".", 350, 350, 2, 11, false, true));
+                        yield return StartCoroutine(CreateMessageText("Now \"Factory\".", 350, 350, 2, 12, false, true));
+                        yield return StartCoroutine(CreateMessageText("And finally, \"Military Base\".", 350, 350, 2, 13, false, true));
+                        yield return StartCoroutine(CreateMessageText("Now press L to hide these stats.", 350, 350, 2, 9, false, true));
+                        EnableActions(new List<int>{4});
+                        yield return StartCoroutine(CreateMessageText("Press the I key to see your new weapon in your inventory!", 100, 100, 2, 14, false, true));
+                        yield return StartCoroutine(CreateMessageText("Click it!", 0, 0, 2, 15, false, true));
+                        yield return StartCoroutine(CreateMessageText("Press I to close the inventory.", 350, 350, 2, 14, false, true));
+                        TuIList[0].SetActive(true);
+                        yield return StartCoroutine(CreateMessageText("This is the Stats Book. It tells you the stats for each item, the same as what's shown when you find it. Again, use arrow keys to flip through this.", -280, -280, 2, 16, false, true));
+                        TuIList[0].SetActive(false);
+                        EnableActions(new List<int>{1});
+                        yield return StartCoroutine(CreateMessageText("Now press S to hide these stats. You can use S to toggle Stats Book any time!", 350, 350, 2, 17, false, true));
+                        EnableActions(new List<int>{7});
+                        yield return StartCoroutine(CreateMessageText("Press the B key to see your book inventory.", 100, 100, 2, 23, false, true));
+                        while (Keyboard.current.bKey.isPressed) {
+                            yield return null;
+                        }
+                        yield return StartCoroutine(CreateMessageText("As always, use arrows to navigate. Press B to hide it.", 325, 325, 2, 23, false, true));
+                    } else if (TURNS.Value == 3) {
+                        yield return new WaitForSeconds(1f);
+                        yield return StartCoroutine(CreateMessageText("Some items have cooldowns, which means that you have to wait a certain number of turns before using it again. (Click)", 100, 100, 2, 1, false, true));
+                        EnableActions(new List<int>{8});
+                        yield return StartCoroutine(CreateMessageText("Press C to see the items you have on cooldown!", 100, 100, 2, 24, false, true));
+                        yield return StartCoroutine(CreateMessageText("The gun you just used has a cooldown of 2, which means you must wait 2 turns before using it again. (Click)", 100, 100, 2, 1, false, true));
+                        yield return StartCoroutine(CreateMessageText("Now that you know the basics, try to beat the dummy! (Click)", 100, 100, 2, 1, false, true));
+                        EnableActions(new List<int>{9, 10});
+                    }
+                }
             }
             //Debug.Log("searchused is " + searchused);
         }
         //Debug.Log("Turn done");
         actions[29] = myPlayerNum;
-        TurnDoneServerRpc(myPlayerNum, actions, bulDirDeg.ToArray(), localDamages, trapIndexes.ToArray(), smokeIndexes.ToArray(), HEALTH, maxHealth, false);
+        TurnDoneServerRpc(myPlayerNum, actions, bulDirDeg.ToArray(), modifiers, localDamages, localMHDamages, trapIndexes.ToArray(), smokeIndexes.ToArray(), HEALTH, maxHealth, false);
     }
     List<bool> ConvertNetworkBoolList(NetworkList<bool> l) {
         List<bool> retList = new List<bool>();
@@ -6589,12 +7762,14 @@ public class LocalScript : NetworkBehaviour
         }*/
         /*if (mode == 2) {
             if (doneDamage) {
-                UpdateHealthText(Mathf.RoundToInt(pseudoHealth), maxHealth);
+                UpdateHealthText(Mathf.RoundToInt(pseudoHealth), Mathf.RoundToInt(pseudoMaxHealth));
             }
         }*/
-        
-        if (mode == 1)
+        List<int> totalBroken = new List<int>();
+        if (mode == 1) {
             healthCalculation = HEALTH;
+            prevInv = new List<InventoryItem>(INVENTORY);
+        }
         if (mode == 3)
             BS.HPCalculation = BS.HP;
         int pnum = myPlayerNum;
@@ -6608,6 +7783,9 @@ public class LocalScript : NetworkBehaviour
                     doneDamage = true;
                     if (mode == 1) {
                         healthCalculation -= armorCoefficient * currentTrap[2];
+                        List<int> broken = DecreaseDurabilityInInv(INVENTORY, 1, currentTrap[2]);
+                        totalBroken.AddRange(broken);
+                        RemoveFromInvAt(INVENTORY, broken);
                     }
                     if (mode == 3)
                         BS.HPCalculation -= BS.armorCoefficient * currentTrap[2];
@@ -6623,8 +7801,11 @@ public class LocalScript : NetworkBehaviour
         Debug.Log("removedTraps#: " + removedTraps.Count);
         if (doneDamage) {
             if (mode == 1) {
+                NotifyBrokenItems(prevInv, totalBroken);
+                UpdateInventory(INVENTORY);
                 //prevHealth = HEALTH
                 pseudoHealth = HEALTH;
+                pseudoMaxHealth = maxHealth;
                 HEALTH = Mathf.RoundToInt(healthCalculation);
                 UpdateHealthText(HEALTH, maxHealth);
                 if (replayable3 == 0) {
@@ -6641,6 +7822,8 @@ public class LocalScript : NetworkBehaviour
                 prevRemovedTraps = new List<int>(removedTraps);
                 prevTrapPosition = pos;
                 prevTrapPlayerNum = myPlayerNum;
+                replayable9 = true;
+                R9Mode = 2;
             } else if (mode == 2) {
                 UpdateHealthText(HEALTH, maxHealth);
             } else if (mode == 3) {
@@ -6660,9 +7843,9 @@ public class LocalScript : NetworkBehaviour
             }
             if (mode != 3) {
                 if (removedTraps.Count == 1) {
-                    StartCoroutine(CreateMessageText("You stepped on a trap!", 300, 200, 1, false));
+                    StartCoroutine(CreateMessageText("You stepped on a trap!", 300, 200, 1, 0, false, false));
                 } else {
-                    StartCoroutine(CreateMessageText("You stepped on " + removedTraps.Count + " traps!", 300, 200, 1, false));
+                    StartCoroutine(CreateMessageText("You stepped on " + removedTraps.Count + " traps!", 300, 200, 1, 0, false, false));
                 }
                 yield return StartCoroutine(RenderTraps(traps));
             }
@@ -6745,22 +7928,22 @@ public class LocalScript : NetworkBehaviour
             StartCoroutine(ExplodeTrap(pos, currentTrap));
         }
         if (countMyTraps == 1) {
-            StartCoroutine(CreateMessageText("The enemy stepped on one of your traps!", 300, 200, 1, false));
+            StartCoroutine(CreateMessageText("The enemy stepped on one of your traps!", 300, 200, 1, 0, false, false));
         } else if (countMyTraps > 1) {
-            StartCoroutine(CreateMessageText("The enemy stepped on " + countMyTraps + " of your traps!", 300, 200, 1, false));
+            StartCoroutine(CreateMessageText("The enemy stepped on " + countMyTraps + " of your traps!", 300, 200, 1, 0, false, false));
         } else if (countMyTraps == 0) {
             if (removedTraps.Length == 1) {
-                StartCoroutine(CreateMessageText("The enemy stepped on someone else's trap!", 300, 200, 1, false));
+                StartCoroutine(CreateMessageText("The enemy stepped on someone else's trap!", 300, 200, 1, 0, false, false));
             } else if (removedTraps.Length > 1) {
-                StartCoroutine(CreateMessageText("The enemy stepped on " + removedTraps.Length + " traps belonging to others!", 300, 200, 1, false));
+                StartCoroutine(CreateMessageText("The enemy stepped on " + removedTraps.Length + " traps belonging to others!", 300, 200, 1, 0, false, false));
             }
         }
         yield return null;
     }
-    float ChangeMoves(List<int> inv) {
+    float ChangeMoves(List<InventoryItem> inv) {
         float returnVal = 0;
         for (int i = 0; i < inv.Count; i++) {
-            int itemIndex = inv[i] - 1;
+            int itemIndex = inv[i].itemNum - 1;
             returnVal += itemFloats[itemIndex][0];
         }
         return returnVal;
@@ -6800,9 +7983,9 @@ public class LocalScript : NetworkBehaviour
     public void EnemyMovedClientRpc(int num) {
         if (num != myPlayerNum) {
             if (playerPositionList.Count > 2) {
-                StartCoroutine(CreateMessageText("It's enemy " + num + "'s turn", 100, 0, 1, false));
+                StartCoroutine(CreateMessageText("It's enemy " + num + "'s turn", 100, 0, 1, 0, false, false));
             } else {
-                StartCoroutine(CreateMessageText("It's the enemy's turn", 100, 0, 1, false));
+                StartCoroutine(CreateMessageText("It's the enemy's turn", 100, 0, 1, 0, false, false));
             }
             StartCoroutine(ChangeTurnsIndicator(2));
         }
@@ -6859,9 +8042,9 @@ public class LocalScript : NetworkBehaviour
             VSpriteRenderer.color = color;
         }
     }
-    IEnumerator Vision(float addVision, List<float> s, List<int> fx, List<int> fxs)
+    IEnumerator Vision(float addVision, List<float> s, bool setIsSmoked, List<int> fx, List<int> fxs)
     {  
-        visionGrid = GetVisionList(addVision, s, 1, null, fx, fxs, INVENTORY, myPosition);
+        visionGrid = GetVisionList(addVision, s, setIsSmoked, 1, null, fx, fxs, INVENTORY, myPosition);
         /*yield return StartCoroutine(GetVisionList(addVision, s, 1, null, fx, fxs, result =>{ 
             visionGrid = result;
         }));*/
@@ -6874,9 +8057,10 @@ public class LocalScript : NetworkBehaviour
         }
         testList = new List<GameObject>();*/
     }
-    float AddArmorVisions(List<int> inv) {
+    float AddArmorVisions(List<InventoryItem> inv) {
         float v = 0;
-        foreach (int item in inv) {
+        foreach (InventoryItem II in inv) {
+            int item = II.itemNum;
             int index = item - 1;
             if (itemIntLists[index][0].Contains(4)) {
                 v += itemInfos[index][3][2];
@@ -6884,8 +8068,9 @@ public class LocalScript : NetworkBehaviour
         }
         return v;
     }
-    int ScanInvXray(List<int> inv) {
-        foreach (int item in inv) {
+    int ScanInvXray(List<InventoryItem> inv) {
+        foreach (InventoryItem II in inv) {
+            int item = II.itemNum;
             int index = item - 1;
             if (itemIntLists[index][0].Contains(4)) {
                 if (Mathf.RoundToInt(itemInfos[index][3][3]) == 1) {
@@ -6895,8 +8080,21 @@ public class LocalScript : NetworkBehaviour
         }
         return 0;
     }
+    public float ScanInvGasProt(List<InventoryItem> inv) {
+        float retVal = 0;
+        foreach (InventoryItem II in inv) {
+            int item = II.itemNum;
+            int index = item - 1;
+            if (itemIntLists[index][0].Contains(4)) {
+                if (itemInfos[index][3][4] != 0) {
+                    retVal += itemInfos[index][3][4];
+                }
+            }
+        }
+        return retVal;
+    }
     //public IEnumerator GetVisionList(float addVision, List<float> s, int mode, BotScript BS, List<int> fx, List<int> fxs, System.Action<List<int>> callback)
-    public List<int> GetVisionList(float addVision, List<float> s, int mode, BotScript BS, List<int> fx, List<int> fxs, List<int> inv, int pos) 
+    public List<int> GetVisionList(float addVision, List<float> s, bool setIsSmoked, int mode, BotScript BS, List<int> fx, List<int> fxs, List<InventoryItem> inv, int pos) 
     {
         float v = 0;
         v = FindVision(GRID[pos - 1], inv, fx, fxs);
@@ -6926,7 +8124,11 @@ public class LocalScript : NetworkBehaviour
         }
         Vector2 myPositionInWorldSpace = new Vector2(GRIDX[pos - 1], GRIDY[pos - 1]);
         //Debug.Log(visionGrid.Count);
-        isSmoked = SmokeList(s);
+        bool[] IS = SmokeList(s);
+        if (setIsSmoked) {
+            isSmoked = IS;
+        }
+        
         //ClearTestFolder(); //if testing, of course
         for (int j = 0; j < retList.Count; j++)
         {
@@ -6937,7 +8139,7 @@ public class LocalScript : NetworkBehaviour
                 float angleRadians = Mathf.Atan2(direction.y, direction.x);
                 float distance = FindDistance(myPositionVector2, GetCoordsFromIndex(j + 1));
                 float myElevation = FindElevation(GRID[pos - 1], 1);
-                retList[j] = CheckVisionObstacles(myPositionInWorldSpace, angleRadians, distance, myElevation, j, 1, retList, pos - 1, xray);
+                retList[j] = CheckVisionObstacles(myPositionInWorldSpace, angleRadians, distance, myElevation, j, 1, retList, pos - 1, xray, IS);
                 /*if (retList[j] == 0) {
                     Debug.Log("Turned to 0");
                 }*/
@@ -6950,7 +8152,7 @@ public class LocalScript : NetworkBehaviour
         return retList;
     }
     //IEnumerator CheckVisionObstacles(Vector3 startPosition, float angleRadians, float distance, float myElevation, int j, int mode, List<int> VG, int myIndex, int xray, System.Action<int> callback)
-    int CheckVisionObstacles(Vector3 startPosition, float angleRadians, float distance, float myElevation, int j, int mode, List<int> VG, int myIndex, int xray) //j, myIndex are 0+
+    int CheckVisionObstacles(Vector3 startPosition, float angleRadians, float distance, float myElevation, int j, int mode, List<int> VG, int myIndex, int xray, bool[] IS) //j, myIndex are 0+
     {
         //List<GameObject> testList = new List<GameObject>();
         int visualTest = 0;
@@ -6988,8 +8190,8 @@ public class LocalScript : NetworkBehaviour
         }
         //treeCoefficient -= 0.1f; //justified for floating point error
         float hilltopCoefficient = 0.5f;
-        //bool alrInSmoke = isSmoked[myPosition - 1];
-        bool alrInSmoke = isSmoked[myIndex];
+        //bool alrInSmoke = IS[myPosition - 1];
+        bool alrInSmoke = IS[myIndex];
         //bool alrInSmoke = false;
         float smokeCoefficient = 0;
         if (alrInSmoke)
@@ -7160,7 +8362,7 @@ public class LocalScript : NetworkBehaviour
                             hilltop += 1;
                         }
                         //bool[] isSmoked = SmokeList(smokes);
-                        if (isSmoked[iterationIndex - 1]) {
+                        if (IS[iterationIndex - 1]) {
                             if (smoke < 0)
                                 smoke = 0;
                             smoke += 1;
@@ -7592,7 +8794,7 @@ public class LocalScript : NetworkBehaviour
                                     hilltop += distInSquare;
                                 }
                                 //smoke
-                                if (isSmoked[iterationIndex - 1]) { //idk if smoke belongs in here
+                                if (IS[iterationIndex - 1]) { //idk if smoke belongs in here
                                     //Debug.Log("isSmoked");
                                     if (smoke < 0) {
                                         smoke = 0;
@@ -7676,7 +8878,7 @@ public class LocalScript : NetworkBehaviour
             }
             if (stopIndex == j + 1 || (stopIndex == 0 && iterationIndex == j + 1)) {
                 if (smokeCoefficient == 0 && !alrInSmoke) {
-                    if (stopIndex > 0 && isSmoked[stopIndex - 1]) {
+                    if (stopIndex > 0 && IS[stopIndex - 1]) {
                         replaceVal = 0;
                     } /*else if (stopIndex == 0 && isSmoked[iterationIndex - 1]) {
                         replaceVal = 0;
@@ -8121,15 +9323,18 @@ public class LocalScript : NetworkBehaviour
         }
         return (r > minR && r < maxR); //subject to change
     }
-    IEnumerator UpdateIsSmoked(List<float> s) {
-        isSmoked = SmokeList(s);
+    IEnumerator UpdateIsSmoked(List<float> s, bool setIsSmoked) {
+        bool[] IS = SmokeList(s);
+        if (setIsSmoked) {
+            isSmoked = IS;
+        }
         if (smokeFolder) {
             Destroy(smokeFolder);
             Debug.Log("Smoke test");
         }
         smokeFolder = Instantiate(SFPrefab);
-        for (int i = 0; i < isSmoked.Length; i++) {
-            if (isSmoked[i]) {
+        for (int i = 0; i < IS.Length; i++) {
+            if (IS[i]) {
                 Vector3 spawnPos = new Vector3(GRIDX[i], GRIDY[i], Camera.main.nearClipPlane); //new Vector3(x / screenScaleX, y / screenScaleY, Camera.main.nearClipPlane);
                 spawnPos.z = 0;
                 GameObject smokeClone = Instantiate(smokePrefab, spawnPos, Quaternion.identity);
@@ -8137,6 +9342,33 @@ public class LocalScript : NetworkBehaviour
             }
         }
         yield return null;
+    }
+    void CreateGases(int gCount) {
+        for (int i = 0; i < gCount; i++) {
+            Vector3 spawnPos = new Vector3(GRIDX[i], GRIDY[i], Camera.main.nearClipPlane); //new Vector3(x / screenScaleX, y / screenScaleY, Camera.main.nearClipPlane);
+            spawnPos.z = 0;
+            GameObject gasClone = Instantiate(smokePrefab, spawnPos, Quaternion.identity);
+            gasClone.transform.SetParent(gasFolder.transform, true);
+            Color c = gasClone.GetComponent<SpriteRenderer>().color;
+            c.a = 0f;
+            gasClone.GetComponent<SpriteRenderer>().color = c;
+            gasClone.GetComponent<SpriteRenderer>().sprite = gasCostume;
+            gasClone.GetComponent<SpriteRenderer>().sortingLayerName = "gas";
+            gasClone.name = "gas(Clone)";
+            gases.Add(gasClone);
+        }
+    }
+    void UpdateGases(List<float> g) {
+        for (int i = 0; i < g.Count; i++) {
+            GameObject gasClone = gases[i];
+            Color c = gasClone.GetComponent<SpriteRenderer>().color;
+            if (g[i] == 0) {
+                c.a = 0f;
+            } else {
+                c.a = Mathf.Clamp(g[i] / maxGasDamage, 0.2f, 0.8f);
+            }
+            gasClone.GetComponent<SpriteRenderer>().color = c;
+        }
     }
     public bool[] SmokeList(List<float> s) {
         bool[] retList = new bool[s.Count];
@@ -8154,7 +9386,7 @@ public class LocalScript : NetworkBehaviour
         }
         return retList;
     }
-    float FindVision(int terrain, List<int> inv, List<int> fx, List<int> fxs)
+    float FindVision(int terrain, List<InventoryItem> inv, List<int> fx, List<int> fxs)
     {
         float returnVal = baseVision;
         if (terrain == 2)
@@ -8269,7 +9501,7 @@ public class LocalScript : NetworkBehaviour
                 {
                     if (moves > 0) {
                         VCSpriterenderer.enabled = false;
-                        yield return StartCoroutine(Vision(0, smokes, myEffects, myEffectStrengths));
+                        yield return StartCoroutine(Vision(0, smokes, false, myEffects, myEffectStrengths));
                     }
                 }
             }
@@ -8278,45 +9510,101 @@ public class LocalScript : NetworkBehaviour
     }
 
     bool moving = false;
-    IEnumerator Move()
+    IEnumerator Move(List<int> limiteds, List<int> overrides)
     {
+        bool alreadyMoved = false;
         if (!statsBookOpen && !rollChancesOpen && !bookInventoryOpen && !replaying && !replaying2 && !replaying6) {
-            if (Keyboard.current.upArrowKey.isPressed)
+            if (Keyboard.current.upArrowKey.isPressed || overrides.Contains(1))
             {
+                if (limiteds.Contains(1) && !overrides.Contains(1)) {
+                    if (LocalScript.gamemode == 5 && TURNS.Value == 3) {
+                        if (!alreadyMoved) {
+                            StartCoroutine(CreateMessageText("Can't move up buddy", -200, -200, 6, 0, false, true));
+                            while (Keyboard.current.upArrowKey.isPressed) {
+                                yield return null;
+                            }
+                        }
+                    }
+                } else {
+                    if (!(LocalScript.gamemode == 5 && TURNS.Value == 3 && alreadyMoved)) {
+                        alreadyMoved = true;
+                        ChangePosition(0, 1, 1, moves, 0, GRID.Count);
+                        while (moving) {
+                            yield return null;
+                        }
+                    }
+                }
                 
-                ChangePosition(0, 1, 1, moves, 0, GRID.Count, null);
-                while (moving) {
-                    yield return null;
+            }
+            if (Keyboard.current.downArrowKey.isPressed || overrides.Contains(2))
+            {
+                if (limiteds.Contains(2) && !overrides.Contains(2)) {
+                    if (LocalScript.gamemode == 5 && TURNS.Value == 3) {
+                        if (!alreadyMoved) {
+                            StartCoroutine(CreateMessageText("Can't move down buddy", -200, -200, 6, 0, false, true));
+                            while (Keyboard.current.downArrowKey.isPressed) {
+                                yield return null;
+                            }
+                        }
+                    }
+                } else {
+                    if (!(LocalScript.gamemode == 5 && TURNS.Value == 3 && alreadyMoved)) {
+                        alreadyMoved = true;
+                        ChangePosition(0, -1, 1, moves, 0, GRID.Count);
+                        while (moving) {
+                            yield return null;
+                        }
+                        //Debug.Log("Moved down");
+                    }
                 }
             }
-            if (Keyboard.current.downArrowKey.isPressed)
+            if (Keyboard.current.rightArrowKey.isPressed || overrides.Contains(3))
             {
-                
-                ChangePosition(0, -1, 1, moves, 0, GRID.Count, null);
-                while (moving) {
-                    yield return null;
+                if (limiteds.Contains(3) && !overrides.Contains(3)) {
+                    if (LocalScript.gamemode == 5 && TURNS.Value == 3) {
+                        if (!alreadyMoved) {
+                            StartCoroutine(CreateMessageText("Can't move right buddy", -200, -200, 6, 0, false, true));
+                            while (Keyboard.current.rightArrowKey.isPressed) {
+                                yield return null;
+                            }
+                        }
+                    }
+                } else {
+                    if (!(LocalScript.gamemode == 5 && TURNS.Value == 3 && alreadyMoved)) {
+                        alreadyMoved = true;
+                        ChangePosition(1, 0, 1, moves, 0, GRID.Count);
+                        while (moving) {
+                            yield return null;
+                        }
+                    }
                 }
             }
-            if (Keyboard.current.rightArrowKey.isPressed)
+            if (Keyboard.current.leftArrowKey.isPressed || overrides.Contains(4))
             {
-                
-                ChangePosition(1, 0, 1, moves, 0, GRID.Count, null);
-                while (moving) {
-                    yield return null;
-                }
-            }
-            if (Keyboard.current.leftArrowKey.isPressed)
-            {
-                
-                ChangePosition(-1, 0, 1, moves, 0, GRID.Count, null);
-                while (moving) {
-                    yield return null;
+                if (limiteds.Contains(4) && !overrides.Contains(4)) {
+                    if (LocalScript.gamemode == 5 && TURNS.Value == 3) {
+                        if (!alreadyMoved) {
+                            StartCoroutine(CreateMessageText("Can't move left buddy", -200, -200, 6, 0, false, true));
+                            Debug.Log("limiteds contains 4: " + limiteds.Contains(4));
+                            while (Keyboard.current.leftArrowKey.isPressed) {
+                                yield return null;
+                            }
+                        }
+                    }
+                } else {
+                    if (!(LocalScript.gamemode == 5 && TURNS.Value == 3 && alreadyMoved)) {
+                        alreadyMoved = true;
+                        ChangePosition(-1, 0, 1, moves, 0, GRID.Count);
+                        while (moving) {
+                            yield return null;
+                        }
+                    }
                 }
             } 
         }
         yield return null; 
     }
-    public List<float> ChangePosition(int x, int y, int mode, float myMoves, int prevP, int gridCount, BotScript BS)
+    public List<float> ChangePosition(int x, int y, int mode, float myMoves, int prevP, int gridCount)
     {
         if (myMoves > 0)
         {
@@ -8491,6 +9779,7 @@ public class LocalScript : NetworkBehaviour
             if (subtractMoveX == true || subtractMoveY == true)
             {
                 if (mode == 1) {
+                    iHaveChangedPos = true;
                     StartCoroutine(Mode1Move(prevPosition, animationX, animationY));
                     return null;
                 } else if (mode == 2) {
@@ -8548,6 +9837,16 @@ public class LocalScript : NetworkBehaviour
         if (replayable6) {
             replayable6 = false;
             R6Smoke = false;
+        }
+        if (replayable7) {
+            replayable7 = false;
+        }
+        if (replayable8) {
+            replayable8 = false;
+        }
+        if (replayable9) {
+            replayable9 = false;
+            R9Mode = 0;
         }
         moves -= MovesSubtract(prevPosition, myPosition, 1);
         UpdateMovesText(moves);
@@ -8636,6 +9935,7 @@ public class LocalScript : NetworkBehaviour
         int count = 0;
         //for (int i = 1; i < repeats; i++)
         //while (elapsed < duration)
+        bool[] IS = SmokeList(smokes);
         while (velocity > 0 || yPos > targetY)
         {
             count += 1;
@@ -8680,7 +9980,7 @@ public class LocalScript : NetworkBehaviour
                 myElevation = FindElevation(GRID[newPosition - 1], 1);
                 myVision = FindVision(GRID[newPosition - 1], INVENTORY, myEffects, myEffectStrengths);
             }
-            StartCoroutine(CreateFOVRaycast(new Vector3(xPos, yPos, Camera.main.nearClipPlane), myElevation, myVision, smokes));
+            StartCoroutine(CreateFOVRaycast(new Vector3(xPos, yPos, Camera.main.nearClipPlane), myElevation, myVision, smokes, IS));
 
             //yield return null;
             yield return new WaitForSeconds(Time.deltaTime / 2);
@@ -8691,7 +9991,7 @@ public class LocalScript : NetworkBehaviour
     void AnimationMove() {
 
     }
-    IEnumerator CreateFOVRaycast(Vector3 startPosition, float myElevation, float myVision, List<float> s)
+    IEnumerator CreateFOVRaycast(Vector3 startPosition, float myElevation, float myVision, List<float> s, bool[] IS)
     {
         int xray = ScanInvXray(INVENTORY);
         float fov = 360f;
@@ -8711,13 +10011,14 @@ public class LocalScript : NetworkBehaviour
 
         int vertexIndex = 1;
         int triangleIndex = 0;
-        isSmoked = SmokeList(s);
+        //bool[] IS = SmokeList(s);
+        //isSmoked = SmokeList(s);
         for (int i = 0; i <= rayCount; i++)
         {
             Vector3 vertex = new Vector3();
-            int raycast = CheckVisionObstacles(origin, angle * Mathf.Deg2Rad, viewDistance, myElevation, 0, 2, null, 0, xray);
+            int raycast = CheckVisionObstacles(origin, angle * Mathf.Deg2Rad, viewDistance, myElevation, 0, 2, null, myPosition - 1, xray, IS);
             /*int raycast = 0;
-            StartCoroutine(CheckVisionObstacles(origin, angle * Mathf.Deg2Rad, viewDistance, myElevation, 0, 2, null, 0, xray, result => {
+            StartCoroutine(CheckVisionObstacles(origin, angle * Mathf.Deg2Rad, viewDistance, myElevation, 0, 2, null, myPosition - 1, xray, result => {
                 raycast = result;
             }));*/
             //RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), viewDistance);
@@ -8758,6 +10059,72 @@ public class LocalScript : NetworkBehaviour
         // angle = 0 - 360
         float angleRad = angle * (Mathf.PI / 180f);
         return new Vector3(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
+    }
+    IEnumerator GasAndWait(int pnum, int mode, int transmitter) {
+        gasConfirm = false;
+        GasServerRpc(pnum, mode, transmitter);
+        while (!gasConfirm) {
+            yield return null;
+        }
+        yield return null;
+    }
+    float gasRadius = 0;
+    float gasGradient = 5;
+    public float maxGasDamage = 80;
+    int gasTurnServer = 40;
+    bool gasConfirm = false;
+    bool gasConfirm2 = false;
+    bool gasChanged = false;
+    [ServerRpc(RequireOwnership = false)]
+    void GasServerRpc(int pnum, int mode, int transmitter) {
+        bool worked = false;
+        if (TURNS.Value >= gasTurnServer) {
+            if (gasTurn == 0) {
+                gasTurn = playerAmount.Value;
+            }
+            if (TURN.Value == gasTurn) {
+                Debug.Log("TURNS = " + TURNS.Value + ", gasTurnServer = " + gasTurnServer);
+                gasTurnServer += 5;
+                worked = true;
+            }
+        }
+        if (worked) {
+            gasRadius -= 1;
+            UpdateGasList(GetCenterOfMap(), gasRadius);
+            gasTurn -= 1;
+            if (gasTurn < 1) {
+                gasTurn = playerAmount.Value;
+            }
+        }
+        ConfirmGasClientRpc(pnum, mode, transmitter, worked);
+    }
+    [ClientRpc]
+    void ConfirmGasClientRpc(int pnum, int mode, int transmitter, bool changed) {
+        if (mode == 1) {
+            if (pnum == myPlayerNum) {
+                gasConfirm = true;
+            }
+        } else if (mode == 2) {
+            if (transmitter == myPlayerNum) {
+                gasConfirm = true;
+            }
+        }
+        gasChanged = changed;
+        gasConfirm2 = true;
+    }
+    Vector2 GetCenterOfMap() {
+        return new Vector2(((float)(columns.Value + 1)) / 2, ((float)(rows.Value + 1)) / 2);
+    }
+    void UpdateGasList(Vector2 center, float radius) {
+        for (int i = 0; i < GAS.Count; i++) {
+            int pos = i + 1;
+            float dist = FindDistance(center, GetCoordsFromIndex(pos));
+            if (dist <= radius) {
+                GAS[i] = 0;
+            } else {
+                GAS[i] = Mathf.Clamp01((dist - radius) / gasGradient) * maxGasDamage;
+            }
+        }
     }
     IEnumerator AirdropAndWait(int pnum, int adnum, int mode, int transmitter) {
         airdropConfirm = false;
@@ -8835,13 +10202,13 @@ public class LocalScript : NetworkBehaviour
         
     }
     IEnumerator BotWin() {
-        StartCoroutine(CreateMessageText("Player " + (playerAliveList.IndexOf(true) + 1) + " won!", 0, 0, 3, true));
+        StartCoroutine(CreateMessageText("Player " + (playerAliveList.IndexOf(true) + 1) + " won!", 0, 0, 3, 0, true, false));
         StartCoroutine(PlaySound(sounds[32]));
         yield return new WaitForSeconds(2f);
         restartGame.RstrtGm(false);
     }
     [ServerRpc(RequireOwnership = false)]
-    public void TurnDoneServerRpc(int playerNum, float[] a, float[] BDD, float[] LDs, int[] TI, int[] SI, int hp, int maxHp, bool skipped)
+    public void TurnDoneServerRpc(int playerNum, float[] a, float[] BDD, float[] m, float[] LDs, float[] LMDs, int[] TI, int[] SI, int hp, int maxHp, bool skipped)
     {
         int potentialTurn = TURN.Value;
         if (CountAlive(playerAliveList) <= 1) {
@@ -8873,13 +10240,13 @@ public class LocalScript : NetworkBehaviour
             TURN.Value = potentialTurn;
             //Debug.Log("Keep going");
             
-            NewTurnClientRpc(playerNum, TURN.Value, a, BDD, LDs, TI, SI, hp, maxHp, skipped, TURNS.Value);
+            NewTurnClientRpc(playerNum, TURN.Value, a, BDD, m, LDs, LMDs, TI, SI, hp, maxHp, skipped, TURNS.Value);
         }
     }
     [ClientRpc]
     void WinClientRpc(int num) {
         if (num == myPlayerNum) {
-            StartCoroutine(CreateMessageText("You won!", 0, 0, 3, false));
+            StartCoroutine(CreateMessageText("You won!", 0, 0, 3, 0, false, true));
             StartCoroutine(PlaySound(sounds[32]));
             mainMenuButton.SetActive(true);
         }
@@ -9097,7 +10464,7 @@ public class LocalScript : NetworkBehaviour
                 }
                 Debug.Log("replayable is false");
             }
-            StartCoroutine(CreateMessageText("The enemy has moved", 0, -100, 1, false));
+            StartCoroutine(CreateMessageText("The enemy has moved", 0, -100, 1, 0, false, false));
             //check vision
             if (!amSpectator) {
                 StartCoroutine(EnemyVisible(visionGrid, playerList[playerNum - 1], newPos, enemyEffects[playerNum - 1].Contains(1)));
@@ -9122,6 +10489,16 @@ public class LocalScript : NetworkBehaviour
             if (replayable6) {
                 replayable6 = false;
                 R6Smoke = false;
+            }
+            if (replayable7) {
+                replayable7 = false;
+            }
+            if (replayable8) {
+                replayable8 = false;
+            }
+            if (replayable9) {
+                replayable9 = false;
+                R9Mode = 0;
             }
         }
     }
@@ -9218,6 +10595,19 @@ public class LocalScript : NetworkBehaviour
         
         yield return null;
     }
+    public IEnumerator StartTutorial() {
+        if (IsServer) {
+            //yield return new WaitForSeconds(0.2f);
+            while (!serverConnected) {
+                yield return null;
+            }
+            for (int i = 0; i < 1; i++) {
+                yield return StartCoroutine(DelayedSet(false, true, null));
+                
+            }
+        }
+        yield return null;
+    }
     public IEnumerator StartBotTraining() {
         Debug.Log("Start bot training");
         if (IsServer) {
@@ -9293,7 +10683,7 @@ public class LocalScript : NetworkBehaviour
         turnIndicator.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -(CANVAS.rect.height / 2));
         turnIndicator.SetActive(true);
 
-        yield return StartCoroutine(CreateMap(0));
+        yield return StartCoroutine(CreateMap(mapMode));
         int count = 0;
         for (int i = 0; i < rows.Value; i++)
         {
@@ -9363,6 +10753,9 @@ public class LocalScript : NetworkBehaviour
             } else if (mode == 1) {
                 columns.Value = 67;
                 rows.Value = 35;
+            } else if (mode == 2) {
+                columns.Value = 5;
+                rows.Value = 5;
             }
             //Debug.Log(columns.Value);
         }
@@ -9373,6 +10766,7 @@ public class LocalScript : NetworkBehaviour
         }
         Debug.Log(tileWidth);
         Debug.Log(columns.Value);
+        gasRadius = (int)Math.Ceiling(Mathf.Max(columns.Value, rows.Value) / 2f);
         float supposedWidth = columns.Value * tileWidth; // * tilePixelX;
         float supposedHeight = rows.Value * tileHeight; // * tilePixelY;
         if (supposedWidth / screenWidth > 1 || supposedHeight / screenHeight > 1)
@@ -9450,17 +10844,18 @@ public class LocalScript : NetworkBehaviour
         y -= screenHeight / 2;*/
         Debug.Log(tileWidth * tilePixelX * gameWidth / screenWidth);
         Debug.Log(rows.Value);
-        if (mode == 0) {
-            int count = 0;
-            for (int i = 0; i < rows.Value; i++)
-            {
-                for (int j = 0; j < columns.Value; j++)
+        //only use mode if IsHost is true
+        if (IsHost) {
+            if (mode == 0) {
+                int count = 0;
+                for (int i = 0; i < rows.Value; i++)
                 {
-                    count += 1;
-                    if (IsHost)
+                    for (int j = 0; j < columns.Value; j++)
                     {
+                        count += 1;
                         //GRID.Add(UnityEngine.Random.Range(1, 9 + 1));
                         GRID.Add(TerrainGeneration(count - 1, count));
+                        GAS.Add(0);
                         /*if (GRID.Count % 2 == 0) {
                             GRID.Add(3);
                         } else {
@@ -9477,679 +10872,694 @@ public class LocalScript : NetworkBehaviour
                             GRID.Add(4);
                         }*/
                     }
-                    smokes.Add(-1);
-                    traps.Add(new List<List<float>>());
-                    visionGrid.Add(0);
+                }
+            } else if (mode == 1) {
+                if (true) {
+                    AddToGrid(61, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(66, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(56, 2);
+                    AddToGrid(2, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(10, 2);
+                    AddToGrid(1, 4);
+                    AddToGrid(43, 2);
+                    AddToGrid(2, 3);
+                    AddToGrid(7, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(10, 2);
+                    AddToGrid(1, 4);
+                    AddToGrid(16, 2);
+                    AddToGrid(2, 2);
+                    AddToGrid(26, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(7, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(13, 2);
+                    AddToGrid(1, 4);
+                    AddToGrid(15, 2);
+                    AddToGrid(3, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(23, 2);
+                    AddToGrid(8, 1);
+                    AddToGrid(14, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(14, 2);
+                    AddToGrid(4, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(24, 2);
+                    AddToGrid(3, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(15, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(13, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(3, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(15, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(6, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(17, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(12, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(13, 2);
+                    AddToGrid(2, 5);
+                    AddToGrid(3, 2);
+                    AddToGrid(2, 5);
+                    AddToGrid(7, 2);
+                    AddToGrid(2,5);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(12, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(11, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(15, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(12, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(3, 1);
+                    AddToGrid(8, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(16, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(20, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(8, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(6, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(10, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(8, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(17, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(5, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(5, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(5, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(7, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(17, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(6, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 3);
+                    AddToGrid(9, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(3, 2);
+                    AddToGrid(4, 5);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(18, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(6, 2);
+                    AddToGrid(10, 1);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(6, 2);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(5, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(20, 2);
+                    AddToGrid(3, 1);
+                    AddToGrid(8, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(9, 1);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 1);
+                    AddToGrid(4, 2);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(4, 5);
+                    AddToGrid(5, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(20, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(10, 2);
+                    AddToGrid(2, 3);
+                    AddToGrid(8, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(4, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 4);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(24, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(12, 2);
+                    AddToGrid(2, 3);
+                    AddToGrid(2, 1);
+                    AddToGrid(3, 2);
+                    AddToGrid(6, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 4);
+                    AddToGrid(3, 3);
+                    AddToGrid(2, 4);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(19, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(16, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 2);
+                    AddToGrid(4, 1);
+                    AddToGrid(4, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 4);
+                    AddToGrid(5, 3);
+                    AddToGrid(2, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(15, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(14, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 3);
+                    AddToGrid(3, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(5, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(8, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(14, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(11, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 3);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 3);
+                    AddToGrid(3, 1);
+                    AddToGrid(3, 3);
+                    AddToGrid(3, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(5, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(13, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(13, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 5);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(5, 1);
+                    AddToGrid(3, 3);
+                    AddToGrid(3, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(11, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 5);
+                    AddToGrid(11, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(3, 1);
+                    AddToGrid(3, 5);
+                    AddToGrid(3, 1);
+                    AddToGrid(3, 3);
+                    AddToGrid(2, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(12, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 5);
+                    AddToGrid(14, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(3, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(4, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(14, 2);
+                    AddToGrid(1, 4);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 5);
+                    AddToGrid(9, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 2);
+                    AddToGrid(3, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(5, 5);
+                    AddToGrid(5, 1);
+                    AddToGrid(3, 5);
+                    AddToGrid(8, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(9, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 4);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(8, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(7, 1);
+                    AddToGrid(3, 5);
+                    AddToGrid(6, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 3);
+                    AddToGrid(7, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 4);
+                    AddToGrid(6, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(8, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(7, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(4, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 4);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 1);
+                    AddToGrid(4, 2);
+                    AddToGrid(4, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(3, 2);
+                    AddToGrid(2, 5);
+                    AddToGrid(12, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 5);
+                    AddToGrid(4, 1);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(14, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 2);
+                    AddToGrid(2, 5);
+                    AddToGrid(3, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(15, 5);
+                    AddToGrid(7, 1);
+                    AddToGrid(3, 5);
+                    AddToGrid(3, 1);
+                    AddToGrid(12, 2);
+                    AddToGrid(1, 4);
+                    AddToGrid(3, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 4);
+                    AddToGrid(7, 2);
+                    AddToGrid(2, 3);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(3, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 5);
+                    AddToGrid(3, 1);
+                    AddToGrid(12, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(6, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 4);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 4);
+                    AddToGrid(2, 3);
+                    AddToGrid(1, 4);
+                    AddToGrid(2, 2);
+                    AddToGrid(2, 4);
+                    AddToGrid(13, 2);
+                    AddToGrid(2, 3);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(10, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(3, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(14, 2);
+                    AddToGrid(3, 4);
+                    AddToGrid(1, 3);
+                    AddToGrid(19, 2);
+                    AddToGrid(1, 4);
+                    AddToGrid(5, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(3, 1);
+                    AddToGrid(8, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(4, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(9, 2);
+                    AddToGrid(1, 4);
+                    AddToGrid(1, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 4);
+                    AddToGrid(1, 2);
+                    AddToGrid(4, 4);
+                    AddToGrid(1, 3);
+                    AddToGrid(20, 2);
+                    AddToGrid(1, 4);
+                    AddToGrid(6, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(2, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 2);
+                    AddToGrid(3, 1);
+                    AddToGrid(17, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(2, 2);
+                    AddToGrid(3, 4);
+                    AddToGrid(1, 3);
+                    AddToGrid(27, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(4, 5);
+                    AddToGrid(2, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(26, 2);
+                    AddToGrid(1, 3);
+                    AddToGrid(33, 2);
+                    AddToGrid(1, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(19, 2);
+                }
+                
+                yield return StartCoroutine(Buildings());
+            } else if (mode == 2) {
+                if (true) {
+                    AddToGrid(2, 1);
+                    AddToGrid(2, 5);
+                    AddToGrid(1, 6);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 2);
+                    AddToGrid(5, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 9);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 4);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 8);
+                    AddToGrid(1, 1);
+                    AddToGrid(1, 5);
+                    AddToGrid(1, 3);
+                    AddToGrid(1, 7);
                 }
             }
-            
             if (MBAmount > GRID.Count)
             {
                 MBAmount = GRID.Count;
             }
-            if (IsHost)
-            {
+            if (mode != 2) {
                 yield return StartCoroutine(Caves());
-                yield return StartCoroutine(MilitaryBases(1));
+                yield return StartCoroutine(MilitaryBases());
             }
-        } else if (mode == 1) {
-            if (true) {
-                AddToGrid(61, 2);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 5);
-                AddToGrid(66, 2);
-                AddToGrid(2, 1);
-                AddToGrid(56, 2);
-                AddToGrid(2, 3);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(2, 1);
-                AddToGrid(1, 5);
-                AddToGrid(2, 2);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(10, 2);
-                AddToGrid(1, 4);
-                AddToGrid(43, 2);
-                AddToGrid(2, 3);
-                AddToGrid(7, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 5);
-                AddToGrid(10, 2);
-                AddToGrid(1, 4);
-                AddToGrid(16, 2);
-                AddToGrid(2, 2);
-                AddToGrid(26, 2);
-                AddToGrid(1, 3);
-                AddToGrid(7, 1);
-                AddToGrid(1, 5);
-                AddToGrid(13, 2);
-                AddToGrid(1, 4);
-                AddToGrid(15, 2);
-                AddToGrid(3, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(23, 2);
-                AddToGrid(8, 1);
-                AddToGrid(14, 2);
-                AddToGrid(1, 3);
-                AddToGrid(1, 1);
-                AddToGrid(14, 2);
-                AddToGrid(4, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(24, 2);
-                AddToGrid(3, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(15, 2);
-                AddToGrid(1, 3);
-                AddToGrid(1, 1);
-                AddToGrid(13, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(3, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(15, 2);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(6, 2);
-                AddToGrid(2, 1);
-                AddToGrid(17, 2);
-                AddToGrid(1, 3);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(12, 2);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(13, 2);
-                AddToGrid(2, 5);
-                AddToGrid(3, 2);
-                AddToGrid(2, 5);
-                AddToGrid(7, 2);
-                AddToGrid(2,5);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(12, 2);
-                AddToGrid(1, 3);
-                AddToGrid(2, 1);
-                AddToGrid(1, 5);
-                AddToGrid(11, 2);
-                AddToGrid(1, 1);
-                AddToGrid(3, 5);
-                AddToGrid(2, 1);
-                AddToGrid(15, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(4, 2);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 2);
-                AddToGrid(1, 5);
-                AddToGrid(1, 2);
-                AddToGrid(1, 5);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(12, 2);
-                AddToGrid(1, 3);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(3, 1);
-                AddToGrid(8, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(4, 5);
-                AddToGrid(2, 1);
-                AddToGrid(16, 2);
-                AddToGrid(1, 1);
-                AddToGrid(4, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(20, 2);
-                AddToGrid(1, 3);
-                AddToGrid(2, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(8, 2);
-                AddToGrid(1, 1);
-                AddToGrid(6, 5);
-                AddToGrid(2, 1);
-                AddToGrid(10, 2);
-                AddToGrid(1, 1);
-                AddToGrid(3, 2);
-                AddToGrid(1, 1);
-                AddToGrid(8, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(17, 2);
-                AddToGrid(1, 3);
-                AddToGrid(5, 5);
-                AddToGrid(2, 1);
-                AddToGrid(5, 2);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(5, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(2, 1);
-                AddToGrid(7, 2);
-                AddToGrid(1, 1);
-                AddToGrid(4, 2);
-                AddToGrid(1, 5);
-                AddToGrid(1, 2);
-                AddToGrid(1, 5);
-                AddToGrid(4, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 5);
-                AddToGrid(1, 2);
-                AddToGrid(1, 5);
-                AddToGrid(17, 2);
-                AddToGrid(1, 1);
-                AddToGrid(6, 5);
-                AddToGrid(1, 1);
-                AddToGrid(4, 2);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 3);
-                AddToGrid(9, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(3, 2);
-                AddToGrid(4, 5);
-                AddToGrid(4, 2);
-                AddToGrid(1, 5);
-                AddToGrid(1, 2);
-                AddToGrid(1, 5);
-                AddToGrid(18, 2);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(4, 5);
-                AddToGrid(6, 2);
-                AddToGrid(10, 1);
-                AddToGrid(1, 3);
-                AddToGrid(1, 2);
-                AddToGrid(1, 3);
-                AddToGrid(1, 1);
-                AddToGrid(6, 2);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(4, 5);
-                AddToGrid(5, 2);
-                AddToGrid(1, 5);
-                AddToGrid(20, 2);
-                AddToGrid(3, 1);
-                AddToGrid(8, 2);
-                AddToGrid(1, 3);
-                AddToGrid(9, 1);
-                AddToGrid(1, 3);
-                AddToGrid(1, 2);
-                AddToGrid(1, 3);
-                AddToGrid(2, 1);
-                AddToGrid(4, 2);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(4, 5);
-                AddToGrid(5, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(20, 2);
-                AddToGrid(1, 1);
-                AddToGrid(10, 2);
-                AddToGrid(2, 3);
-                AddToGrid(8, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 3);
-                AddToGrid(4, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 3);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(3, 4);
-                AddToGrid(1, 1);
-                AddToGrid(4, 5);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(24, 2);
-                AddToGrid(1, 5);
-                AddToGrid(12, 2);
-                AddToGrid(2, 3);
-                AddToGrid(2, 1);
-                AddToGrid(3, 2);
-                AddToGrid(6, 1);
-                AddToGrid(1, 2);
-                AddToGrid(2, 3);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 4);
-                AddToGrid(3, 3);
-                AddToGrid(2, 4);
-                AddToGrid(1, 1);
-                AddToGrid(4, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(19, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(16, 2);
-                AddToGrid(1, 1);
-                AddToGrid(4, 2);
-                AddToGrid(4, 1);
-                AddToGrid(4, 3);
-                AddToGrid(1, 1);
-                AddToGrid(1, 4);
-                AddToGrid(5, 3);
-                AddToGrid(2, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(2, 1);
-                AddToGrid(15, 2);
-                AddToGrid(2, 1);
-                AddToGrid(14, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 3);
-                AddToGrid(3, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 3);
-                AddToGrid(1, 1);
-                AddToGrid(5, 3);
-                AddToGrid(1, 1);
-                AddToGrid(8, 3);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(3, 2);
-                AddToGrid(1, 1);
-                AddToGrid(14, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(2, 2);
-                AddToGrid(1, 5);
-                AddToGrid(11, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 3);
-                AddToGrid(1, 5);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 3);
-                AddToGrid(2, 1);
-                AddToGrid(1, 2);
-                AddToGrid(2, 3);
-                AddToGrid(3, 1);
-                AddToGrid(3, 3);
-                AddToGrid(3, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(5, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(13, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 3);
-                AddToGrid(2, 1);
-                AddToGrid(1, 5);
-                AddToGrid(13, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 3);
-                AddToGrid(1, 5);
-                AddToGrid(4, 2);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(5, 1);
-                AddToGrid(3, 3);
-                AddToGrid(3, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(3, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(2, 1);
-                AddToGrid(1, 2);
-                AddToGrid(2, 1);
-                AddToGrid(11, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 3);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 3);
-                AddToGrid(1, 5);
-                AddToGrid(11, 2);
-                AddToGrid(2, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 3);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(2, 1);
-                AddToGrid(1, 2);
-                AddToGrid(3, 1);
-                AddToGrid(3, 5);
-                AddToGrid(3, 1);
-                AddToGrid(3, 3);
-                AddToGrid(2, 5);
-                AddToGrid(2, 1);
-                AddToGrid(4, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(12, 2);
-                AddToGrid(2, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(2, 5);
-                AddToGrid(14, 2);
-                AddToGrid(1, 5);
-                AddToGrid(2, 1);
-                AddToGrid(2, 5);
-                AddToGrid(2, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(2, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(4, 5);
-                AddToGrid(3, 1);
-                AddToGrid(1, 5);
-                AddToGrid(4, 1);
-                AddToGrid(2, 5);
-                AddToGrid(2, 1);
-                AddToGrid(14, 2);
-                AddToGrid(1, 4);
-                AddToGrid(2, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(2, 5);
-                AddToGrid(9, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(3, 2);
-                AddToGrid(3, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(5, 5);
-                AddToGrid(5, 1);
-                AddToGrid(3, 5);
-                AddToGrid(8, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(9, 2);
-                AddToGrid(1, 3);
-                AddToGrid(2, 4);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(8, 2);
-                AddToGrid(1, 1);
-                AddToGrid(3, 2);
-                AddToGrid(1, 1);
-                AddToGrid(3, 2);
-                AddToGrid(2, 1);
-                AddToGrid(1, 5);
-                AddToGrid(7, 1);
-                AddToGrid(3, 5);
-                AddToGrid(6, 1);
-                AddToGrid(4, 5);
-                AddToGrid(2, 1);
-                AddToGrid(4, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 3);
-                AddToGrid(7, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 4);
-                AddToGrid(6, 5);
-                AddToGrid(1, 2);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(8, 2);
-                AddToGrid(1, 3);
-                AddToGrid(2, 2);
-                AddToGrid(1, 3);
-                AddToGrid(1, 2);
-                AddToGrid(2, 5);
-                AddToGrid(2, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(7, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(2, 1);
-                AddToGrid(2, 5);
-                AddToGrid(4, 1);
-                AddToGrid(4, 5);
-                AddToGrid(2, 1);
-                AddToGrid(4, 2);
-                AddToGrid(1, 4);
-                AddToGrid(1, 3);
-                AddToGrid(2, 1);
-                AddToGrid(4, 2);
-                AddToGrid(4, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(3, 2);
-                AddToGrid(2, 5);
-                AddToGrid(12, 2);
-                AddToGrid(1, 3);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 2);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(2, 1);
-                AddToGrid(4, 5);
-                AddToGrid(1, 1);
-                AddToGrid(4, 5);
-                AddToGrid(2, 1);
-                AddToGrid(4, 5);
-                AddToGrid(1, 1);
-                AddToGrid(3, 5);
-                AddToGrid(4, 1);
-                AddToGrid(4, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 2);
-                AddToGrid(2, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(14, 2);
-                AddToGrid(1, 3);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 2);
-                AddToGrid(2, 5);
-                AddToGrid(3, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(2, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(15, 5);
-                AddToGrid(7, 1);
-                AddToGrid(3, 5);
-                AddToGrid(3, 1);
-                AddToGrid(12, 2);
-                AddToGrid(1, 4);
-                AddToGrid(3, 2);
-                AddToGrid(1, 3);
-                AddToGrid(1, 4);
-                AddToGrid(7, 2);
-                AddToGrid(2, 3);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(2, 1);
-                AddToGrid(3, 2);
-                AddToGrid(1, 3);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 2);
-                AddToGrid(1, 1);
-                AddToGrid(3, 5);
-                AddToGrid(3, 1);
-                AddToGrid(12, 5);
-                AddToGrid(1, 1);
-                AddToGrid(6, 5);
-                AddToGrid(1, 1);
-                AddToGrid(4, 2);
-                AddToGrid(1, 3);
-                AddToGrid(2, 4);
-                AddToGrid(1, 2);
-                AddToGrid(1, 4);
-                AddToGrid(2, 3);
-                AddToGrid(1, 4);
-                AddToGrid(2, 2);
-                AddToGrid(2, 4);
-                AddToGrid(13, 2);
-                AddToGrid(2, 3);
-                AddToGrid(4, 2);
-                AddToGrid(1, 3);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(3, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(10, 5);
-                AddToGrid(1, 1);
-                AddToGrid(3, 5);
-                AddToGrid(2, 1);
-                AddToGrid(14, 2);
-                AddToGrid(3, 4);
-                AddToGrid(1, 3);
-                AddToGrid(19, 2);
-                AddToGrid(1, 4);
-                AddToGrid(5, 2);
-                AddToGrid(1, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(3, 1);
-                AddToGrid(8, 5);
-                AddToGrid(2, 1);
-                AddToGrid(4, 2);
-                AddToGrid(1, 1);
-                AddToGrid(9, 2);
-                AddToGrid(1, 4);
-                AddToGrid(1, 2);
-                AddToGrid(1, 3);
-                AddToGrid(1, 4);
-                AddToGrid(1, 2);
-                AddToGrid(4, 4);
-                AddToGrid(1, 3);
-                AddToGrid(20, 2);
-                AddToGrid(1, 4);
-                AddToGrid(6, 2);
-                AddToGrid(1, 1);
-                AddToGrid(4, 5);
-                AddToGrid(2, 1);
-                AddToGrid(1, 5);
-                AddToGrid(1, 1);
-                AddToGrid(2, 2);
-                AddToGrid(3, 1);
-                AddToGrid(17, 2);
-                AddToGrid(1, 3);
-                AddToGrid(2, 2);
-                AddToGrid(1, 3);
-                AddToGrid(2, 2);
-                AddToGrid(3, 4);
-                AddToGrid(1, 3);
-                AddToGrid(27, 2);
-                AddToGrid(1, 1);
-                AddToGrid(4, 5);
-                AddToGrid(2, 2);
-                AddToGrid(1, 1);
-                AddToGrid(26, 2);
-                AddToGrid(1, 3);
-                AddToGrid(33, 2);
-                AddToGrid(1, 1);
-                AddToGrid(2, 5);
-                AddToGrid(1, 1);
-                AddToGrid(19, 2);
-            }
+        }
+        if (!IsHost) {
             if (MBAmount > GRID.Count)
             {
                 MBAmount = GRID.Count;
-            }
-            if (IsHost)
-            {
-                yield return StartCoroutine(Buildings());
-                yield return StartCoroutine(Caves());
-                yield return StartCoroutine(MilitaryBases(2));
             }
         }
         Debug.Log("rows = " + rows.Value);
@@ -10159,6 +11569,9 @@ public class LocalScript : NetworkBehaviour
                 GRIDX.Add(x);
                 GRIDY.Add(y);
                 x += tileWidth;
+                smokes.Add(-1);
+                traps.Add(new List<List<float>>());
+                visionGrid.Add(0);
             }
             gameSpace = Camera.main.ScreenToWorldPoint(new Vector2(0, 0));
             x = gameSpace.x;
@@ -10166,19 +11579,19 @@ public class LocalScript : NetworkBehaviour
             x += tileWidth / 2;
             y += tileHeight;
         }
-        StartCoroutine(UpdateIsSmoked(smokes));
+        StartCoroutine(UpdateIsSmoked(smokes, true));
+        CreateGases(GAS.Count);
+        prevGas1 = CloneNLF(GAS);
     }
     void AddToGrid(int times, int terrain) {
         for (int i = 0; i < times; i++) {
             if (IsHost) {
                 GRID.Add(terrain);
+                GAS.Add(0);
                 smokeLifespans.Add(0);
                 smokeOwners.Add(0);
                 
             }
-            smokes.Add(-1);
-            traps.Add(new List<List<float>>());
-            visionGrid.Add(0);
         }
         if (!(terrain >= 1 && terrain <= 9)) {
             Debug.Log("terrain glitch with " + times + " times! Terrain: " + terrain);
@@ -10561,7 +11974,7 @@ public class LocalScript : NetworkBehaviour
         }
         yield return null;
     }
-    IEnumerator MilitaryBases(int mode)
+    IEnumerator MilitaryBases()
     {
         if (MBAmount == 1)
         {
@@ -10572,7 +11985,7 @@ public class LocalScript : NetworkBehaviour
             bool done = false;
             while (done == false)
             {
-                done = MBAttempt(mode);
+                done = MBAttempt();
             }
         }
         for (int i = 0; i < MB.Count; i++)
@@ -10581,7 +11994,7 @@ public class LocalScript : NetworkBehaviour
         }
         yield return null;
     }
-    bool MBAttempt(int mode)
+    bool MBAttempt()
     {
         bool success = false; 
         List<Vector2> MBVectors = new List<Vector2>();
@@ -10625,15 +12038,8 @@ public class LocalScript : NetworkBehaviour
                             int distance = (int)Math.Abs(myVector.x - otherVector.x) + (int)Math.Abs(myVector.y - otherVector.y);
                             float minDist = columns.Value / (MBAmount - 1) + rows.Value / (MBAmount - 1);
                             minDist -= 1;
-                            if (mode == 1) {
-                                if (distance < minDist)
-                                {
-                                    keepGoing = false;
-                                }
-                            } else if (mode == 2) {
-                                if (distance < minDist) {
-                                    keepGoing = false;
-                                }
+                            if (distance < minDist) {
+                                keepGoing = false;
                             }
                         }
                     }
@@ -10712,11 +12118,19 @@ public class LocalScript : NetworkBehaviour
     void UpdateHealthText(int hp, int maxHp) {
         healthText.GetComponent<TextMeshProUGUI>().text = "Health: " + hp + "/" + maxHp;
     }
-    public IEnumerator CreateMessageText(String txt, float startY, float endY, int mode, bool bypass4) {
-        if (!(LocalScript.gamemode == 4 && !bypass4)) {
+    GameObject joinCodeText;
+    public IEnumerator CreateMessageText(String txt, float startY, float endY, int mode, int destroyMode, bool bypass4, bool bypass5) {
+        if (!(LocalScript.gamemode == 4 && !bypass4) && !((LocalScript.gamemode == 5 && TURNS.Value <= 3) && !bypass5)) {
             GameObject MT = Instantiate(messageText, CANVAS);
+            bool destroyed = false;
             if (mode == 2) {
-                StartCoroutine(WaitToDestroyMT(MT, 1));
+                StartCoroutine(WaitToDestroyMT(MT, destroyMode, result => {
+                    destroyed = result;
+                }));
+            }
+            if (mode == 5) {
+                joinCodeText = MT;
+                //don't destroy
             }
             MT.GetComponent<TMPro.TextMeshProUGUI>().text = txt;
             if (mode == 3) {
@@ -10737,7 +12151,7 @@ public class LocalScript : NetworkBehaviour
             float step = (endY - startY) / 51f;
             float changeY = endY - startY;
             float totalTime = 1.5f;
-            if (!(mode == 3 || mode == 4)) {
+            if (!(mode == 3 || mode == 4 || mode == 6)) {
                 float timer = 0f;
                 while (timer < totalTime) {
                     timer += Time.deltaTime; //might delay if MT is false AKA null AKA destroyed
@@ -10767,6 +12181,7 @@ public class LocalScript : NetworkBehaviour
                 }*/
             }
             if (mode == 1) { 
+                
                 yield return new WaitForSeconds(1f);
                 float timer = 0f;
                 while (timer < totalTime) {
@@ -10786,6 +12201,9 @@ public class LocalScript : NetworkBehaviour
                 }*/
                 Destroy(MT);
             } else if (mode == 2) {
+                while (!destroyed) {
+                    yield return null;
+                }
             } else if (mode == 3 || mode == 4) {
                 colour = MT.GetComponent<TextMeshProUGUI>().color;
                 colour.a = 1f;
@@ -10800,15 +12218,136 @@ public class LocalScript : NetworkBehaviour
                     yield return null;
                 }
                 
+            } else if (mode == 6) {
+                float OGXMin = MT.GetComponent<RectTransform>().anchorMin.x;
+                float OGYMin = MT.GetComponent<RectTransform>().anchorMin.y;
+                float OGXMax = MT.GetComponent<RectTransform>().anchorMax.x;
+                float OGYMax = MT.GetComponent<RectTransform>().anchorMax.y;
+                float shake = 0.1f; 
+                float angle = 0f;
+                float timer = 0f;
+                float angleSpeed = 6f;
+                float decayFactor = 0.99f;
+                while (timer < totalTime) {
+                    if (!useing) break;
+                    float progress = Mathf.Clamp01(timer / totalTime);
+                    colour = MT.GetComponent<TextMeshProUGUI>().color;
+                    colour.a = 1f - progress;
+                    MT.GetComponent<TextMeshProUGUI>().color = colour;
+                    MT.GetComponent<RectTransform>().anchorMin = new Vector2(OGXMin - (shake * (Mathf.Sin(angle))), OGYMin);
+                    MT.GetComponent<RectTransform>().anchorMax = new Vector2(OGXMax - (shake * (Mathf.Sin(angle))), OGYMax);
+                    float dt = Time.deltaTime;
+                    shake *= Mathf.Pow(decayFactor, dt * 60f);
+                    angle += angleSpeed * dt;
+                    timer += dt;
+                    yield return null;
+                }
+                Destroy(MT);
             }
         }
         yield return null;
     }
-    IEnumerator WaitToDestroyMT(GameObject MT, int type) {
-        while (!(Mouse.current.leftButton.wasPressedThisFrame && mouseIndex != 0)) {
-            yield return null;
+    IEnumerator WaitToDestroyMT(GameObject MT, int type, System.Action<bool> callback) {
+        if (type == 1) {
+            while (!(Mouse.current.leftButton.wasPressedThisFrame && mouseIndex != 0)) {
+                yield return null;
+            }
+        } else if (type == 2) {
+            while (!(Keyboard.current.upArrowKey.isPressed || Keyboard.current.downArrowKey.isPressed || Keyboard.current.rightArrowKey.isPressed || Keyboard.current.leftArrowKey.isPressed)) {
+                yield return null;
+            }
+        } else if (type == 3) {
+            while (!(Keyboard.current.upArrowKey.isPressed)) {
+                yield return null;
+            }
+        } else if (type == 4) {
+            while (!(Keyboard.current.downArrowKey.isPressed)) {
+                yield return null;
+            }
+        } else if (type == 5) {
+            while (!(Keyboard.current.rightArrowKey.isPressed)) {
+                yield return null;
+            }
+        } else if (type == 6) {
+            while (!(Keyboard.current.leftArrowKey.isPressed)) {
+                yield return null;
+            }
+        } else if (type == 7) {
+            while (buttonClicked != 1) {
+                yield return null;
+            }
+        } else if (type == 8) {
+            while (buttonClicked != 3) {
+                yield return null;
+            }
+        } else if (type == 9) {
+            while (!(Keyboard.current.lKey.isPressed)) {
+                yield return null;
+            }
+        } else if (type == 10) {
+            while (!((Keyboard.current.rightArrowKey.isPressed || Keyboard.current.leftArrowKey.isPressed) && rollChancesOpen)) {
+                yield return null;
+            }
+        } else if (type == 11) {
+            while (!(rollChancesPage == 6)) {
+                yield return null;
+            }
+        } else if (type == 12) {
+            while (!(rollChancesPage == 7)) {
+                yield return null;
+            }
+        } else if (type == 13) {
+            while (!(rollChancesPage == 8)) {
+                yield return null;
+            }
+        } else if (type == 14) {
+            while (!(Keyboard.current.iKey.isPressed)) {
+                yield return null;
+            }
+        } else if (type == 15) {
+            while (!statsBookOpen) {
+                yield return null;
+            }
+        } else if (type == 16) {
+            while (!(Keyboard.current.rightArrowKey.isPressed || Keyboard.current.leftArrowKey.isPressed)) {
+                yield return null;
+            }
+        } else if (type == 17) {
+            while (!(Keyboard.current.sKey.isPressed)) {
+                yield return null;
+            }
+        } else if (type == 18) {
+            while (buttonClicked != 2) {
+                yield return null;
+            }
+            StartCoroutine(CreateMessageText("Press Bandages.", 0, 0, 2, 19, false, true));
+        } else if (type == 19) {
+            while (!(buttonClicked == 6 && useItem == 1)) {
+                yield return null;
+            }
+        } else if (type == 20) {
+            while (!replaying) {
+                yield return null;
+            }
+        } else if (type == 21) {
+            while (moves > 0) {
+                yield return null;
+            }
+        } else if (type == 22) {
+            while (!(buttonClicked == 6 && useItem == 22)) {
+                yield return null;
+            }
+        } else if (type == 23) {
+            while (!(Keyboard.current.bKey.isPressed)) {
+                yield return null;
+            }
+        } else if (type == 24) {
+            while (!(Keyboard.current.cKey.isPressed)) {
+                yield return null;
+            }
         }
         Destroy(MT);
+        callback(true);
         yield return null;
     }
     public void DisplayBotTest(int mode, List<bool> arrivable, List<int> myVG, List<List<float>> dataLists, List<float> weightedList) {
@@ -10866,5 +12405,70 @@ public class LocalScript : NetworkBehaviour
         foreach (Transform child in testFolder.transform) {
             GameObject.Destroy(child.gameObject);
         }
+    }
+    public void CreateArrivable(List<int> grid, int startPos, List<bool> a, List<(int index, float moves, int LMIndex)> YTC, List<(int index, float moves, int LMIndex)> AC, List<float> listMoves) {
+        YTC.Clear();
+        AC.Clear();
+        YTC.Add((index: startPos - 1, moves: listMoves[0], LMIndex: 0)); //think if moves starts with 0, then it will be wrong
+        while (YTC.Count > 0) {
+            CheckNeighbors(grid, a, YTC, AC, listMoves);
+        }
+    }
+    //public int indexHelper; //[2]
+    //public float movesHelper; //[1]
+    //public int workedHelper; //[0]
+    void CheckNeighbors(List<int> grid, List<bool> a, List<(int index, float moves, int LMIndex)> YTC, List<(int index, float moves, int LMIndex)> AC, List<float> listMoves) {
+        var gridSquare = YTC[0];
+        int idx = gridSquare.index;
+        float mvs = gridSquare.moves;
+        int lmidx = gridSquare.LMIndex;
+        //Vector2 coords = lScript.GetCoordsFromIndex(idx + 1);
+        CheckNeighbor(0, 1, mvs, idx + 1, lmidx, grid.Count, a, YTC, AC, listMoves);
+        CheckNeighbor(0, -1, mvs, idx + 1, lmidx, grid.Count, a, YTC, AC, listMoves);
+        CheckNeighbor(1, 0, mvs, idx + 1, lmidx, grid.Count, a, YTC, AC, listMoves);
+        CheckNeighbor(-1, 0, mvs, idx + 1, lmidx, grid.Count, a, YTC, AC, listMoves);
+        YTC.RemoveAt(0);
+        AC.Add(gridSquare);
+    }
+    void CheckNeighbor(int x, int y, float mvs, int PP, int lmidx, int gridCount, List<bool> a, List<(int index, float moves, int LMIndex)> YTC, List<(int index, float moves, int LMIndex)> AC, List<float> listMoves) {
+        /*indexHelper = -1;
+        movesHelper = 0;
+        workedHelper = -1;*/
+        List<float> helpers = ChangePosition(x, y, 2, mvs, PP, gridCount);
+        int workedHelper = Mathf.RoundToInt(helpers[0]);
+        float movesHelper = helpers[1];
+        int indexHelper = Mathf.RoundToInt(helpers[2]);
+        /*while (workedHelper == -1) {
+            yield return null;
+        }*/
+        if (workedHelper == 1) {
+            var newGridSquare = (index: indexHelper, moves: movesHelper, LMIndex: lmidx);
+            if (newGridSquare.moves <= 0) {
+                int lmi = newGridSquare.LMIndex;
+                if (lmi + 1 > listMoves.Count - 1) {
+                    a[newGridSquare.index] = true;
+                } else {
+                    lmi++;
+                    YTC.Add((index: newGridSquare.index, moves: listMoves[lmi], LMIndex: lmi));
+                }
+                
+            } else {
+                if (YTC.Contains(newGridSquare) || AC.Contains(newGridSquare)) {
+                    //don't add
+                } else {
+                    YTC.Add(newGridSquare);
+                }
+            }
+        }
+    }
+}
+public struct InventoryItem {
+    public int itemNum;
+    public int maxDurability;
+    public int durability;
+    public InventoryItem(int n, int d) {
+        itemNum = n;
+        maxDurability = d;
+        durability = maxDurability;
     }
 }

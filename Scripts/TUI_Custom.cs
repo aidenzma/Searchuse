@@ -26,6 +26,8 @@ namespace Unity.Multiplayer.Center.NetcodeForGameObjectsExample
         [SerializeField]
         Button m_TrainBotButton;
         [SerializeField]
+        Button m_TutorialButton;
+        [SerializeField]
         GameObject image;
         [SerializeField]
         GameObject buttons;
@@ -106,10 +108,11 @@ namespace Unity.Multiplayer.Center.NetcodeForGameObjectsExample
                 ClientAsync();
                 m_PlayBotButton.onClick.AddListener(() => StartOfflineBotGame());
                 m_TrainBotButton.onClick.AddListener(() => StartTrainingBot());
+                m_TutorialButton.onClick.AddListener(() => StartTut());
                 AddClickListener(XButton, () => OnImageClicked("X"), () => OnImageEnter("X"), () => OnImageExit("X"));
             }
         }
-        async void ClientAsync() {
+        void ClientAsync() {
             //m_StartClientButton.onClick.AddListener(async () => {await ClientClick();});
             m_StartClientButton.onClick.AddListener(StartClient);
             joinCodeInput.onSubmit.AddListener(async (_) => {await ClientClick(); });
@@ -125,7 +128,7 @@ namespace Unity.Multiplayer.Center.NetcodeForGameObjectsExample
                     image.SetActive(false);
                     typeCode.SetActive(false);
                 } else {
-                    StartCoroutine(lScript.CreateMessageText("Code not found", -150, -150, 1, false));
+                    StartCoroutine(lScript.CreateMessageText("Code not found", -150, -150, 1, 0, false, false));
                 }
             }
         }
@@ -142,6 +145,7 @@ namespace Unity.Multiplayer.Center.NetcodeForGameObjectsExample
             lScript.amSpectator = spec;
             LocalScript.gamemode = 1;
             lScript.spectatorSet = true;
+            lScript.mapMode = 0;
             RelayScript.Instance.CreateRelay();
             DeactivateButtons();
             image.SetActive(false);
@@ -149,17 +153,20 @@ namespace Unity.Multiplayer.Center.NetcodeForGameObjectsExample
         }
 
         private void StartOfflineBotGame() {
-            var transport = Unity.Netcode.NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
-            if (transport != null)
+            var spTransport = Unity.Netcode.NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.SinglePlayer.SinglePlayerTransport>();
+            //var utpTransport = Unity.Netcode.NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
+            if (spTransport != null)
             {
                 // "127.0.0.1" is the universal computer code for "myself" (localhost).
                 // This ensures absolutely zero data leaves your network card.
-                transport.SetConnectionData("127.0.0.1", 7777); 
+                //transport.SetConnectionData("127.0.0.1", 7777); 
+                Unity.Netcode.NetworkManager.Singleton.NetworkConfig.NetworkTransport = spTransport;
             }
 
             lScript.amSpectator = false;
             LocalScript.gamemode = 3;
             lScript.spectatorSet = true;
+            lScript.mapMode = 0;
             // 3. Start the host session locally. No Relay server required!
             Unity.Netcode.NetworkManager.Singleton.StartHost();
 
@@ -169,17 +176,19 @@ namespace Unity.Multiplayer.Center.NetcodeForGameObjectsExample
             StartCoroutine(lScript.StartBots()); //this starts a one-player vs everyone else = bots game
         }
         private void StartTrainingBot() {
-            var transport = Unity.Netcode.NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
-            if (transport != null)
+            var spTransport = Unity.Netcode.NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.SinglePlayer.SinglePlayerTransport>();
+            if (spTransport != null)
             {
                 // "127.0.0.1" is the universal computer code for "myself" (localhost).
                 // This ensures absolutely zero data leaves your network card.
-                transport.SetConnectionData("127.0.0.1", 7777); 
+                //transport.SetConnectionData("127.0.0.1", 7777); 
+                Unity.Netcode.NetworkManager.Singleton.NetworkConfig.NetworkTransport = spTransport;
             }
 
             lScript.amSpectator = true;
             LocalScript.gamemode = 4;
             lScript.spectatorSet = true;
+            lScript.mapMode = 0;
             // 3. Start the host session locally. No Relay server required!
             Unity.Netcode.NetworkManager.Singleton.StartHost();
 
@@ -189,16 +198,41 @@ namespace Unity.Multiplayer.Center.NetcodeForGameObjectsExample
             mainMenuButton.SetActive(true);
             StartCoroutine(lScript.StartBotTraining()); //this starts a one-player vs everyone else = bots game
         }
+        private void StartTut() {
+            var spTransport = Unity.Netcode.NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.SinglePlayer.SinglePlayerTransport>();
+            //var utpTransport = Unity.Netcode.NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
+            if (spTransport != null)
+            {
+                // "127.0.0.1" is the universal computer code for "myself" (localhost).
+                // This ensures absolutely zero data leaves your network card.
+                //transport.SetConnectionData("127.0.0.1", 7777); 
+                Unity.Netcode.NetworkManager.Singleton.NetworkConfig.NetworkTransport = spTransport;
+            }
+
+            lScript.amSpectator = false;
+            LocalScript.gamemode = 5;
+            lScript.spectatorSet = true;
+            lScript.mapMode = 2;
+            // 3. Start the host session locally. No Relay server required!
+            Unity.Netcode.NetworkManager.Singleton.StartHost();
+
+            // 4. Clean up your UI menu just like you normally do
+            DeactivateButtons();
+            image.SetActive(false);
+            StartCoroutine(lScript.StartTutorial());
+        }
         void DeactivateButtons()
         {
             m_StartHostButton.interactable = false;
             m_StartClientButton.interactable = false;
             m_PlayBotButton.interactable = false;
             m_TrainBotButton.interactable = false;
+            m_TutorialButton.interactable = false;
             m_StartHostButton.gameObject.SetActive(false);
             m_StartClientButton.gameObject.SetActive(false);
             m_PlayBotButton.gameObject.SetActive(false);
             m_TrainBotButton.gameObject.SetActive(false);
+            m_TutorialButton.gameObject.SetActive(false);
             buttons.SetActive(false);
         }
         void ActivateButtons() {
@@ -206,10 +240,12 @@ namespace Unity.Multiplayer.Center.NetcodeForGameObjectsExample
             m_StartClientButton.interactable = true;
             m_PlayBotButton.interactable = true;
             m_TrainBotButton.interactable = true;
+            m_TutorialButton.interactable = true;
             m_StartHostButton.gameObject.SetActive(true);
             m_StartClientButton.gameObject.SetActive(true);
             m_PlayBotButton.gameObject.SetActive(true);
             m_TrainBotButton.gameObject.SetActive(true);
+            m_TutorialButton.gameObject.SetActive(true);
             buttons.SetActive(true);
             XButton.SetActive(false);
             XButton.GetComponent<Image>().sprite = buttonCostumes[0];

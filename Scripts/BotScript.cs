@@ -7,7 +7,8 @@ using UnityEngine;
 public class BotScript : MonoBehaviour
 {
     [Header("AI Settings")]
-    [SerializeField] private bool trainingModeActivated = false;
+    [SerializeField] public bool trainingModeActivated = false;
+    [SerializeField] public bool NNBot = false;
     public int playerNum; //playerNum is 1+
     public int position; //position is 1+
     [SerializeField]
@@ -24,7 +25,9 @@ public class BotScript : MonoBehaviour
     public int HP;
     public float HPCalculation;
     public float[] myActions;
+    public float[] myModifiers;
     public float[] myLocalDamages;
+    public float[] myLocalMHDamages;
     public List<float> myBDD;
     public List<int> myTI;
     public List<int> mySI;
@@ -36,7 +39,7 @@ public class BotScript : MonoBehaviour
        3 = "Hiding"
     */
     public float armorCoefficient = 1;
-    public List<int> inventory = new List<int>();
+    public List<InventoryItem> inventory = new List<InventoryItem>();
     public List<int> botBookInventory = new List<int>();
     [SerializeField]
     public List<int> myVG = new List<int>();
@@ -46,7 +49,7 @@ public class BotScript : MonoBehaviour
     public List<List<bool>> potentialPlayerPositions = new List<List<bool>>();
     public List<List<int>> potentialPlayerVGs = new List<List<int>>();
     public List<List<float>> compoundPlayerVGs = new List<List<float>>();
-    public List<List<int>> potentialPlayerInvs = new List<List<int>>(); //1+
+    public List<List<InventoryItem>> potentialPlayerInvs = new List<List<InventoryItem>>(); //1+
     public List<int> UAVPlayerPositions = new List<int>(); //1+
     public List<bool> playerHealthsVisible = new List<bool>();
     public List<int> knownPlayerHealths = new List<int>();
@@ -76,6 +79,7 @@ public class BotScript : MonoBehaviour
     public List<List<float>> allPlayerModes = new List<List<float>>();
     /* [0] is searching, [1] is hunting, [2] is hiding*/
     public List<List<float>> allPlayerDataLists = new List<List<float>>();
+    public List<int> myGas;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -87,10 +91,12 @@ public class BotScript : MonoBehaviour
     {
         
     }
-    public void InitializeBotBrain() {
-        if (!botBrain.LoadBrainData(trainingModeActivated)) {
-            botBrain.InitializeNetwork();
-        }
+    public IEnumerator InitializeBotBrain() {
+        yield return StartCoroutine(botBrain.LoadBrainData(trainingModeActivated, result => {
+            if (!result) {
+                botBrain.InitializeNetwork();
+            }
+        }));
     }
     void InitializeData(List<int> mode, List<int> grid) {
         /* mode: 
@@ -321,10 +327,11 @@ public class BotScript : MonoBehaviour
             theList.Add((rarityData[i] * searchWeight) + (elevationData[i] * huntWeight) + (hideData[i] * hideWeight));
         }
     }
-    List<int> ScanInvList(List<int> inv, int type, int type2, bool checkCooldown, float dist) {
-        List<int> retList = new List<int>();
+    List<InventoryItem> ScanInvList(List<InventoryItem> inv, int type, int type2, bool checkCooldown, float dist) {
+        List<InventoryItem> retList = new List<InventoryItem>();
         if (type == 1 || type == 2 || type == 4 || type == 6 || type == 7) {
-            foreach (int item in inv) {
+            foreach (InventoryItem II in inv) {
+                int item = II.itemNum;
                 if (item != 0) {
                     int index = item - 1;
                     bool cond1 = false;
@@ -341,24 +348,24 @@ public class BotScript : MonoBehaviour
                     }
                     if (cond1) {
                         if (type == 1) {
-                            retList.Add(item);
+                            retList.Add(II);
                         } else if (type == 2 || type == 6) {
                             if (checkCooldown) {
                                 if (botItemsOnCooldown[index] == 0) {
-                                    retList.Add(item);
+                                    retList.Add(II);
                                 }
                             } else {
-                                retList.Add(item);
+                                retList.Add(II);
                             }
                         } else if (type == 4) {
                             
                             if (lScript.itemInfos[index][0][8] > 0) {
                                 if (checkCooldown) {
                                     if (botItemsOnCooldown[index] == 0) {
-                                        retList.Add(item);
+                                        retList.Add(II);
                                     }
                                 } else {
-                                    retList.Add(item);
+                                    retList.Add(II);
                                 }
                             }
                         } else if (type == 7) {
@@ -366,10 +373,10 @@ public class BotScript : MonoBehaviour
                             if (cond2) {
                                 if (checkCooldown) {
                                     if (botItemsOnCooldown[index] == 0) {
-                                        retList.Add(item);
+                                        retList.Add(II);
                                     }
                                 } else {
-                                    retList.Add(item);
+                                    retList.Add(II);
                                 }
                             }
                         }
@@ -380,66 +387,69 @@ public class BotScript : MonoBehaviour
             }
             if (type == 2 || type == 4 || type == 6 || type == 7) { //4 is ordered by damage but maybe it should be ordered by visionchange instead
                 for (int i = 0; i < retList.Count - 1; i++) {
-                    float currentDamage = GetExpectedDamage(retList[i] - 1);
+                    float currentDamage = GetExpectedDamage(retList[i].itemNum - 1);
                     float maxDamage = currentDamage;
                     int swapIndex = i;
                     for (int j = i + 1; j < retList.Count; j++) {
-                        float newDamage = GetExpectedDamage(retList[j] - 1);
+                        float newDamage = GetExpectedDamage(retList[j].itemNum - 1);
                         if (newDamage > maxDamage) {
                             maxDamage = newDamage;
                             swapIndex = j;
                         }
                     }
                     if (swapIndex != i) {
-                        int temp = retList[i];
+                        InventoryItem temp = retList[i];
                         retList[i] = retList[swapIndex];
                         retList[swapIndex] = temp;
                     }
                 }
             }
         } else if (type == 3) {
-            foreach (int item in inv) {
+            foreach (InventoryItem II in inv) {
+                int item = II.itemNum;
                 if (item != 0) {
                     int index = item - 1;
                     if (lScript.itemIntLists[index][0].Contains(2)) {
                         if (checkCooldown) {
                             if (botItemsOnCooldown[index] == 0) {
-                                retList.Add(item);
+                                retList.Add(II);
                             }
                         } else {
-                            retList.Add(item);
+                            retList.Add(II);
                         }
                     }
                 }
             }
         } else if (type == 5) {
-            foreach (int item in inv) {
+            foreach (InventoryItem II in inv) {
+                int item = II.itemNum;
                 if (item != 0) {
                     int index = item - 1;
                     if (lScript.itemIntLists[index][0].Contains(3)) {
                         if (lScript.itemIntLists[index][4].Contains(type2)) {
                             if (checkCooldown) {
                                 if (botItemsOnCooldown[index] == 0) {
-                                    retList.Add(item);
+                                    retList.Add(II);
                                 }
                             } else {
-                                retList.Add(item);
+                                retList.Add(II);
                             }
                         }
                     }
                 }
             }
         } else if (type == 8) {
-            foreach (int item in inv) {
+            foreach (InventoryItem II in inv) {
+                int item = II.itemNum;
                 if (item != 0) {
                     int index = item - 1;
                     if (lScript.itemBools[index][0]) {
                         if (checkCooldown) {
                             if (botItemsOnCooldown[index] == 0) {
-                                retList.Add(item);
+                                retList.Add(II);
                             }
                         } else {
-                            retList.Add(item);
+                            retList.Add(II);
                         }
                     }
                 }
@@ -448,7 +458,7 @@ public class BotScript : MonoBehaviour
         return retList;
     }
     public float GetExpectedDamage(int index) {
-        return lScript.itemInfos[index][0][1] * Mathf.RoundToInt(lScript.itemInfos[index][0][3]);
+        return (lScript.itemInfos[index][0][1] + (lScript.itemInfos[index][0][15] * 2)) * Mathf.RoundToInt(lScript.itemInfos[index][0][3]); //weight max health damage by 2 times
     }
     bool TestBulletHit(int index, int pos, int enPos, NetworkList<int> grid) {
         Vector2 posV = new Vector2(lScript.GRIDX[pos - 1], lScript.GRIDY[pos - 1]);
@@ -474,23 +484,23 @@ public class BotScript : MonoBehaviour
         }
         return returnVal;
     }
-    int ScanInvInt(List<int> inv, int type, int search, int pos, int enPos, NetworkList<int> grid) { //pos & enPos are 1+
+    int ScanInvInt(List<InventoryItem> inv, int type, int search, int pos, int enPos, NetworkList<int> grid) { //pos & enPos are 1+
         int returnVal = 0;
         if (type == 1) {
             for (int i = 0; i < inv.Count; i++) {
-                if (lScript.itemIntLists[inv[i] - 1][1].Contains(17)) {
-                    returnVal = inv[i];
+                if (lScript.itemIntLists[inv[i].itemNum - 1][1].Contains(17)) {
+                    returnVal = inv[i].itemNum;
                     break;
                 } else {
-                    if (TestBulletHit(inv[i] - 1, pos, enPos, grid)) {
-                        returnVal = inv[i];
+                    if (TestBulletHit(inv[i].itemNum - 1, pos, enPos, grid)) {
+                        returnVal = inv[i].itemNum;
                         break;
                     }
                 }
             }
         } else if (type == 2) {
             for (int i = 0; i < inv.Count; i++) {
-                if (inv[i] == search) {
+                if (inv[i].itemNum == search) {
                     returnVal++;
                 }
             }
@@ -501,7 +511,7 @@ public class BotScript : MonoBehaviour
     public float LD = 0;
     public int BD;
     bool seenMF = false;
-    public IEnumerator TakeDamage(float[] EA, float[] EB, float[] ELDs, int[] ETI, int[] ESI, int width, int height) {
+    public IEnumerator TakeDamage(float[] EA, float[] EB, float[] EM, float[] ELDs, float[] ELMDs, int[] ETI, int[] ESI, int width, int height) {
         //Debug.Log("bot TakeDamage");
         //HP -= Mathf.RoundToInt(armorCoefficient * localDamage);
         armorCoefficient = lScript.GetArmorCoefficient(inventory);
@@ -533,7 +543,7 @@ public class BotScript : MonoBehaviour
             if (i < ESI.Length) {
                 smokeI = ESI[i];
             }
-            StartCoroutine(lScript.BulletMove(Mathf.RoundToInt(EA[1]) - 1, bul, angleDeg, EA[6], EA[5], EA[7], enemyPosition, Mathf.RoundToInt(EA[0]), 3, EA[4], Mathf.RoundToInt(EA[9]), Mathf.RoundToInt(EA[10]), EA[11], EA[12], EA[13], EA[14], Mathf.RoundToInt(EA[15]), Mathf.RoundToInt(EA[16]), Mathf.RoundToInt(EA[17]), Mathf.RoundToInt(EA[18]), Mathf.RoundToInt(EA[19]), Mathf.RoundToInt(EA[20]), trapI, smokeI, Mathf.RoundToInt(EA[27]), false, false, this));
+            StartCoroutine(lScript.BulletMove(Mathf.RoundToInt(EA[1]) - 1, bul, EM, angleDeg, EA[6], EA[5], EA[7], enemyPosition, Mathf.RoundToInt(EA[0]), 3, EA[4], EA[32], Mathf.RoundToInt(EA[9]), Mathf.RoundToInt(EA[10]), EA[11], EA[12], EA[13], EA[14], Mathf.RoundToInt(EA[15]), Mathf.RoundToInt(EA[16]), Mathf.RoundToInt(EA[17]), Mathf.RoundToInt(EA[18]), Mathf.RoundToInt(EA[19]), Mathf.RoundToInt(EA[20]), trapI, smokeI, Mathf.RoundToInt(EA[27]), false, false, this));
             //Debug.Log("bulmove2");
             yield return new WaitForSeconds(EA[3]);
         }
@@ -547,8 +557,15 @@ public class BotScript : MonoBehaviour
         }
         //HP = Mathf.RoundToInt(HPCalculation);
         //HP -= Mathf.RoundToInt(myLD * this.armorCoefficient);
-        int hpChange = Mathf.RoundToInt(this.armorCoefficient * ELDs[playerNum - 1]);
+        int hpChange = Mathf.RoundToInt(Mathf.Clamp01(this.armorCoefficient + EM[0]) * ELDs[playerNum - 1]);
         HP -= hpChange;
+        int maxHpChange = Mathf.RoundToInt(Mathf.Clamp01(this.armorCoefficient + EM[0]) * ELMDs[playerNum - 1]);
+        maxHP -= maxHpChange;
+        if (HP > maxHP) {
+            HP = maxHP;
+        }
+        List<int> broken = lScript.DecreaseDurabilityInInv(inventory, 1, ELDs[playerNum - 1]);
+        lScript.RemoveFromInvAt(inventory, broken);
         lScript.HealthsServerRpc(playerNum, HP, maxHP, false, true, 1);
         //yield return StartCoroutine(UpdateMode(2));
         AdjustPlayerMode(Mathf.RoundToInt(EA[0]), 2, 0.1f);
@@ -679,11 +696,41 @@ public class BotScript : MonoBehaviour
         }
         return combinedHeatmap;
     }
+    List<bool> FindNotGassed(List<bool> a) {
+        List<bool> retList = new List<bool>();
+        for (int i = 0; i < a.Count; i++) {
+            retList.Add(a[i] && myGas[i] == 0);
+        }
+        return retList;
+    }
+    int FindLowestGasDamage(List<bool> a) { //0+
+        int lowestDamage = 0;
+        bool firstSet = true;
+        for (int i = 0; i < a.Count; i++) {
+            if (a[i]) {
+                if (firstSet) {
+                    lowestDamage = myGas[i];
+                    firstSet = false;
+                } else {
+                    if (myGas[i] < lowestDamage) {
+                        lowestDamage = myGas[i];
+                    }
+                }
+            }
+        }
+        List<bool> a2 = new List<bool>();
+        for (int i = 0; i < a.Count; i++) {
+            a2.Add(a[i] && (myGas[i] == lowestDamage));
+        }
+        return FindHighestDistance(1, a2, lScript.GetCoordsFromIndex(knownPlayerPositions[playerNum - 1]), null);
+    }
+    public float[,,] currentCNNInput;
     List<(int index, float moves, int LMIndex)> yetToCheck = new List<(int index, float moves, int LMIndex)>(); //index is 0+, LMIndex is 0+
     List<(int index, float moves, int LMIndex)> alreadyChecked = new List<(int index, float moves, int LMIndex)>(); //index is 0+, LMIndex is 0+
     List<bool> arrivable;
     public IEnumerator MoveSomewhere(int width, int height, NetworkList<int> g, float startMoves) {
         yield return StartCoroutine(UpdateIsSmoked(botSmokes));
+        UpdateMyGas();
         List<int> grid = new List<int>();
         arrivable = new List<bool>();
         foreach (int item in g) {
@@ -691,9 +738,9 @@ public class BotScript : MonoBehaviour
             arrivable.Add(false);
         }
 
-        CreateArrivable(grid, position, arrivable, yetToCheck, alreadyChecked, new List<float>{startMoves});
+        lScript.CreateArrivable(grid, position, arrivable, yetToCheck, alreadyChecked, new List<float>{startMoves});
         int aIndex;
-        int aiMode = 1;
+        /*int aiMode = 1;
         if (LocalScript.gamemode == 1 || LocalScript.gamemode == 2 || LocalScript.gamemode == 3) {
             aiMode = 1;
         } else if (LocalScript.gamemode == 4) {
@@ -702,26 +749,32 @@ public class BotScript : MonoBehaviour
             } else if (playerNum == 2) {
                 aiMode = 2;
             }
-        }
-        if (aiMode == 1) {
-            if (mode == 1) {
-                if (botAirdrops.Count > 0) {
-                    aIndex = FindLowestDistance(1, arrivable, lScript.GetCoordsFromIndex(botAirdrops[FindClosestAirdrop(lScript.GetCoordsFromIndex(knownPlayerPositions[playerNum - 1]), botAirdrops)]), null);
+        }*/
+        List<bool> arrivable2 = FindNotGassed(arrivable);
+        
+        if (!NNBot) {
+            if (arrivable2.Contains(true)) {
+                if (mode == 1) {
+                    if (botAirdrops.Count > 0) {
+                        aIndex = FindLowestDistance(1, arrivable2, lScript.GetCoordsFromIndex(botAirdrops[FindClosestAirdrop(lScript.GetCoordsFromIndex(knownPlayerPositions[playerNum - 1]), botAirdrops)]), null);
+                    } else {
+                        aIndex = FindHighestRarity(arrivable2, grid);
+                    }
+                } else if (mode == 2) { 
+                    aIndex = HuntEnemy(arrivable2, grid, usePlan);
+                } else if (mode == 3) {
+                    aIndex = RunAway(arrivable2, grid);
                 } else {
-                    aIndex = FindHighestRarity(arrivable, grid);
+                    aIndex = GetRandomIndex(arrivable2);
                 }
-            } else if (mode == 2) { 
-                aIndex = HuntEnemy(arrivable, grid, usePlan);
-            } else if (mode == 3) {
-                aIndex = RunAway(arrivable, grid);
             } else {
-                aIndex = GetRandomIndex(arrivable);
+                aIndex = FindLowestGasDamage(arrivable);
             }
             position = aIndex + 1;
             yield return StartCoroutine(BotVisionHouse(false, 0));
-        } else if (aiMode == 2) {
-            float[,,] cnnInput = botBrain.GenerateCNNInput(width, height, elevationData, hideData, rarityData, GetKnownEnemyPositions(1), GetCombinedHeatmap(GetEnemyHeatmaps()), botAirdrops);
-            aIndex = botBrain.PickBestMoveCNN(trainingModeActivated, arrivable, cnnInput, width, height, grid.Count, allPlayerModes[playerNum - 1]);
+        } else if (NNBot) {
+            currentCNNInput = botBrain.GenerateCNNInput(width, height, elevationData, hideData, rarityData, GetKnownEnemyPositions(1), GetCombinedHeatmap(GetEnemyHeatmaps()), botAirdrops);
+            aIndex = botBrain.PickBestMoveCNN(trainingModeActivated, arrivable, currentCNNInput, width, height, grid.Count, allPlayerModes[playerNum - 1]);
             if (aIndex + 1 == 0) {
                 Debug.Log("Why am I setting position to 0");
             }
@@ -730,7 +783,7 @@ public class BotScript : MonoBehaviour
             position = aIndex + 1;
             yield return StartCoroutine(BotVisionHouse(false, 0));
             if (trainingModeActivated) {
-                EvalAndTrainBrain(grid, width, height, aIndex, allPlayerModes[playerNum - 1], cnnInput);
+                EvalAndTrainBrain(grid, width, height, aIndex, allPlayerModes[playerNum - 1]);
             }
         }
         //position++;
@@ -738,7 +791,7 @@ public class BotScript : MonoBehaviour
         //lScript.DisplayBotTest(1, arrivable, null);
         yield return null;
     }
-    void EvalAndTrainBrain(List<int> grid, int width, int height, int aIndex, List<float> myMode, float[,,] cnnInput) {
+    void EvalAndTrainBrain(List<int> grid, int width, int height, int aIndex, List<float> myMode) {
 
         float targetScore = 0f;
         if (botBrain.moveHistory.Count > 0) {
@@ -748,24 +801,17 @@ public class BotScript : MonoBehaviour
             float vagueRarity = rarityData[aIndex];
             int exactRarity = BotGetLandRarity(aIndex, grid);
             if (exactRarity == maxLandRarity) {
-                targetScore += 1f;
+                targetScore += 5f;
             } else if (vagueRarity > 0.6f) {
                 targetScore += 0.5f;
             } else {
                 targetScore += -0.5f;
             }
         }
-        botBrain.Backpropagate(cnnInput, aIndex, width, height, myMode, new List<int>{0}, new List<float>{targetScore});
+        botBrain.Backpropagate(botBrain.moveHistory[botBrain.moveHistory.Count - 1], width, height, new List<int>{0}, new List<float>{targetScore});
     }
-    void CreateArrivable(List<int> grid, int startPos, List<bool> a, List<(int index, float moves, int LMIndex)> YTC, List<(int index, float moves, int LMIndex)> AC, List<float> listMoves) {
-        YTC.Clear();
-        AC.Clear();
-        YTC.Add((index: startPos - 1, moves: listMoves[0], LMIndex: 0)); //think if moves starts with 0, then it will be wrong
-        while (YTC.Count > 0) {
-            CheckNeighbors(grid, a, YTC, AC, listMoves);
-        }
-    }
-    int HuntEnemy(List<bool> a, List<int> grid, List<int> UP) {
+    
+    int HuntEnemy(List<bool> a, List<int> grid, List<InventoryItem> UP) {
         int aIndex = -1;
         int target = FindRandomTarget(1, false); //target is 1+
         if (target == 0) {
@@ -786,8 +832,8 @@ public class BotScript : MonoBehaviour
                     }
                 }
             } else {
-                List<int> weaponsInRange = GetWeaponsAndDetonators(1, UP, true, target, 0)[0].ConvertAll(x => (int)x);
-                if (weaponsInRange.Count == 0 || lScript.itemIntLists[weaponsInRange[0] - 1][1].Contains(17)) { //\G
+                List<InventoryItem> weaponsInRange = GetWeaponsAndDetonators(1, UP, true, target, 0).IIs;
+                if (weaponsInRange.Count == 0 || lScript.itemIntLists[weaponsInRange[0].itemNum - 1][1].Contains(17)) { //\G
                     //go somewhere where you can see the most of potentialPlayerPositions
                     aIndex = FindMostSeeing(1, a, potentialPlayerPositions[target2 - 1], allPlayerDataLists[target2 - 1]);
                 } else {
@@ -800,8 +846,8 @@ public class BotScript : MonoBehaviour
                 ppos = lastKnownPlayerPositions[target - 1];
             }
             int aIndexAttempt = FindLowestDistance(1, a, lScript.GetCoordsFromIndex(ppos), null);
-            List<int> weaponsInRange = GetWeaponsAndDetonators(2, UP, true, target, lScript.FindDistance(lScript.GetCoordsFromIndex(aIndexAttempt + 1), lScript.GetCoordsFromIndex(ppos)))[0].ConvertAll(x => (int)x);
-            if (weaponsInRange.Count == 0 || lScript.itemIntLists[weaponsInRange[0] - 1][1].Contains(17)) { //\G
+            List<InventoryItem> weaponsInRange = GetWeaponsAndDetonators(2, UP, true, target, lScript.FindDistance(lScript.GetCoordsFromIndex(aIndexAttempt + 1), lScript.GetCoordsFromIndex(ppos))).IIs;
+            if (weaponsInRange.Count == 0 || lScript.itemIntLists[weaponsInRange[0].itemNum - 1][1].Contains(17)) { //\G
                 //aIndex is somewhere out of view but still has enemy in view
                 List<bool> arrivable2 = FindPPVGList(a, potentialPlayerVGs[target - 1]);
                 if (arrivable2.Contains(true)) {
@@ -827,7 +873,7 @@ public class BotScript : MonoBehaviour
     int FindMostSeeing(int mode, List<bool> a, List<bool> PPP, List<float> PDL) { //0+
         List<float> scores = new List<float>();
         for (int i = 0; i < a.Count; i++) {
-            List<int> VL = lScript.GetVisionList(0, botSmokes, 3, this, botEffects, botEffectStrengths, inventory, i + 1); //when I move it's not gonna change my effects
+            List<int> VL = lScript.GetVisionList(0, botSmokes, false, 3, this, botEffects, botEffectStrengths, inventory, i + 1); //when I move it's not gonna change my effects
             float addVal = 0;
             for (int j = 0; j < VL.Count; j++) {
                 if (VL[j] != 0) {
@@ -883,7 +929,7 @@ public class BotScript : MonoBehaviour
         for (int i = 0; i < a.Count; i++) {
             bool addVal = false;
             if (a[i]) {
-                List<int> VL = lScript.GetVisionList(0, botSmokes, 3, this, botEffects, botEffectStrengths, inventory, i + 1); //when I move it's not gonna change my effects
+                List<int> VL = lScript.GetVisionList(0, botSmokes, false, 3, this, botEffects, botEffectStrengths, inventory, i + 1); //when I move it's not gonna change my effects
                 if (VL[pos - 1] != 0) {
                     addVal = true;
                 }
@@ -1191,53 +1237,7 @@ public class BotScript : MonoBehaviour
             }
         }
     }
-    public int indexHelper; //[2]
-    public float movesHelper; //[1]
-    public int workedHelper; //[0]
-    void CheckNeighbors(List<int> grid, List<bool> a, List<(int index, float moves, int LMIndex)> YTC, List<(int index, float moves, int LMIndex)> AC, List<float> listMoves) {
-        var gridSquare = YTC[0];
-        int idx = gridSquare.index;
-        float mvs = gridSquare.moves;
-        int lmidx = gridSquare.LMIndex;
-        //Vector2 coords = lScript.GetCoordsFromIndex(idx + 1);
-        CheckNeighbor(0, 1, mvs, idx + 1, lmidx, grid.Count, a, YTC, AC, listMoves);
-        CheckNeighbor(0, -1, mvs, idx + 1, lmidx, grid.Count, a, YTC, AC, listMoves);
-        CheckNeighbor(1, 0, mvs, idx + 1, lmidx, grid.Count, a, YTC, AC, listMoves);
-        CheckNeighbor(-1, 0, mvs, idx + 1, lmidx, grid.Count, a, YTC, AC, listMoves);
-        YTC.RemoveAt(0);
-        AC.Add(gridSquare);
-    }
-    void CheckNeighbor(int x, int y, float mvs, int PP, int lmidx, int gridCount, List<bool> a, List<(int index, float moves, int LMIndex)> YTC, List<(int index, float moves, int LMIndex)> AC, List<float> listMoves) {
-        /*indexHelper = -1;
-        movesHelper = 0;
-        workedHelper = -1;*/
-        List<float> helpers = lScript.ChangePosition(x, y, 2, mvs, PP, gridCount, this);
-        workedHelper = Mathf.RoundToInt(helpers[0]);
-        movesHelper = helpers[1];
-        indexHelper = Mathf.RoundToInt(helpers[2]);
-        /*while (workedHelper == -1) {
-            yield return null;
-        }*/
-        if (workedHelper == 1) {
-            var newGridSquare = (index: indexHelper, moves: movesHelper, LMIndex: lmidx);
-            if (newGridSquare.moves <= 0) {
-                int lmi = newGridSquare.LMIndex;
-                if (lmi + 1 > listMoves.Count - 1) {
-                    a[newGridSquare.index] = true;
-                } else {
-                    lmi++;
-                    YTC.Add((index: newGridSquare.index, moves: listMoves[lmi], LMIndex: lmi));
-                }
-                
-            } else {
-                if (YTC.Contains(newGridSquare) || AC.Contains(newGridSquare)) {
-                    //don't add
-                } else {
-                    YTC.Add(newGridSquare);
-                }
-            }
-        }
-    }
+    
     public int FindLowestDistance(int mode, List<bool> a, Vector2 targetCoords, List<bool> potentialLocs) { //0+
         float minDistance = -1;
         bool firstSet = true;
@@ -1454,14 +1454,15 @@ public class BotScript : MonoBehaviour
         }
         return retList;
     }
-    public void GetUAATRating(List<int> inv, int item, List<(int item, int UAAT, int rating)> potentials, int health, int maxHealth) {
+    public void GetUAATRating(List<InventoryItem> inv, InventoryItem II, List<(InventoryItem item, int UAAT, int rating)> potentials, int health, int maxHealth) {
+        int item = II.itemNum;
         int index = item - 1;
         int maxUAAT = Mathf.Min(lScript.itemInts[index][5], ScanInvInt(inv, 2, item, 0, 0, null));
         for (int j = 1; j <= maxUAAT; j++) {
-            potentials.Add((item: item, UAAT: j, GetHealingRating(health, maxHealth, item, j)));
+            potentials.Add((item: II, UAAT: j, GetHealingRating(health, maxHealth, item, j)));
         }
     }
-    public int GetMaxRating(List<(int item, int UAAT, int rating)> potentials) {
+    public int GetMaxRating(List<(InventoryItem item, int UAAT, int rating)> potentials) {
         int maxRating = 0;
         bool firstSet = true;
         for (int i = 0; i < potentials.Count; i++) {
@@ -1477,7 +1478,7 @@ public class BotScript : MonoBehaviour
         }
         return maxRating;
     }
-    public int GetMinRating(List<(int item, int UAAT, int rating)> potentials) {
+    public int GetMinRating(List<(InventoryItem item, int UAAT, int rating)> potentials) {
         int minRating = 0;
         bool firstSet = true;
         for (int i = 0; i < potentials.Count; i++) {
@@ -1493,9 +1494,9 @@ public class BotScript : MonoBehaviour
         }
         return minRating;
     }
-    List<int> GetMaxHealing(List<(int item, int UAAT, int rating)> potentials) {
+    (InventoryItem? MHItem, int MHUAAT, int rating) GetMaxHealing(List<(InventoryItem item, int UAAT, int rating)> potentials) {
         int maxRating = GetMaxRating(potentials);
-        List<(int item, int UAAT)> itemOptions = new List<(int item, int UAAT)>();
+        List<(InventoryItem? item, int UAAT)> itemOptions = new List<(InventoryItem? item, int UAAT)>();
         for (int i = 0; i < potentials.Count; i++) {
             if (potentials[i].rating == maxRating) {
                 itemOptions.Add((item: potentials[i].item, UAAT: potentials[i].UAAT));
@@ -1503,28 +1504,28 @@ public class BotScript : MonoBehaviour
         }
         if (itemOptions.Count > 1) {
             int rand = UnityEngine.Random.Range(0, itemOptions.Count);
-            return new List<int> {itemOptions[rand].item, itemOptions[rand].UAAT};
+            return (itemOptions[rand].item, itemOptions[rand].UAAT, 0);
         } else if (itemOptions.Count > 0) {
-            return new List<int> {itemOptions[0].item, itemOptions[0].UAAT};
+            return (itemOptions[0].item, itemOptions[0].UAAT, 0);
         } else {
-            return null;
+            return (null, 0, 0);
         }
     }
-    public List<int> FindBestHealing(int mode, List<int> inv, int health, int maxHealth) {
+    public (InventoryItem? MHItem, int MHUAAT, int rating) FindBestHealing(int mode, List<InventoryItem> inv, int health, int maxHealth) {
         //mode 1: returns 1+
-        List<int> healingInInv = ScanInvList(inv, 3, 0, true, 0);
-        List<(int item, int UAAT, int rating)> potentials = new List<(int item, int UAAT, int rating)>();
+        List<InventoryItem> healingInInv = ScanInvList(inv, 3, 0, true, 0);
+        List<(InventoryItem item, int UAAT, int rating)> potentials = new List<(InventoryItem item, int UAAT, int rating)>();
         for (int i = 0; i < healingInInv.Count; i++) {
             GetUAATRating(inv, healingInInv[i], potentials, health, maxHealth);
         }
         if (mode == 1) {
             return GetMaxHealing(potentials);
         } else if (mode == 2) {
-            return new List<int>{GetMaxRating(potentials)};
+            return (null, 0, GetMaxRating(potentials));
         } else if (mode == 3) {
-            return new List<int>{GetMinRating(potentials)};
+            return (null, 0, GetMinRating(potentials));
         }
-        return null;
+        return (null, 0, 0);
     }
     int GetHealingRating(int health, int maxHealth, int item, int j) {
         int pseudoHP = health;
@@ -1580,41 +1581,48 @@ public class BotScript : MonoBehaviour
         }
         return new List<float>{maxDamage, index1, index2};
     }
-    public List<int> usePlan = new List<int>(); //1+, 0 means searching (preemptive use plan)
+    public List<InventoryItem> usePlan = new List<InventoryItem>(); //1+, 0 means searching (preemptive use plan)
     public void CreateUsePlan() {
         usePlan.Clear();
         //all items must not be on cooldown
         if (mode == 2) {
             //weapons
-            List<int> weapons = GetWeaponsAndDetonators(1, inventory, true, 0, 0)[0].ConvertAll(x => (int)x);
-            foreach (int w in weapons) {
+            List<InventoryItem> weapons = GetWeaponsAndDetonators(1, inventory, true, 0, 0).IIs;
+            foreach (InventoryItem w in weapons) {
                 usePlan.Add(w);
             }
         } else if (mode == 3) {
             //concealment
             //\F
-            List<int> toolOptions = ScanInvList(inventory, 5, 8, true, 0); //change location
+            List<InventoryItem> toolOptions = ScanInvList(inventory, 5, 8, true, 0); //change location
             toolOptions.AddRange(ScanInvList(inventory, 5, 1, true, 0)); //invis
             toolOptions.AddRange(ScanInvList(inventory, 5, 3, true, 0)); //partial invis
-            foreach (int t in toolOptions) {
+            foreach (InventoryItem t in toolOptions) {
                 usePlan.Add(t);
             }
         }
         //healing
-        List<int> FBH = FindBestHealing(1, inventory, HP, maxHP);
+        (InventoryItem? MHItem, int MHUAAT, int rating) FBH = FindBestHealing(1, inventory, HP, maxHP);
+        /* adds item and useatatime, idk why
         if (FBH != null) {
             foreach (int f in FBH) {
                 usePlan.Add(f);
             }
+        }*/
+        if (FBH.MHItem != null) {
+            usePlan.Add(FBH.MHItem.Value);
         }
-        usePlan.Add(0);
+        usePlan.Add(GetSearchII());
+    }
+    public InventoryItem GetSearchII() {
+        return new InventoryItem(0, 0);
     }
     public int FindClosestTargetToMe() {
         return FindClosestTarget(lScript.GetCoordsFromIndex(knownPlayerPositions[playerNum - 1]));
     }
     public float[] features;
     public IEnumerator BotSearchUse(NetworkList<int> grid, int width, int height) {
-        int aiMode = 1;
+        /*int aiMode = 1;
         if (LocalScript.gamemode == 1 || LocalScript.gamemode == 2 || LocalScript.gamemode == 3) {
             aiMode = 1;
         } else if (LocalScript.gamemode == 4) {
@@ -1623,8 +1631,8 @@ public class BotScript : MonoBehaviour
             } else if (playerNum == 2) {
                 aiMode = 2;
             }
-        }
-        if (aiMode == 1) {
+        }*/
+        if (!NNBot) {
             bool gonnaSearch = true;
             if (mode == 1) {
                 if (gonnaSearch) {
@@ -1633,18 +1641,18 @@ public class BotScript : MonoBehaviour
                     }));
                 }
                 if (gonnaSearch) {
-                    List<int> toolOptions = ScanInvList(inventory, 5, 12, true, 0); //Powerup
+                    List<InventoryItem> toolOptions = ScanInvList(inventory, 5, 12, true, 0); //Powerup
                     if (toolOptions.Count > 0) {
-                        yield return StartCoroutine(TryToUseTool(grid, toolOptions[0], result => {
+                        yield return StartCoroutine(TryToUseTool(grid, toolOptions[0].itemNum, result => {
                             gonnaSearch = result;
                         }));
                     }
                 }
                 if (gonnaSearch) {
                     if (lScript.RandomChanceFloat(0.5f)) { //arbitrary value
-                        List<int> trapOptions = ScanInvList(inventory, 6, 0, true, 0);
+                        List<InventoryItem> trapOptions = ScanInvList(inventory, 6, 0, true, 0);
                         if (trapOptions.Count > 0) {
-                            yield return StartCoroutine(TryToUseTool(grid, trapOptions[0], result => {
+                            yield return StartCoroutine(TryToUseTool(grid, trapOptions[0].itemNum, result => {
                                 gonnaSearch = result;
                             })); //I know trap's technically not a tool but
                         }
@@ -1656,10 +1664,10 @@ public class BotScript : MonoBehaviour
                     Debug.Log("Got an error that shouldn't happen!");
                 } else if (target == 0) {
                     if (gonnaSearch) {
-                        List<int> visionWeapons = ScanInvList(inventory, 4, 0, true, 0);
+                        List<InventoryItem> visionWeapons = ScanInvList(inventory, 4, 0, true, 0);
                         float myElevation = lScript.FindElevation(grid[position - 1], 1);
                         if (visionWeapons.Count > 0 && myElevation >= 1) {
-                            int itemToUse = visionWeapons[0];
+                            int itemToUse = visionWeapons[0].itemNum;
                             int UAAT = 1;
                             yield return StartCoroutine(TryToUseWeapon(itemToUse, target, UAAT, null, result => {
                                 gonnaSearch = result;
@@ -1669,7 +1677,7 @@ public class BotScript : MonoBehaviour
                         }
                     }
                     if (gonnaSearch) {
-                        List<int> toolOptions = ScanInvList(inventory, 5, 11, true, 0); //UAV
+                        List<InventoryItem> toolOptions = ScanInvList(inventory, 5, 11, true, 0); //UAV
                         toolOptions.AddRange(ScanInvList(inventory, 5, 5, true, 0)); //radar
                         toolOptions.AddRange(ScanInvList(inventory, 5, 8, true, 0)); //change location
                         toolOptions.AddRange(ScanInvList(inventory, 5, 7, true, 0)); //enhanced movement
@@ -1677,7 +1685,7 @@ public class BotScript : MonoBehaviour
                         toolOptions.AddRange(ScanInvList(inventory, 5, 2, true, 0)); //enhanced vision
                         toolOptions.AddRange(ScanInvList(inventory, 5, 6, true, 0)); //see health
                         if (toolOptions.Count > 0) {
-                            yield return StartCoroutine(TryToUseTool(grid, toolOptions[0], result => {
+                            yield return StartCoroutine(TryToUseTool(grid, toolOptions[0].itemNum, result => {
                                 gonnaSearch = result;
                             }));
                         }
@@ -1690,26 +1698,26 @@ public class BotScript : MonoBehaviour
                 } else {
                     //check if any weapon is in range
                     float distToTarget = lScript.FindDistance(lScript.GetCoordsFromIndex(knownPlayerPositions[playerNum - 1]), lScript.GetCoordsFromIndex(knownPlayerPositions[target - 1]));
-                    List<List<float>> GWAD = GetWeaponsAndDetonators(1, inventory, false, target, 0);
-                    List<int> weapons = GWAD[0].ConvertAll(x => (int)x);
+                    (List<InventoryItem> IIs, List<float> fmdd) GWAD = GetWeaponsAndDetonators(1, inventory, false, target, 0);
+                    List<InventoryItem> weapons = GWAD.IIs;
                     Debug.Log("BSU weapons count: " + weapons.Count);
-                    List<float> FMDD = GWAD[1];
-                    List<int> stunTools = ScanInvList(inventory, 5, 4, true, 0);
+                    List<float> FMDD = GWAD.fmdd;
+                    List<InventoryItem> stunTools = ScanInvList(inventory, 5, 4, true, 0);
                     int itemToUse = 0;
                     for (int w = 0; w < weapons.Count; w++) {
-                        int cooldown = botItemsOnCooldown[weapons[w] - 1]; //also could loop through all of weapons but I can implement that later
+                        int cooldown = botItemsOnCooldown[weapons[w].itemNum - 1];
                         
                         if (cooldown != 0) {
                             for (int i = 0; i < stunTools.Count; i++) {
-                                if (lScript.itemInfos[stunTools[i] - 1][2][3] == cooldown) {
-                                    itemToUse = stunTools[i];
+                                if (lScript.itemInfos[stunTools[i].itemNum - 1][2][3] == cooldown) {
+                                    itemToUse = stunTools[i].itemNum;
                                     break;
                                 }
                             }
                         } else {
                             GWAD = GetWeaponsAndDetonators(1, inventory, true, target, 0);
-                            weapons = GWAD[0].ConvertAll(x => (int)x);
-                            FMDD = GWAD[1];
+                            weapons = GWAD.IIs;
+                            FMDD = GWAD.fmdd;
                             itemToUse = ScanInvInt(weapons, 1, 0, knownPlayerPositions[playerNum - 1], knownPlayerPositions[target - 1], grid); //1+
                             break;
                         }
@@ -1733,11 +1741,11 @@ public class BotScript : MonoBehaviour
             } else if (mode == 3) {
                 if (gonnaSearch) {
                     //\F
-                    List<int> toolOptions = ScanInvList(inventory, 5, 8, true, 0); //change location
+                    List<InventoryItem> toolOptions = ScanInvList(inventory, 5, 8, true, 0); //change location
                     toolOptions.AddRange(ScanInvList(inventory, 5, 1, true, 0)); //invis
                     toolOptions.AddRange(ScanInvList(inventory, 5, 3, true, 0)); //partial invis
                     if (toolOptions.Count > 0) {
-                        yield return StartCoroutine(TryToUseTool(grid, toolOptions[0], result => {
+                        yield return StartCoroutine(TryToUseTool(grid, toolOptions[0].itemNum, result => {
                             gonnaSearch = result;
                         }));
                     }
@@ -1768,25 +1776,26 @@ public class BotScript : MonoBehaviour
             if (gonnaSearch) {
                 extraSearches = 0;
                 extraSearches += Mathf.RoundToInt(lScript.FindHighestBookEffectAmt(botBookInventory, 3));
-                yield return StartCoroutine(Search(grid));
+                yield return StartCoroutine(Search(grid, width, height));
             } else {
                 yield return StartCoroutine(UpdateMode(1));
             }
-        } else if (aiMode == 2) {
+        } else if (NNBot) {
             float[,,] cnnInput = botBrain.GenerateCNNInput(width, height, elevationData, hideData, rarityData, GetKnownEnemyPositions(1), GetCombinedHeatmap(GetEnemyHeatmaps()), botAirdrops);
-            List<int> invSnapshot = new List<int>(inventory);
+            List<InventoryItem> invSnapshot = new List<InventoryItem>(inventory);
             List<int> g = new List<int>();
             foreach (int i in grid) {
                 g.Add(i);
             }
             features = null;
             List<float> modeSnapshot = new List<float>(allPlayerModes[playerNum - 1]);
-            int itemToUse = botBrain.PickBestActionNN(ScanInvList(inventory, 8, 0, true, 0), g);
+            InventoryItem IIToUse = botBrain.PickBestActionNN(ScanInvList(inventory, 8, 0, true, 0), g, allPlayerModes[playerNum - 1]);
+            int itemToUse = IIToUse.itemNum;
             bool gonnaSearch = true;
             if (itemToUse == 0) {
                 gonnaSearch = true;
             } else {
-                yield return StartCoroutine(TryToUseItem(itemToUse, grid, result => {
+                yield return StartCoroutine(TryToUseItem(IIToUse, grid, result => {
                     gonnaSearch = result;
                 }));
                 
@@ -1796,15 +1805,16 @@ public class BotScript : MonoBehaviour
                 botBrain.AddToActionHistory(cnnInput, position - 1, new List<int>{1}, modeSnapshot, 0, invSnapshot, null); //should position - 1 be before or after? Let's see how it matters
                 extraSearches = 0;
                 extraSearches += Mathf.RoundToInt(lScript.FindHighestBookEffectAmt(botBookInventory, 3));
-                yield return StartCoroutine(Search(grid));
+                yield return StartCoroutine(Search(grid, width, height));
             } else {
                 botBrain.AddToActionHistory(cnnInput, position - 1, new List<int>{2}, modeSnapshot, itemToUse, invSnapshot, features); //should position - 1 be before or after? Let's see how it matters
                 yield return StartCoroutine(UpdateMode(1));
             }
         }
     }
-    IEnumerator TryToUseItem(int itemToUse, NetworkList<int> grid, System.Action<bool> callback) {
+    IEnumerator TryToUseItem(InventoryItem IIToUse, NetworkList<int> grid, System.Action<bool> callback) {
         //itemToUse is 1+
+        int itemToUse = IIToUse.itemNum;
         List<int> itemClass = lScript.itemIntLists[itemToUse - 1][0];
         bool weapon = itemClass.Contains(1);
         bool healing = itemClass.Contains(2);
@@ -1823,16 +1833,18 @@ public class BotScript : MonoBehaviour
         }
         if (healing) {
             
-            List<(int item, int UAAT, int rating)> potentials = new List<(int item, int UAAT, int rating)>();
-            GetUAATRating(inventory, itemToUse, potentials, HP, maxHP);
-            List<int> GMH = GetMaxHealing(potentials);
-            if (GMH == null) {
-                Debug.Log("Error: GMH is null! potentials is probably empty!");
+            List<(InventoryItem item, int UAAT, int rating)> potentials = new List<(InventoryItem item, int UAAT, int rating)>();
+            GetUAATRating(inventory, IIToUse, potentials, HP, maxHP);
+            (InventoryItem? MHItem, int MHUAAT, int rating) GMH = GetMaxHealing(potentials);
+            if (GMH.MHItem == null) {
+                Debug.Log("Error: GMH.MHItem is null! potentials is probably empty!");
             }
-            if (GMH[0] != itemToUse) {
-                Debug.Log("Error: GMH[0] doesn't match with itemToUse!");
+            if (GMH.MHItem != null) {
+                if (GMH.MHItem.Value.itemNum != itemToUse) {
+                    Debug.Log("Error: GMH.MHItem.itemNum doesn't match with itemToUse!");
+                }
             }
-            int uaat = GMH[1];
+            int uaat = GMH.MHUAAT;
             yield return StartCoroutine(TryToUseHealing(itemToUse, uaat, result => {
                 if (result) {
                     //gonnaSearch = result; //don't set gonnaSearch if it's true, only if it's false
@@ -1851,14 +1863,14 @@ public class BotScript : MonoBehaviour
         callback(gonnaSearch);
         yield return null;
     }
-    List<List<float>> GetWeaponsAndDetonators(int mode, List<int> inv, bool checkCooldown, int target, float dist) {
-        List<int> weapons = new List<int>();
+    (List<InventoryItem> IIs, List<float> fmdd) GetWeaponsAndDetonators(int mode, List<InventoryItem> inv, bool checkCooldown, int target, float dist) {
+        List<InventoryItem> weapons = new List<InventoryItem>();
         if (mode == 1) {
             weapons = ScanInvList(inv, 2, 0, checkCooldown, 0);
         } else if (mode == 2) {
             weapons = ScanInvList(inv, 7, 0, checkCooldown, dist);
         }
-        List<int> detonators = ScanInvList(inv, 5, 9, checkCooldown, 0); //since it's findclosesttarget a closer target could prevent bot from using detonator on a farther one (if out of blast radius)
+        List<InventoryItem> detonators = ScanInvList(inv, 5, 9, checkCooldown, 0); //since it's findclosesttarget a closer target could prevent bot from using detonator on a farther one (if out of blast radius)
         List<float> FMDD = new List<float>();
         if (target != 0) {
             if (detonators.Count > 0) {
@@ -1866,7 +1878,7 @@ public class BotScript : MonoBehaviour
                 //int index2 = Mathf.RoundToInt(FMDD[2]); //0+
                 int i = 0;
                 while (i < weapons.Count) {
-                    if (FMDD[0] > GetExpectedDamage(weapons[i] - 1)) {
+                    if (FMDD[0] > GetExpectedDamage(weapons[i].itemNum - 1)) {
                         break;
                     } else {
                         i++;
@@ -1877,7 +1889,7 @@ public class BotScript : MonoBehaviour
                 }
             }
         }
-        return new List<List<float>>{weapons.ConvertAll(x => (float)x), FMDD};
+        return (weapons, FMDD);
     }
     IEnumerator TryToUseWeapon(int itemToUse, int target, int UAAT, List<float> FMDD, System.Action<bool> callback) {
         bool gonnaSearch = true;
@@ -1936,9 +1948,9 @@ public class BotScript : MonoBehaviour
         if (targetPos == Vector2.zero) {
             Debug.Log("targetPos is perfectly (0, 0)! (sus)");
         }
-        if (inventory.Contains(itemToUse) && botItemsOnCooldown[itemToUse - 1] == 0) {
+        if (InvContainsItem(inventory, itemToUse) && botItemsOnCooldown[itemToUse - 1] == 0) {
             Debug.Log("About to use " + itemToUse);
-            yield return StartCoroutine(lScript.UseItem(itemToUse - 1, myActions, myBDD, myTI, mySI, 2, this, position, playerNum, targetPos, target, UAAT, FMDD, result => {
+            yield return StartCoroutine(lScript.UseItem(itemToUse - 1, myActions, myBDD, myModifiers, myTI, mySI, 2, this, position, playerNum, targetPos, target, UAAT, FMDD, result => {
                 if (result) {
                     gonnaSearch = false;
                     //Debug.Log("Used item");
@@ -1948,6 +1960,15 @@ public class BotScript : MonoBehaviour
             }));
         }
         callback(gonnaSearch);
+    }
+    bool InvContainsItem(List<InventoryItem> inv, int item) {
+        bool retVal = false;
+        foreach (InventoryItem II in inv) {
+            if (II.itemNum == item) {
+                retVal = true;
+            }
+        }
+        return retVal;
     }
     public Vector2? ChangeTarget(int prevTarget) {
         if (prevTarget == 0) {
@@ -1966,11 +1987,11 @@ public class BotScript : MonoBehaviour
         bool gonnaSearch = true;
         if (HP < maxHP) {
             //Debug.Log("Trying to heal");
-            List<int> FBH = FindBestHealing(1, inventory, HP, maxHP);
-            if (FBH != null) {
+            (InventoryItem? MHItem, int MHUAAT, int rating) FBH = FindBestHealing(1, inventory, HP, maxHP);
+            if (FBH.MHItem != null) {
                     
-                itemToUse = FBH[0];
-                UAAT = FBH[1];
+                itemToUse = FBH.MHItem.Value.itemNum;
+                UAAT = FBH.MHUAAT;
                 //Debug.Log("Found healing item: " + itemToUse);
             }
         }
@@ -1989,8 +2010,8 @@ public class BotScript : MonoBehaviour
     IEnumerator TryToUseHealing(int itemToUse, int UAAT, System.Action<bool> callback) {
         bool gonnaSearch = true;
         BD = 0;
-        if (inventory.Contains(itemToUse) && botItemsOnCooldown[itemToUse - 1] == 0) {
-            yield return StartCoroutine(lScript.UseItem(itemToUse - 1, myActions, myBDD, myTI, mySI, 2, this, position, playerNum, new Vector2(), 0, UAAT, null, result => {
+        if (InvContainsItem(inventory, itemToUse) && botItemsOnCooldown[itemToUse - 1] == 0) {
+            yield return StartCoroutine(lScript.UseItem(itemToUse - 1, myActions, myBDD, myModifiers, myTI, mySI, 2, this, position, playerNum, new Vector2(), 0, UAAT, null, result => {
                 if (result) {
                     gonnaSearch = false;
                     //Debug.Log("Used item");
@@ -2021,36 +2042,44 @@ public class BotScript : MonoBehaviour
             if (lScript.itemIntLists[itemToUse - 1][4].Contains(3)) {
                 targetPos = GetRandomPosWithinXOfMe(grid, lScript.itemInfos[itemToUse - 1][0][9]);
             } else if (lScript.itemIntLists[itemToUse - 1][4].Contains(8)) {
-                
+                List<bool> a2 = FindNotGassed(a);
                 int targetIndex = -1;
                 if (mode == 2) {
-                    int target = FindRandomTarget(1, false); //target is 1+
-                    if (target == 0) {
-                        //implement target2
-                        int target2 = FindRandomTarget(2, false);
-                        if (target2 == 0) {
-                            if (currentQuadrant != targetQuadrant) {
-                                targetIndex = FindLowestDistance(1, a, GetCornerCoords(targetQuadrant), null);
-                            } else {
-                                /*if (timeSpentInTQ <= 3) { //arbitrary value
-                                    aIndex = FindHighestElevation(a, grid);
+                    if (a2.Contains(true)) {
+                        int target = FindRandomTarget(1, false); //target is 1+
+                        if (target == 0) {
+                            //implement target2
+                            int target2 = FindRandomTarget(2, false);
+                            if (target2 == 0) {
+                                if (currentQuadrant != targetQuadrant) {
+                                    targetIndex = FindLowestDistance(1, a2, GetCornerCoords(targetQuadrant), null);
                                 } else {
-                                    aIndex = FindLowestDistance(a, GetCornerCoords(targetQuadrant));
-                                }*/
-                                targetIndex = FindHighestDistance(1, a, lScript.GetCoordsFromIndex(knownPlayerPositions[playerNum - 1]), null);
+                                    /*if (timeSpentInTQ <= 3) { //arbitrary value
+                                        aIndex = FindHighestElevation(a2, grid);
+                                    } else {
+                                        aIndex = FindLowestDistance(a2, GetCornerCoords(targetQuadrant));
+                                    }*/
+                                    targetIndex = FindHighestDistance(1, a2, lScript.GetCoordsFromIndex(knownPlayerPositions[playerNum - 1]), null);
+                                }
+                            } else {
+                                targetIndex = FindLowestDistance(2, a2, new Vector2(), potentialPlayerPositions[target2 - 1]);
                             }
                         } else {
-                            targetIndex = FindLowestDistance(2, a, new Vector2(), potentialPlayerPositions[target2 - 1]);
+                            int ppos = knownPlayerPositions[target - 1];
+                            if (ppos == 0) {
+                                ppos = lastKnownPlayerPositions[target - 1];
+                            }
+                            targetIndex = FindLowestDistance(1, a2, lScript.GetCoordsFromIndex(ppos), null);
                         }
                     } else {
-                        int ppos = knownPlayerPositions[target - 1];
-                        if (ppos == 0) {
-                            ppos = lastKnownPlayerPositions[target - 1];
-                        }
-                        targetIndex = FindLowestDistance(1, a, lScript.GetCoordsFromIndex(ppos), null);
+                        targetIndex = FindLowestGasDamage(a);
                     }
                 } else if (mode == 3) {
-                    targetIndex = RunAway(a, grid);
+                    if (a2.Contains(true)) {
+                        targetIndex = RunAway(a2, grid);
+                    } else {
+                        targetIndex = FindLowestGasDamage(a);
+                    }
                 }
                 targetPos = new Vector2(lScript.GRIDX[targetIndex], lScript.GRIDY[targetIndex]);
             } else if (lScript.itemIntLists[itemToUse - 1][1].Contains(13)) {
@@ -2063,9 +2092,9 @@ public class BotScript : MonoBehaviour
                 targetPos = new Vector2(lScript.GRIDX[targetIndex], lScript.GRIDY[targetIndex]);
             }
         }
-        if (inventory.Contains(itemToUse) && botItemsOnCooldown[itemToUse - 1] == 0) {
+        if (InvContainsItem(inventory, itemToUse) && botItemsOnCooldown[itemToUse - 1] == 0) {
             BD = 0;
-            yield return StartCoroutine(lScript.UseItem(itemToUse - 1, myActions, myBDD, myTI, mySI, 2, this, position, playerNum, targetPos, 0, UAAT, null, result => {
+            yield return StartCoroutine(lScript.UseItem(itemToUse - 1, myActions, myBDD, myModifiers, myTI, mySI, 2, this, position, playerNum, targetPos, 0, UAAT, null, result => {
                 if (result) {
                     gonnaSearch = false;
                 } else {
@@ -2105,6 +2134,17 @@ public class BotScript : MonoBehaviour
         botIsSmoked = lScript.SmokeList(s);
         yield return null;
     }
+    void UpdateMyGas() {
+        myGas = new List<int>();
+        foreach (float g in lScript.GAS) {
+            float gasProtection = lScript.ScanInvGasProt(inventory);
+            if (g == 0) {
+                myGas.Add(0);
+            } else {
+                myGas.Add(Mathf.RoundToInt(g * (1 - Mathf.Clamp01(gasProtection))));
+            }
+        }
+    }
     List<int> SortByRarity(List<int> ASY) { //greatest rarity at [0]
         List<int> retList = new List<int>();
         foreach (int SY in ASY) {
@@ -2122,13 +2162,18 @@ public class BotScript : MonoBehaviour
     }
     int extraSearches;
     List<int> airdropSearchYields = new List<int>();
-    public IEnumerator Search(NetworkList<int> grid) {
+    public IEnumerator Search(NetworkList<int> grid, int width, int height) {
         int landRarity = lScript.GetLandRarity(grid[position - 1]);
         landRarity += lScript.GetLuck(botEffects, botEffectStrengths);
         int searchYield = 0;
         bool isAirdrop = botAirdrops.Contains(position);
         int ASYIndex = 0;
         if (isAirdrop) { //still gotta implement bot choosing from airdrop
+            if (NNBot) {
+                if (trainingModeActivated) {
+                    botBrain.Backpropagate(botBrain.moveHistory[botBrain.moveHistory.Count - 1], width, height, new List<int>{0, 1}, new List<float>{3.0f, 3.0f});
+                }
+            }
             myActions[0] = playerNum;
             myActions[28] = position;
             int index = lScript.FindInIntList(botAirdrops, position);
@@ -2179,7 +2224,7 @@ public class BotScript : MonoBehaviour
             yield return StartCoroutine(AcceptSearch(searchYield, grid, false, result => {
                 if (result) {
                     dontConclude = true;
-                    StartCoroutine(Search(grid));
+                    StartCoroutine(Search(grid, width, height));
                 }
             }));
         }
@@ -2189,7 +2234,7 @@ public class BotScript : MonoBehaviour
                 if (extraSearches < 0) {
                     extraSearches = 0;
                 }
-                StartCoroutine(Search(grid));
+                StartCoroutine(Search(grid, width, height));
             }
         }
         yield return null;
@@ -2200,19 +2245,35 @@ public class BotScript : MonoBehaviour
         /*if (isAirdrop) { //purely for testing
             keep = false;
         }*/
-        if (lScript.itemIntLists[searchYield - 1][0].Contains(4)) {
-            if (lScript.InventoryContainsArmor(inventory, Mathf.RoundToInt(lScript.itemInfos[searchYield - 1][3][0]))) {
-                //don't forget to remove from inventory if keep == true
-                keep = false;
+        if (lScript.CountInIntList(lScript.GetInvIntList(inventory), searchYield) + lScript.itemInts[searchYield - 1][6] <= lScript.itemInts[searchYield - 1][3]) {
+            if (lScript.itemIntLists[searchYield - 1][0].Contains(4)) {
+                if (lScript.InventoryContainsArmor(inventory, Mathf.RoundToInt(lScript.itemInfos[searchYield - 1][3][0]))) {
+                    //don't forget to remove from inventory if keep == true
+                    keep = false;
+                }
             }
-        }
-        if (lScript.IsPermanentWeapon(searchYield - 1)) {
-            if (lScript.CountPermWeaponsInInv(inventory) + lScript.itemInts[searchYield - 1][6] - lScript.CountNegativePermWeaponsInIntList(lScript.itemIntLists[searchYield - 1][6]) > botMaxWeapons) {
-                //don't forget to choose which weapon to remove if keep == true
-                keep = false;
+            if (lScript.IsPermanentWeapon(searchYield - 1)) {
+                if (lScript.CountPermWeaponsInInv(inventory) + lScript.itemInts[searchYield - 1][6] - lScript.CountNegativePermWeaponsInIntList(lScript.itemIntLists[searchYield - 1][6]) > botMaxWeapons) {
+                    //don't forget to choose which weapon to remove if keep == true
+                    keep = false;
+                }
+            }
+        } else {
+            int replaceNum = Math.Min(lScript.InvCountImperfect(inventory, searchYield), lScript.itemInts[searchYield - 1][6]);
+            if (replaceNum > 0) {
+                keep = true;
             }
         }
         if (keep) {
+            int replaceNum = Math.Min(lScript.InvCountImperfect(inventory, searchYield), lScript.itemInts[searchYield - 1][6]);
+            if (replaceNum > 0) {
+                for (int i = 0; i < replaceNum; i++) {
+                    int removeIdx = lScript.FindLowestDuraIndex(inventory, searchYield);
+                    if (removeIdx != -1) {
+                        inventory.RemoveAt(removeIdx);
+                    }
+                }
+            }
             if (lScript.itemInts[searchYield - 1][6] == 0) {
                 if (!lScript.itemBools[searchYield - 1][0] && lScript.itemIntLists[searchYield - 1][0].Contains(3) && lScript.itemInfos[searchYield - 1][2].Count > 0) {
                     if (lScript.itemInfos[searchYield - 1][2][0] == 1) {
@@ -2225,8 +2286,8 @@ public class BotScript : MonoBehaviour
                 }
             }
             for (int i = 0; i < lScript.itemInts[searchYield - 1][6]; i++) {
-                if (lScript.itemInts[searchYield - 1][3] == -1 || lScript.CountInIntList(inventory, searchYield) + 1 <= lScript.itemInts[searchYield - 1][3]) {
-                    inventory.Add(searchYield);
+                if (lScript.itemInts[searchYield - 1][3] == -1 || lScript.CountInIntList(lScript.GetInvIntList(inventory), searchYield) + 1 <= lScript.itemInts[searchYield - 1][3]) {
+                    inventory.Add(new InventoryItem(searchYield, lScript.itemInts[searchYield - 1][8]));
                     if (!lScript.itemBools[searchYield - 1][0] && lScript.itemIntLists[searchYield - 1][0].Contains(3) && lScript.itemInfos[searchYield - 1][2].Count > 0) {
                         yield return StartCoroutine(lScript.AddToEffects(searchYield - 1, botEffects, botEffectLengths, botEffectStrengths));
                     }
@@ -2235,7 +2296,7 @@ public class BotScript : MonoBehaviour
             List<int> AAU = lScript.itemIntLists[searchYield - 1][6];
             foreach (int a in AAU) {
                 if (a < 0) {
-                    inventory.Remove(-a);
+                    lScript.RemoveFromIIList(inventory, -a);
                 }
             }
             armorCoefficient = lScript.GetArmorCoefficient(inventory);
@@ -2249,11 +2310,12 @@ public class BotScript : MonoBehaviour
         }
         callback(dontConclude);
     }
+    
     public IEnumerator BotVision() {
         float addVision = 0;
         if (!lScript)
             Debug.Log("lScript not assigned for vision!");
-        myVG = lScript.GetVisionList(addVision, lScript.smokes, 2, this, botEffects, botEffectStrengths, inventory, position); //why we using lScript's smokes when we could use botSmokes
+        myVG = lScript.GetVisionList(addVision, lScript.smokes, false, 2, this, botEffects, botEffectStrengths, inventory, position); //why we using lScript's smokes when we could use botSmokes
         Debug.Log("After botvision");
         /*yield return StartCoroutine(lScript.GetVisionList(addVision, lScript.smokes, 2, this, new List<int>{}, new List<int>{}, result =>{ 
             myVG = result;
@@ -2304,7 +2366,7 @@ public class BotScript : MonoBehaviour
     void UpdatePlayerVG(int pnum) {
         Debug.Log("potentialMovesSinceLastSeen count = " + potentialMovesSinceLastSeen.Count);
         if (lastKnownPlayerPositions[pnum - 1] != 0 && potentialMovesSinceLastSeen[pnum - 1].Count == 0) { //(potentialMovesSinceLastSeen[pnum - 1].Count == 0 || potentialMovesSinceLastSeen[pnum - 1] adds up to 0/the only element is 0)
-            potentialPlayerVGs[pnum - 1] = lScript.GetVisionList(0, botSmokes, 3, this, new List<int>{}, new List<int>{}, potentialPlayerInvs[pnum - 1], lastKnownPlayerPositions[pnum - 1]); //TODO: new List<int>{}s represent what the bot believes to be the player's effects and effectStrengths
+            potentialPlayerVGs[pnum - 1] = lScript.GetVisionList(0, botSmokes, false, 3, this, new List<int>{}, new List<int>{}, potentialPlayerInvs[pnum - 1], lastKnownPlayerPositions[pnum - 1]); //TODO: new List<int>{}s represent what the bot believes to be the player's effects and effectStrengths
             /*List<bool> testList = new List<bool>();
             foreach (int i in potentialPlayerVGs[pnum - 1]) {
                 testList.Add(i != 0);
@@ -2327,7 +2389,7 @@ public class BotScript : MonoBehaviour
         List<bool> PPP = potentialPlayerPositions[pnum - 1];
         for (int i = 0; i < PPP.Count; i++) {
             if (PPP[i]) {
-                List<int> VL = lScript.GetVisionList(0, botSmokes, 3, this, new List<int>{}, new List<int>{}, potentialPlayerInvs[pnum - 1], i + 1); //TODO: new List<int>{}s represent what the bot believes to be the player's effects and effectStrengths
+                List<int> VL = lScript.GetVisionList(0, botSmokes, false, 3, this, new List<int>{}, new List<int>{}, potentialPlayerInvs[pnum - 1], i + 1); //TODO: new List<int>{}s represent what the bot believes to be the player's effects and effectStrengths
                 for (int j = 0; j < VL.Count; j++) {
                     if (VL[j] != 0) {
                         retList[j] += PDL[i]; //weight here
@@ -2352,7 +2414,7 @@ public class BotScript : MonoBehaviour
             if (potentialMovesSinceLastSeen[pnum - 1].Count == 0) {
                 a[lastKnownPlayerPositions[pnum - 1] - 1] = true;
             } else {
-                CreateArrivable(grid, lastKnownPlayerPositions[pnum - 1], a, new List<(int index, float moves, int LMIndex)>(), new List<(int index, float moves, int LMIndex)>(), potentialMovesSinceLastSeen[pnum - 1]);
+                lScript.CreateArrivable(grid, lastKnownPlayerPositions[pnum - 1], a, new List<(int index, float moves, int LMIndex)>(), new List<(int index, float moves, int LMIndex)>(), potentialMovesSinceLastSeen[pnum - 1]);
             }
         }
         potentialPlayerPositions[pnum - 1] = a;

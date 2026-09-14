@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class BotBrain : MonoBehaviour
 {
     public BotScript botScript;
     private int numFilters = 4;
     private int filterSize = 3;
-    private int numChannels = 6;
+    private int numChannels = 7;
     private int actionFilters = 3; //0 = move, 1 = search, 2 = use
 
     private float[,,,] convWeights;
@@ -24,7 +25,7 @@ public class BotBrain : MonoBehaviour
 
     private float[] itemWeights;
     private float itemBias;
-    private int IWLength = 3;
+    private int IWLength = 39;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -40,6 +41,7 @@ public class BotBrain : MonoBehaviour
         float pastKEP = pastMove.inputs[targetX, targetY, 3];
         float pastCH = pastMove.inputs[targetX, targetY, 4];
         float pastAirdrop = pastMove.inputs[targetX, targetY, 5];
+        float pastGas = pastMove.inputs[targetX, targetY, 6];
         List<float> currentMode = pastMove.playerMode;
         float baseReward = 0f;
         float huntWeight = currentMode[1];
@@ -57,13 +59,16 @@ public class BotBrain : MonoBehaviour
                 baseReward -= 2.0f;
             }
         }
-        if (pastAirdrop > 0.5f) {
+        if (pastGas > 0) {
+            baseReward -= pastGas;
+        }
+        /*if (pastAirdrop > 0.5f) { //this just rewards it for being on an airdrop, not opening it
             if (searchWeight > huntWeight && searchWeight > hideWeight) {
                 baseReward += 3.0f;
             } else {
                 baseReward += 1.0f;
             }
-        }
+        }*/
         return baseReward;
     }
     public void ReceiveDamage(float percent, int width, int height, List<float> ED, List<float> HD, List<float> RD) {
@@ -77,7 +82,8 @@ public class BotBrain : MonoBehaviour
             float baseReward = CalculateTileBaseReward(pastMove, width, height);
             float finalTarget = Mathf.Clamp(baseReward - (fadedPunishment * 2.0f), -1.0f, 1.0f);
 
-            Backpropagate(pastMove.inputs, pastMove.chosenIndex, width, height, pastMove.playerMode, new List<int>{0}, new List<float>{finalTarget});
+            Backpropagate(pastMove, width, height, new List<int>{0}, new List<float>{finalTarget});
+            BackpropagateItemNetwork(pastMove, finalTarget);
         }
 
         //moveHistory.Clear();
@@ -125,6 +131,7 @@ public class BotBrain : MonoBehaviour
             inputTensor[x, y, 3] = knownEnemyPositions.Contains(i + 1) ? 1.0f : 0.0f;
             inputTensor[x, y, 4] = combinedHeatmap[i];
             inputTensor[x, y, 5] = airdrops.Contains(i + 1) ? 1.0f : 0.0f;
+            inputTensor[x, y, 6] = Mathf.Clamp01((float)botScript.myGas[i] / botScript.lScript.maxGasDamage);
             //Debug.Log("inputTensor 0: " + inputTensor[x, y, 0]);
         }
         return inputTensor;
@@ -226,6 +233,7 @@ public class BotBrain : MonoBehaviour
             List<float> snapshotMode = new List<float>(playerMode);
             MoveMemory currentMove = new MoveMemory(snapshotInput, bestTileIndex, new List<int>{0}, snapshotMode, 0, null, null);
             moveHistory.Add(currentMove);
+            Debug.Log("Added to moveHistory");
             if (moveHistory.Count > maxHistorySize) {
                 moveHistory.RemoveAt(0);
             }
@@ -233,18 +241,73 @@ public class BotBrain : MonoBehaviour
         //botScript.lScript.DisplayBotTest(4, null, null, null, testList);
         return bestTileIndex;
     }
-    public int PickBestActionNN(List<int> usableItems, List<int> grid) {
+    float GetToolScore(int index, List<float> playerMode, float[] localFeatures, LocalScript LS) {
+        List<int> functions = LS.itemIntLists[index][4];
+        int attributeAmount = 0;
+        float score = 0f;
+        /*if (functions.Contains(1)) {
+            score += playerMode[0] * itemWeights[3];
+            attributeAmount++;
+            localFeatures[3] = playerMode[0];
+
+            score += playerMode[1] * itemWeights[4];
+            attributeAmount++;
+            localFeatures[4] = playerMode[1];
+
+            score += playerMode[2] * itemWeights[5];
+            attributeAmount++;
+            localFeatures[5] = playerMode[2];
+        }
+        if (functions.Contains(2)) {
+            score += playerMode[0] * itemWeights[6];
+            attributeAmount++;
+            localFeatures[6] = playerMode[0];
+
+            score += playerMode[1] * itemWeights[7];
+            attributeAmount++;
+            localFeatures[7] = playerMode[1];
+
+            score += playerMode[2] * itemWeights[8];
+            attributeAmount++;
+            localFeatures[8] = playerMode[2];
+        }
+        if (functions.Contains(3)) {
+            score += playerMode[0] * itemWeights[9];
+            attributeAmount++;
+            localFeatures[9] = playerMode[0];
+
+            score += playerMode[1] * itemWeights[10];
+            attributeAmount++;
+            localFeatures[10] = playerMode[1];
+
+            score += playerMode[2] * itemWeights[11];
+            attributeAmount++;
+            localFeatures[11] = playerMode[2];
+        }*/
+        for (int f = 1; f <= 12; f++) {
+            if (functions.Contains(f)) {
+                for (int i = 0; i <= 2; i++) {
+                    score += playerMode[i] * itemWeights[(f * 3) + i];
+                    attributeAmount++;
+                    localFeatures[(f * 3) + i] = playerMode[i];
+                }
+            }
+        }
+        return score / attributeAmount;
+    }
+    public InventoryItem PickBestActionNN(List<InventoryItem> usableItems, List<int> grid, List<float> playerMode) {
         int itemToUse = 0;
-        float threshold = 0.0f;
-        int bestItem = 0;
+        float threshold = 0f;
+        InventoryItem bestItem = botScript.GetSearchII();
         float highestItemScore = 0;
         bool firstSet = true;
         float[] bestFeatures = new float[IWLength];
-        int maxHealingRating = botScript.FindBestHealing(2, botScript.inventory, botScript.HP, botScript.maxHP)[0];
-        int minHealingRating = botScript.FindBestHealing(3, botScript.inventory, botScript.HP, botScript.maxHP)[0];
+        int maxHealingRating = botScript.FindBestHealing(2, botScript.inventory, botScript.HP, botScript.maxHP).rating;
+        int minHealingRating = botScript.FindBestHealing(3, botScript.inventory, botScript.HP, botScript.maxHP).rating;
         for (int i = 0; i < usableItems.Count; i++) {
             bool skip = false;
-            int item = usableItems[i];
+            InventoryItem II = usableItems[i];
+            int item = II.itemNum;
             int index = item - 1;
             int bomb = botScript.lScript.GetIsBomb(index);
             
@@ -253,6 +316,7 @@ public class BotBrain : MonoBehaviour
             LocalScript LS = botScript.lScript;
             bool weapon = LS.itemIntLists[index][0].Contains(1); //AKA you need a target vector
             bool healing = LS.itemIntLists[index][0].Contains(2);
+            bool tool = LS.itemIntLists[index][0].Contains(3);
             float[] localFeatures = new float[bestFeatures.Length];
             float hpFeature = (float)botScript.HP / botScript.maxHP; //over maxHP for now
             score += hpFeature * itemWeights[0]; 
@@ -295,8 +359,8 @@ public class BotBrain : MonoBehaviour
                 }
             }
             if (healing) {
-                List<(int item, int UAAT, int rating)> potentials = new List<(int item, int UAAT, int rating)>();
-                botScript.GetUAATRating(botScript.inventory, item, potentials, botScript.HP, botScript.maxHP);
+                List<(InventoryItem item, int UAAT, int rating)> potentials = new List<(InventoryItem item, int UAAT, int rating)>();
+                botScript.GetUAATRating(botScript.inventory, II, potentials, botScript.HP, botScript.maxHP);
                 int rating = botScript.GetMaxRating(potentials); //when using it should find the same UAAT again
                 //int maxPossibleRating = botScript.maxHealing + LS.FindHighestBookEffectAmt(botScript.botBookInventory, 2);
                 //rating <= maxHealingRating
@@ -325,31 +389,36 @@ public class BotBrain : MonoBehaviour
                 attributeAmount++;
                 localFeatures[2] = healingFeature;
             }
+            if (tool) {
+                score += GetToolScore(index, playerMode, localFeatures, LS);
+                attributeAmount++;
+            }
             //implement more attributes
             if (!skip) {
                 score /= attributeAmount;
                 score += itemBias;
                 if (firstSet) {
                     highestItemScore = score;
-                    bestItem = item;
+                    bestItem = II;
                     bestFeatures = localFeatures;
                     firstSet = false;
                 } else {
                     if (score > highestItemScore) {
                         highestItemScore = score;
-                        bestItem = item;
+                        bestItem = II;
                         bestFeatures = localFeatures;
                     }
                 }
             }
         }
+        Debug.Log("Highest Item Score: " + highestItemScore);
         if (firstSet) {
-            return 0;
+            return botScript.GetSearchII();
         } else if (highestItemScore >= threshold) {
             botScript.features = bestFeatures;
             return bestItem;
         } else {
-            return 0;
+            return botScript.GetSearchII();
         }
         
     }
@@ -369,18 +438,21 @@ public class BotBrain : MonoBehaviour
             foreach (int act in actionsToUpdate) {
                 targetScores.Add(currentReward);
             }
-            Backpropagate(mapInput, chosenIndex, width, height, pastMemory.playerMode, actionsToUpdate, targetScores);
+            Backpropagate(pastMemory, width, height, actionsToUpdate, targetScores);
             currentReward *= discountFactor;
         }
     }
-    public void AddToActionHistory(float[,,] cnnInput, int chosenIndex, List<int> actionIndices, List<float> playerMode, int item, List<int> inv, float[] PF) {
+    public void AddToActionHistory(float[,,] cnnInput, int chosenIndex, List<int> actionIndices, List<float> playerMode, int item, List<InventoryItem> inv, float[] PF) {
         MoveMemory MM = new MoveMemory(cnnInput, chosenIndex, actionIndices, playerMode, item, inv, PF);
         actionHistory.Add(MM);
         if (actionHistory.Count > maxHistorySize) {
             actionHistory.RemoveAt(0);
         }
     }
-    public void Backpropagate(float[,,] mapInput, int chosenIndex, int width, int height, List<float> playerMode, List<int> actionsToUpdate, List<float> targetScores) {
+    public void Backpropagate(MoveMemory pastMove, int width, int height, List<int> actionsToUpdate, List<float> targetScores) {
+        float[,,] mapInput = pastMove.inputs;
+        int chosenIndex = pastMove.chosenIndex;
+        List<float> playerMode = pastMove.playerMode;
         int chosenX = chosenIndex % width;
         int chosenY = chosenIndex / width;
         float learningRate = 0.01f;
@@ -517,8 +589,9 @@ public class BotBrain : MonoBehaviour
         LocalScript LS = botScript.lScript;
         bool weapon = LS.itemIntLists[itemIndex][0].Contains(1);
         bool healing = LS.itemIntLists[itemIndex][0].Contains(2);
+        bool tool = LS.itemIntLists[itemIndex][0].Contains(3);
         float errorDelta = rewardValue;
-        int attributeAmount = 1;
+        int attributeAmount = 1; //what does this do
         itemWeights[0] += learningRate * errorDelta * hpFeature;
         if (weapon) {
             float damageFeature = pastMemory.playerFeatures[1];
@@ -529,6 +602,13 @@ public class BotBrain : MonoBehaviour
             float healingFeature = pastMemory.playerFeatures[2];
             itemWeights[2] += learningRate * errorDelta * healingFeature;
             attributeAmount++;
+        }
+        if (tool) {
+            for (int i = 3; i <= 38; i++) {
+                float feature = pastMemory.playerFeatures[i];
+                itemWeights[i] += learningRate * errorDelta * feature;
+                attributeAmount++;
+            }
         }
         itemBias += learningRate * errorDelta;
     }
@@ -544,11 +624,11 @@ public class BotBrain : MonoBehaviour
     }
     private string GetSavePath(bool trainingModeActivated) {
         if (trainingModeActivated) {
-            return System.IO.Path.Combine(Application.persistentDataPath, "bot_brain.json");
             Debug.Log("Found local brain");
+            return System.IO.Path.Combine(Application.persistentDataPath, "bot_brain.json");
         } else {
-            return System.IO.Path.Combine(Application.streamingAssetsPath, "bot_brain.json");
             Debug.Log("Found built brain");
+            return System.IO.Path.Combine(Application.streamingAssetsPath, "bot_brain.json");
         }
         
     }
@@ -600,13 +680,29 @@ public class BotBrain : MonoBehaviour
         System.IO.File.WriteAllText(GetSavePath(), json);
         Debug.Log($"Brain saved successfully to: {GetSavePath()}");*/
     }
-    public bool LoadBrainData(bool trainingModeActivated) {
+    public IEnumerator LoadBrainData(bool trainingModeActivated, System.Action<bool> callback) {
         string path = GetSavePath(trainingModeActivated);
-        if (!System.IO.File.Exists(path)) {
-            Debug.Log($"No brain file found at {path}. Defaulting to random initialization.");
-            return false;
-        }
-        string json = System.IO.File.ReadAllText(path);
+        string json = "";
+        #if UNITY_WEBGL && !UNITY_EDITOR
+            using (UnityWebRequest webRequest = UnityWebRequest.Get(path)) {
+                yield return webRequest.SendWebRequest();
+                if (webRequest.result == UnityWebRequest.Result.Success) {
+                    json = webRequest.downloadHandler.text;
+                } else {
+                    Debug.Log($"No brain file found at web path {path}. Defaulting to random initialization.");
+                    callback(false);
+                    yield break;
+                }
+            }
+        #else
+            if (!System.IO.File.Exists(path)) {
+                Debug.Log($"No brain file found at {path}. Defaulting to random initialization.");
+                callback(false);
+                yield break;
+            }
+            json = System.IO.File.ReadAllText(path);
+            yield return null;
+        #endif
         BrainSaveData data = JsonUtility.FromJson<BrainSaveData>(json);
         denseBiases = data.denseBiases;
         denseWeights = new float[numFilters, actionFilters];
@@ -659,7 +755,7 @@ public class BotBrain : MonoBehaviour
         denseWeights[0] = 1.0f;
         denseBias = 0f;*/
         //Debug.Log("Frozen master brain data loaded successfully! Training lock active.");
-        return true;
+        callback(true);
     }
 }
 
@@ -689,8 +785,8 @@ public struct MoveMemory {
     public float[] playerFeatures;
     
     public int chosenItem; //1+
-    public List<int> snapshotInventory; //1+
-    public MoveMemory(float[,,] inputs, int chosenIndex, List<int> actionIndices, List<float> playerMode, int item, List<int> inv, float[] PF) {
+    public List<InventoryItem> snapshotInventory; //1+
+    public MoveMemory(float[,,] inputs, int chosenIndex, List<int> actionIndices, List<float> playerMode, int item, List<InventoryItem> inv, float[] PF) {
         this.inputs = (float[,,])inputs.Clone();
         this.chosenIndex = chosenIndex;
         this.actionIndices = new List<int>(actionIndices);
@@ -699,7 +795,7 @@ public struct MoveMemory {
         if (inv == null) {
             this.snapshotInventory = null;
         } else {
-            this.snapshotInventory = new List<int>(inv);
+            this.snapshotInventory = new List<InventoryItem>(inv);
         }
         if (PF == null) {
             this.playerFeatures = null;

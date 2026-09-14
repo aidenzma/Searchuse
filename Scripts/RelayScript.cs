@@ -9,14 +9,16 @@ using System;
 using System.Collections;
 using TMPro;
 using System.Threading.Tasks;
-
+using Unity.Services.Relay.Models;
 
 public class RelayScript : MonoBehaviour
 {
     public static RelayScript Instance;
-    public GameObject messageText;
+    //public GameObject messageText;
+    public LocalScript lScript;
     public RectTransform CANVAS;
-    public GameObject joinCodeText;
+    //public GameObject joinCodeText;
+    bool createdJCT = false;
     private void Awake()
     {
         Instance = this;
@@ -41,17 +43,28 @@ public class RelayScript : MonoBehaviour
 
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
             Debug.Log("Join Code: " + joinCode);
-            if (!joinCodeText) {
-                StartCoroutine(CreateMessageText("Join Code: " + joinCode, 200, 200));
+            if (!createdJCT) {
+                //StartCoroutine(CreateMessageText("Join Code: " + joinCode, 200, 200));
+                StartCoroutine(lScript.CreateMessageText("Join Code: " + joinCode, 200, 200, 5, 0, true, false));
+                createdJCT = true;
             }
             UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-            transport.SetRelayServerData(
+            /*transport.SetRelayServerData(
                 allocation.RelayServer.IpV4,
                 (ushort)allocation.RelayServer.Port,
                 allocation.AllocationIdBytes,
                 allocation.Key,
                 allocation.ConnectionData
-            );
+            );*/
+            #if UNITY_WEBGL && !UNITY_EDITOR
+                string connectionType = "wss";
+                transport.UseWebSockets = true;
+            #else
+                string connectionType = "dtls";
+                transport.UseWebSockets = false;
+            #endif
+            var hostRelayData = AllocationUtils.ToRelayServerData(allocation, connectionType);
+            transport.SetRelayServerData(hostRelayData);
             /*var hostRelayData = Unity.Services.Relay.RelayServiceExtensions.ToRelayServerData(allocation, "dtls");
             UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
             transport.SetRelayServerData(hostRelayData);*/
@@ -99,14 +112,21 @@ public class RelayScript : MonoBehaviour
             JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
             UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-            transport.SetRelayServerData(
+            /*transport.SetRelayServerData(
                 allocation.RelayServer.IpV4,
                 (ushort)allocation.RelayServer.Port,
                 allocation.AllocationIdBytes,
                 allocation.Key,
                 allocation.ConnectionData,
                 allocation.HostConnectionData
-            );
+            );*/
+            #if UNITY_WEBGL && !UNITY_EDITOR
+                string connectionType = "wss";
+                transport.UseWebSockets = true;
+            #else
+                string connectionType = "dtls";
+                transport.UseWebSockets = false;
+            #endif
             /*var clientRelayData = Unity.Services.Relay.RelayServiceExtensions.ToRelayServerData(allocation, "wss");
 
             UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
@@ -114,7 +134,8 @@ public class RelayScript : MonoBehaviour
 
             transport.SetRelayServerData(clientRelayData);*/
 
-
+            var clientRelayData = AllocationUtils.ToRelayServerData(allocation, connectionType);
+            transport.SetRelayServerData(clientRelayData);
             NetworkManager.Singleton.StartClient();
             return true;
         }
@@ -124,7 +145,7 @@ public class RelayScript : MonoBehaviour
             return false;
         }
     }
-    IEnumerator CreateMessageText(String txt, float startY, float endY) {
+    /*IEnumerator CreateMessageText(String txt, float startY, float endY) {
         GameObject MT = Instantiate(messageText, CANVAS);
         joinCodeText = MT;
         MT.GetComponent<TMPro.TextMeshProUGUI>().text = txt;
@@ -151,6 +172,6 @@ public class RelayScript : MonoBehaviour
             MT.GetComponent<TextMeshProUGUI>().color = colour;
             yield return new WaitForSeconds(0.02f);
         }
-        Destroy(MT);*/
-    }
+        Destroy(MT);
+    }*/
 }
