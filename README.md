@@ -3,6 +3,7 @@ A turn-based multiplayer strategy game where you search for and use various item
 
 <img width="426" height="240" alt="showcaseGif" src="https://github.com/user-attachments/assets/94bff7f7-ccc9-40c0-acdd-65a3b8586470" />
 
+* Main scripts are located in "LocalScript.cs"
 Download & try here:
 
 https://ai-zamden.itch.io/searchuse
