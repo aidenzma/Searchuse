@@ -1,0 +1,1365 @@
+fileFormatVersion: 2
+guid: b9a00c967971d9a43ae55dbee3a4977c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7391251564021320366
+    second: costume8 (1)_0
+  - first:
+      213: -6047909688529580003
+    second: costume8 (1)_1
+  - first:
+      213: -4743410920961140812
+    second: costume8 (1)_2
+  - first:
+      213: -3602839395982027197
+    second: costume8 (1)_3
+  - first:
+      213: 6469842908833449761
+    second: costume8 (1)_4
+  - first:
+      213: -1058262114467373510
+    second: costume8 (1)_5
+  - first:
+      213: 6266901389702041591
+    second: costume8 (1)_6
+  - first:
+      213: -2606133441035304422
+    second: costume8 (1)_7
+  - first:
+      213: 6978535798806133317
+    second: costume8 (1)_8
+  - first:
+      213: -5240744741696495579
+    second: costume8 (1)_9
+  - first:
+      213: -7563809893712497030
+    second: costume8 (1)_10
+  - first:
+      213: 7043943195165184134
+    second: costume8 (1)_11
+  - first:
+      213: 4067243663848472935
+    second: costume8 (1)_12
+  - first:
+      213: 143497211568293475
+    second: costume8 (1)_13
+  - first:
+      213: -6915445578581770693
+    second: costume8 (1)_14
+  - first:
+      213: -8600125473465097283
+    second: costume8 (1)_15
+  - first:
+      213: -5476578426511726961
+    second: costume8 (1)_16
+  - first:
+      213: -1725272089122422332
+    second: costume8 (1)_17
+  - first:
+      213: 4195919428321646706
+    second: costume8 (1)_18
+  - first:
+      213: -5677609818226507675
+    second: costume8 (1)_19
+  - first:
+      213: -4338378718793303002
+    second: costume8 (1)_20
+  - first:
+      213: 3658051653864955627
+    second: costume8 (1)_21
+  - first:
+      213: -3193366113226935367
+    second: costume8 (1)_22
+  - first:
+      213: 8626657563318209917
+    second: costume8 (1)_23
+  - first:
+      213: 5102681557847743008
+    second: costume8 (1)_24
+  - first:
+      213: -6361751866845882433
+    second: costume8 (1)_25
+  - first:
+      213: -273356495200286220
+    second: costume8 (1)_26
+  - first:
+      213: 662213452827504398
+    second: costume8 (1)_27
+  - first:
+      213: -394100909267368086
+    second: costume8 (1)_28
+  - first:
+      213: -7582397005511595455
+    second: costume8 (1)_29
+  - first:
+      213: -7085657085196234041
+    second: costume8 (1)_30
+  - first:
+      213: 3648335086545048168
+    second: costume8 (1)_31
+  - first:
+      213: -6520560544644616401
+    second: costume8 (1)_32
+  - first:
+      213: 6345809617755027369
+    second: costume8 (1)_33
+  - first:
+      213: 3095818550001337403
+    second: costume8 (1)_34
+  - first:
+      213: 324356818263257359
+    second: costume8 (1)_35
+  - first:
+      213: 7969708647765919068
+    second: costume8 (1)_36
+  - first:
+      213: -5048655236623586151
+    second: costume8 (1)_37
+  - first:
+      213: -9028724831716947158
+    second: costume8 (1)_38
+  - first:
+      213: -6258045760500031582
+    second: costume8 (1)_39
+  - first:
+      213: -1486416198192095992
+    second: costume8 (1)_40
+  - first:
+      213: 3455170496138926707
+    second: costume8 (1)_41
+  - first:
+      213: -878578900639815025
+    second: costume8 (1)_42
+  - first:
+      213: 4604414707924034185
+    second: costume8 (1)_43
+  - first:
+      213: -5896863497607910486
+    second: costume8 (1)_44
+  - first:
+      213: 3136135420305976236
+    second: costume8 (1)_45
+  - first:
+      213: -7892279905990975409
+    second: costume8 (1)_46
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: costume8 (1)_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 148
+        width: 26
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25575f0fcdffc6990800000000000000
+      internalID: -7391251564021320366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_1
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 173
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d101d857e22811ca0800000000000000
+      internalID: -6047909688529580003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_2
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 148
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b7176826e40c2eb0800000000000000
+      internalID: -4743410920961140812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_3
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 148
+        width: 7
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34655b378a4200ec0800000000000000
+      internalID: -3602839395982027197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_4
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 148
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 127099dc8df79c950800000000000000
+      internalID: 6469842908833449761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_5
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 148
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3e1bebb63c4051f0800000000000000
+      internalID: -1058262114467373510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_6
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 148
+        width: 21
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ff87974c9188f650800000000000000
+      internalID: 6266901389702041591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_7
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 148
+        width: 7
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1203d9717725dbd0800000000000000
+      internalID: -2606133441035304422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_8
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 148
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54abf2cc55db8d060800000000000000
+      internalID: 6978535798806133317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_9
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 148
+        width: 17
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5202fa09c622547b0800000000000000
+      internalID: -5240744741696495579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_10
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 148
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a767ea8f9f2f70790800000000000000
+      internalID: -7563809893712497030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 116
+        width: 9
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 680d9ddf30d11c160800000000000000
+      internalID: 7043943195165184134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_12
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 116
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76185a62090c17830800000000000000
+      internalID: 4067243663848472935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_13
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 116
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36689c124fdcdf100800000000000000
+      internalID: 143497211568293475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_14
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 116
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3e7619c2e66700a0800000000000000
+      internalID: -6915445578581770693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_15
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 116
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db32352827736a880800000000000000
+      internalID: -8600125473465097283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_16
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 116
+        width: 10
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f86633fefe84ff3b0800000000000000
+      internalID: -5476578426511726961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 71
+        width: 21
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c146f20d2a9e08e0800000000000000
+      internalID: -1725272089122422332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_18
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 71
+        width: 10
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27895473d76ea3a30800000000000000
+      internalID: 4195919428321646706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_19
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 71
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 560c65b93f31531b0800000000000000
+      internalID: -5677609818226507675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_20
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 71
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62cf53d7a8bfac3c0800000000000000
+      internalID: -4338378718793303002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_21
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 87
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bee96a6199204c230800000000000000
+      internalID: 3658051653864955627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_22
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 71
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b3b65f6072eea3d0800000000000000
+      internalID: -3193366113226935367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_23
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 87
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7dc48c095b08b770800000000000000
+      internalID: 8626657563318209917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_24
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 71
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02a937977dd50d640800000000000000
+      internalID: 5102681557847743008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_25
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 71
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb71973126486b7a0800000000000000
+      internalID: -6361751866845882433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_26
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 71
+        width: 6
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f98a8647b7d43cf0800000000000000
+      internalID: -273356495200286220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_27
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 71
+        width: 6
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0fa44570a7a03900800000000000000
+      internalID: 662213452827504398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_28
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 35
+        width: 17
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a67c571af4fd78af0800000000000000
+      internalID: -394100909267368086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_29
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 35
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14aee74c81ae5c690800000000000000
+      internalID: -7582397005511595455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_30
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 35
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c216a42c60baad90800000000000000
+      internalID: -7085657085196234041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_31
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 35
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8629c177e6d71a230800000000000000
+      internalID: 3648335086545048168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_32
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 35
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2fa7086bb05285a0800000000000000
+      internalID: -6520560544644616401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_33
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 35
+        width: 10
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a7bb8ec938d01850800000000000000
+      internalID: 6345809617755027369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_34
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 35
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3405e1a19e86fa20800000000000000
+      internalID: 3095818550001337403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_35
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 35
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f01be05cec8508400800000000000000
+      internalID: 324356818263257359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_36
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 35
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5542713ac71a9e60800000000000000
+      internalID: 7969708647765919068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_37
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 35
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99ca2abafc29fe9b0800000000000000
+      internalID: -5048655236623586151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_38
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 17
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2b43ce0a9683b280800000000000000
+      internalID: -9028724831716947158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_39
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 0
+        width: 18
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2af91419984f629a0800000000000000
+      internalID: -6258045760500031582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_40
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 0
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80d9f56d7503f5be0800000000000000
+      internalID: -1486416198192095992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_41
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 0
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37a55cc824b33ff20800000000000000
+      internalID: 3455170496138926707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_42
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 0
+        width: 6
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8ae5301529aec3f0800000000000000
+      internalID: -878578900639815025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_43
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 0
+        width: 18
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 982656818ca26ef30800000000000000
+      internalID: 4604414707924034185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_44
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 0
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aabec1054e12a2ea0800000000000000
+      internalID: -5896863497607910486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_45
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 0
+        width: 22
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cababde7c8ac58b20800000000000000
+      internalID: 3136135420305976236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume8 (1)_46
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 0
+        width: 18
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4064779d3df87290800000000000000
+      internalID: -7892279905990975409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      costume8 (1)_0: -7391251564021320366
+      costume8 (1)_1: -6047909688529580003
+      costume8 (1)_10: -7563809893712497030
+      costume8 (1)_11: 7043943195165184134
+      costume8 (1)_12: 4067243663848472935
+      costume8 (1)_13: 143497211568293475
+      costume8 (1)_14: -6915445578581770693
+      costume8 (1)_15: -8600125473465097283
+      costume8 (1)_16: -5476578426511726961
+      costume8 (1)_17: -1725272089122422332
+      costume8 (1)_18: 4195919428321646706
+      costume8 (1)_19: -5677609818226507675
+      costume8 (1)_2: -4743410920961140812
+      costume8 (1)_20: -4338378718793303002
+      costume8 (1)_21: 3658051653864955627
+      costume8 (1)_22: -3193366113226935367
+      costume8 (1)_23: 8626657563318209917
+      costume8 (1)_24: 5102681557847743008
+      costume8 (1)_25: -6361751866845882433
+      costume8 (1)_26: -273356495200286220
+      costume8 (1)_27: 662213452827504398
+      costume8 (1)_28: -394100909267368086
+      costume8 (1)_29: -7582397005511595455
+      costume8 (1)_3: -3602839395982027197
+      costume8 (1)_30: -7085657085196234041
+      costume8 (1)_31: 3648335086545048168
+      costume8 (1)_32: -6520560544644616401
+      costume8 (1)_33: 6345809617755027369
+      costume8 (1)_34: 3095818550001337403
+      costume8 (1)_35: 324356818263257359
+      costume8 (1)_36: 7969708647765919068
+      costume8 (1)_37: -5048655236623586151
+      costume8 (1)_38: -9028724831716947158
+      costume8 (1)_39: -6258045760500031582
+      costume8 (1)_4: 6469842908833449761
+      costume8 (1)_40: -1486416198192095992
+      costume8 (1)_41: 3455170496138926707
+      costume8 (1)_42: -878578900639815025
+      costume8 (1)_43: 4604414707924034185
+      costume8 (1)_44: -5896863497607910486
+      costume8 (1)_45: 3136135420305976236
+      costume8 (1)_46: -7892279905990975409
+      costume8 (1)_5: -1058262114467373510
+      costume8 (1)_6: 6266901389702041591
+      costume8 (1)_7: -2606133441035304422
+      costume8 (1)_8: 6978535798806133317
+      costume8 (1)_9: -5240744741696495579
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
