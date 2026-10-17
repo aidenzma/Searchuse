@@ -1,0 +1,3289 @@
+fileFormatVersion: 2
+guid: 78bb0a68fdfc9324dbe95c3ddfe40115
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4008236665324144420
+    second: costume59_0
+  - first:
+      213: -3753224648472802579
+    second: costume59_1
+  - first:
+      213: -8246954739489976143
+    second: costume59_2
+  - first:
+      213: -8558100063955882205
+    second: costume59_3
+  - first:
+      213: -4309271215681669473
+    second: costume59_4
+  - first:
+      213: 6728505302383735538
+    second: costume59_5
+  - first:
+      213: 1917763076737275770
+    second: costume59_6
+  - first:
+      213: -418190126850717115
+    second: costume59_7
+  - first:
+      213: -4155858804801338679
+    second: costume59_8
+  - first:
+      213: 8599743236068658033
+    second: costume59_9
+  - first:
+      213: 951408024117073534
+    second: costume59_10
+  - first:
+      213: 3306735850164759127
+    second: costume59_11
+  - first:
+      213: 2566388607760458882
+    second: costume59_12
+  - first:
+      213: -1801860271933171912
+    second: costume59_13
+  - first:
+      213: 4442159544321743386
+    second: costume59_14
+  - first:
+      213: 6618664147878893232
+    second: costume59_15
+  - first:
+      213: -8339929859866231266
+    second: costume59_16
+  - first:
+      213: -4164790290556552873
+    second: costume59_17
+  - first:
+      213: -8147080580751812263
+    second: costume59_18
+  - first:
+      213: 6186683953602824209
+    second: costume59_19
+  - first:
+      213: -6412548340844604505
+    second: costume59_20
+  - first:
+      213: 3615949763784918097
+    second: costume59_21
+  - first:
+      213: -4931713375825319529
+    second: costume59_22
+  - first:
+      213: 8610658461834182982
+    second: costume59_23
+  - first:
+      213: 8120331677384906606
+    second: costume59_24
+  - first:
+      213: -199939978113101875
+    second: costume59_25
+  - first:
+      213: 6234585050279651784
+    second: costume59_26
+  - first:
+      213: -5873855999015820655
+    second: costume59_27
+  - first:
+      213: -5026775303969823741
+    second: costume59_28
+  - first:
+      213: 2945889022851582190
+    second: costume59_29
+  - first:
+      213: 8909214970126336884
+    second: costume59_30
+  - first:
+      213: 2642649288036695989
+    second: costume59_31
+  - first:
+      213: -7558183700831420572
+    second: costume59_32
+  - first:
+      213: 4849635969849343025
+    second: costume59_33
+  - first:
+      213: 5236923324602540144
+    second: costume59_34
+  - first:
+      213: 9054579825008997078
+    second: costume59_35
+  - first:
+      213: -4756191035339445170
+    second: costume59_36
+  - first:
+      213: 3487696129353878518
+    second: costume59_37
+  - first:
+      213: -3767732357016263919
+    second: costume59_38
+  - first:
+      213: 3215023880579242852
+    second: costume59_39
+  - first:
+      213: 7155649165571558656
+    second: costume59_40
+  - first:
+      213: 1547802269004703936
+    second: costume59_41
+  - first:
+      213: 4691672470530487180
+    second: costume59_42
+  - first:
+      213: -7179732439976122958
+    second: costume59_43
+  - first:
+      213: 1395923886045750157
+    second: costume59_44
+  - first:
+      213: -2201786561104650253
+    second: costume59_45
+  - first:
+      213: -2158591783157788685
+    second: costume59_46
+  - first:
+      213: 7781402123586250400
+    second: costume59_47
+  - first:
+      213: 7945911027272071781
+    second: costume59_48
+  - first:
+      213: 2988117089500390427
+    second: costume59_49
+  - first:
+      213: -1655115336087131178
+    second: costume59_50
+  - first:
+      213: 1113104649265724583
+    second: costume59_51
+  - first:
+      213: -4865661149395101768
+    second: costume59_52
+  - first:
+      213: 4069982581285161658
+    second: costume59_53
+  - first:
+      213: 6752093844069768283
+    second: costume59_54
+  - first:
+      213: -1965217413119851427
+    second: costume59_55
+  - first:
+      213: -6563784881703870896
+    second: costume59_56
+  - first:
+      213: -888047778649814474
+    second: costume59_57
+  - first:
+      213: 4213462838637727438
+    second: costume59_58
+  - first:
+      213: -4275124034478548716
+    second: costume59_59
+  - first:
+      213: -5189959385355673437
+    second: costume59_60
+  - first:
+      213: 7726618068567342499
+    second: costume59_61
+  - first:
+      213: 8814726722277137804
+    second: costume59_62
+  - first:
+      213: -1250072828839369708
+    second: costume59_63
+  - first:
+      213: 1946483624990390772
+    second: costume59_64
+  - first:
+      213: -1542715475061386591
+    second: costume59_65
+  - first:
+      213: 7651232799185760928
+    second: costume59_66
+  - first:
+      213: -7310211079434531153
+    second: costume59_67
+  - first:
+      213: -3679895479147451974
+    second: costume59_68
+  - first:
+      213: -1487164987179207181
+    second: costume59_69
+  - first:
+      213: 2753161855835024969
+    second: costume59_70
+  - first:
+      213: 4496710948325101757
+    second: costume59_71
+  - first:
+      213: -9220398120456071047
+    second: costume59_72
+  - first:
+      213: -9006843621369190272
+    second: costume59_73
+  - first:
+      213: -6629875817593268730
+    second: costume59_74
+  - first:
+      213: -8612810416784670113
+    second: costume59_75
+  - first:
+      213: -6188886169866846140
+    second: costume59_76
+  - first:
+      213: -1347126840921762981
+    second: costume59_77
+  - first:
+      213: 8800229618572992539
+    second: costume59_78
+  - first:
+      213: 913046125868393902
+    second: costume59_79
+  - first:
+      213: -1491770470959550843
+    second: costume59_80
+  - first:
+      213: -7067984263410339878
+    second: costume59_81
+  - first:
+      213: -3618652087576150388
+    second: costume59_82
+  - first:
+      213: 7840160584691178243
+    second: costume59_83
+  - first:
+      213: -3243926788494472868
+    second: costume59_84
+  - first:
+      213: -1353836389570398539
+    second: costume59_85
+  - first:
+      213: -1710955972869241699
+    second: costume59_86
+  - first:
+      213: 816899984978017858
+    second: costume59_87
+  - first:
+      213: -1243480298988893210
+    second: costume59_88
+  - first:
+      213: -9138026142961520625
+    second: costume59_89
+  - first:
+      213: -548413899919275422
+    second: costume59_90
+  - first:
+      213: -5515166979250135761
+    second: costume59_91
+  - first:
+      213: -5542113351737553843
+    second: costume59_92
+  - first:
+      213: -2995882419924300180
+    second: costume59_93
+  - first:
+      213: -1746432793166377384
+    second: costume59_94
+  - first:
+      213: 9094228025946306991
+    second: costume59_95
+  - first:
+      213: -8303599198888990356
+    second: costume59_96
+  - first:
+      213: -7292581571009747914
+    second: costume59_97
+  - first:
+      213: 6895664361608159565
+    second: costume59_98
+  - first:
+      213: 4390367425051249506
+    second: costume59_99
+  - first:
+      213: -3067917696191819230
+    second: costume59_100
+  - first:
+      213: -7094072885680186672
+    second: costume59_101
+  - first:
+      213: -7427850869500436866
+    second: costume59_102
+  - first:
+      213: -5296166848050443173
+    second: costume59_103
+  - first:
+      213: -2041385622832600992
+    second: costume59_104
+  - first:
+      213: -972519573102621758
+    second: costume59_105
+  - first:
+      213: -2949056094813896486
+    second: costume59_106
+  - first:
+      213: 1985023040317553827
+    second: costume59_107
+  - first:
+      213: -5998580927846713777
+    second: costume59_108
+  - first:
+      213: 5348678630080314077
+    second: costume59_109
+  - first:
+      213: -4022118931182976170
+    second: costume59_110
+  - first:
+      213: 8787205758403115450
+    second: costume59_111
+  - first:
+      213: 7153912393848796033
+    second: costume59_112
+  - first:
+      213: 3026045495400977592
+    second: costume59_113
+  - first:
+      213: -905921385499374938
+    second: costume59_114
+  - first:
+      213: 1539984487811498043
+    second: costume59_115
+  - first:
+      213: -8862580946442028099
+    second: costume59_116
+  - first:
+      213: -6140658349625964486
+    second: costume59_117
+  - first:
+      213: 7061033745658261513
+    second: costume59_118
+  - first:
+      213: 7822821255605400312
+    second: costume59_119
+  - first:
+      213: -7797207128826005201
+    second: costume59_120
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: costume59_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 352
+        width: 101
+        height: 101
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd878ab4df1ef58c0800000000000000
+      internalID: -4008236665324144420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_1
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 363
+        width: 52
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: deac981511ed9ebc0800000000000000
+      internalID: -3753224648472802579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 302
+        width: 21
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b0d9f1db5eec8d80800000000000000
+      internalID: -8246954739489976143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_3
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 302
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32f69a7a5558b3980800000000000000
+      internalID: -8558100063955882205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_4
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 302
+        width: 22
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f967a7c29a46234c0800000000000000
+      internalID: -4309271215681669473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_5
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 302
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f23ae16ce3706d50800000000000000
+      internalID: 6728505302383735538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_6
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 297
+        width: 22
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7719488b534d9a10800000000000000
+      internalID: 1917763076737275770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_7
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 327
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54acc789b4a423af0800000000000000
+      internalID: -418190126850717115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_8
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 302
+        width: 22
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c2032b8f6c6356c0800000000000000
+      internalID: -4155858804801338679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_9
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 302
+        width: 22
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17bc079e8ec685770800000000000000
+      internalID: 8599743236068658033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_10
+      rect:
+        serializedVersion: 2
+        x: 269
+        y: 302
+        width: 27
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7654f1ae84143d00800000000000000
+      internalID: 951408024117073534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_11
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 302
+        width: 7
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75aae136cb2e3ed20800000000000000
+      internalID: 3306735850164759127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_12
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 302
+        width: 27
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 284eb2967d4ad9320800000000000000
+      internalID: 2566388607760458882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_13
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 302
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 837d88c11a18ef6e0800000000000000
+      internalID: -1801860271933171912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_14
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 302
+        width: 21
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1a98eae198b5ad30800000000000000
+      internalID: 4442159544321743386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_15
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 302
+        width: 17
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b65feda9f73adb50800000000000000
+      internalID: 6618664147878893232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_16
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 302
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1efff2bafd924c80800000000000000
+      internalID: -8339929859866231266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_17
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 302
+        width: 27
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7597167fb41b336c0800000000000000
+      internalID: -4164790290556552873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_18
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 302
+        width: 7
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9591ecb7061cfee80800000000000000
+      internalID: -8147080580751812263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_19
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 302
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1180b1007448bd550800000000000000
+      internalID: 6186683953602824209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 270
+        width: 13
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a3dfe6524d0207a0800000000000000
+      internalID: -6412548340844604505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_21
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 270
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 154ce0ce62f6e2230800000000000000
+      internalID: 3615949763784918097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_22
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 270
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 799a3e360d80f8bb0800000000000000
+      internalID: -4931713375825319529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_23
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 270
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64186d3ff343f7770800000000000000
+      internalID: 8610658461834182982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_24
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 270
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6711e023a631b070800000000000000
+      internalID: 8120331677384906606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_25
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 270
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcf4b2436aba93df0800000000000000
+      internalID: -199939978113101875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_26
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 270
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c921eb2212b58650800000000000000
+      internalID: 6234585050279651784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_27
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 270
+        width: 14
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1926dd4071fdb7ea0800000000000000
+      internalID: -5873855999015820655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_28
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 270
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3042c297e7e4d3ab0800000000000000
+      internalID: -5026775303969823741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_29
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 243
+        width: 13
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee88ac25576e1e820800000000000000
+      internalID: 2945889022851582190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_30
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 243
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47309f1ffc3e3ab70800000000000000
+      internalID: 8909214970126336884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_31
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 243
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bfbd5fa6839ca420800000000000000
+      internalID: 2642649288036695989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_32
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 243
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46fbbc418ffeb1790800000000000000
+      internalID: -7558183700831420572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_33
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 243
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13cb3d8583e5d4340800000000000000
+      internalID: 4849635969849343025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_34
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 243
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07064ee640a4da840800000000000000
+      internalID: 5236923324602540144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_35
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 243
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d2741ca06458ad70800000000000000
+      internalID: 9054579825008997078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_36
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 243
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4ce1b6e37d9efdb0800000000000000
+      internalID: -4756191035339445170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_37
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 243
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fb84aaa629c66030800000000000000
+      internalID: 3487696129353878518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_38
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 243
+        width: 14
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 113ec43326356bbc0800000000000000
+      internalID: -3767732357016263919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_39
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 243
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46bd25a7f2f0e9c20800000000000000
+      internalID: 3215023880579242852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 207
+        width: 17
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00d863bf009fd4360800000000000000
+      internalID: 7155649165571558656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_41
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 207
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c8a19a86f5ea7510800000000000000
+      internalID: 1547802269004703936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_42
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 207
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c83f270214b2c1140800000000000000
+      internalID: 4691672470530487180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_43
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 207
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b5efdcb2677c5c90800000000000000
+      internalID: -7179732439976122958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_44
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 219
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d836d31e0615f5310800000000000000
+      internalID: 1395923886045750157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_45
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 207
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ffd02ac9cea171e0800000000000000
+      internalID: -2201786561104650253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_46
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 207
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ff8dcdb5342b02e0800000000000000
+      internalID: -2158591783157788685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_47
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 207
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a624d6f0081dfb60800000000000000
+      internalID: 7781402123586250400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_48
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 207
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56a3965eafb854e60800000000000000
+      internalID: 7945911027272071781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_49
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 207
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b14e1f249ace77920800000000000000
+      internalID: 2988117089500390427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_50
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 171
+        width: 21
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6dba93afe59d709e0800000000000000
+      internalID: -1655115336087131178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_51
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 171
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7acb151f7ca827f00800000000000000
+      internalID: 1113104649265724583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_52
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 171
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b7d2e8c6f2b97cb0800000000000000
+      internalID: -4865661149395101768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_53
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 171
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aba878f089b7b7830800000000000000
+      internalID: 4069982581285161658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_54
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 171
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5c51e9b39144bd50800000000000000
+      internalID: 6752093844069768283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_55
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 171
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d544498cc252ab4e0800000000000000
+      internalID: -1965217413119851427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_56
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 171
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05e16ff2d60c8e4a0800000000000000
+      internalID: -6563784881703870896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_57
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 171
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63ac00a10450da3f0800000000000000
+      internalID: -888047778649814474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_58
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 183
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ece8f4bb02a397a30800000000000000
+      internalID: 4213462838637727438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_59
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 171
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 419db2a5755bba4c0800000000000000
+      internalID: -4275124034478548716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_60
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 171
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a0ab25cf6f89f7b0800000000000000
+      internalID: -5189959385355673437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_61
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 171
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ad321c22367a3b60800000000000000
+      internalID: 7726618068567342499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_62
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 171
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8dd8716043345a70800000000000000
+      internalID: 8814726722277137804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_63
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 171
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41469a5a269d6aee0800000000000000
+      internalID: -1250072828839369708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_64
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 135
+        width: 17
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f9baa44b8c430b10800000000000000
+      internalID: 1946483624990390772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_65
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 132
+        width: 18
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a2d777f27c279ae0800000000000000
+      internalID: -1542715475061386591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_66
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 151
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a2f84161b3ae2a60800000000000000
+      internalID: 7651232799185760928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_67
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 135
+        width: 14
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fae0e2121c9ec8a90800000000000000
+      internalID: -7310211079434531153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_68
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 147
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab9a9d20f826eecc0800000000000000
+      internalID: -3679895479147451974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_69
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 135
+        width: 10
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f5f8c0d2578c5be0800000000000000
+      internalID: -1487164987179207181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_70
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 135
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94ea33afe12353620800000000000000
+      internalID: 2753161855835024969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_71
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 135
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db0178c68c6876e30800000000000000
+      internalID: 4496710948325101757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_72
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 135
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 978598ed2c09a0080800000000000000
+      internalID: -9220398120456071047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_73
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 135
+        width: 6
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 088ebc85273410380800000000000000
+      internalID: -9006843621369190272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_74
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 135
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 606966b0213fdf3a0800000000000000
+      internalID: -6629875817593268730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_75
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 135
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5204cdfe86297880800000000000000
+      internalID: -8612810416784670113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_76
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 99
+        width: 21
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44042c191d8ac1aa0800000000000000
+      internalID: -6188886169866846140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_77
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 99
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b53d67b864b0e4de0800000000000000
+      internalID: -1347126840921762981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_78
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 99
+        width: 18
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b102ae46632b02a70800000000000000
+      internalID: 8800229618572992539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_79
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 95
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea5aeeb2d9acbac00800000000000000
+      internalID: 913046125868393902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_80
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 99
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58ee90019aa2c4be0800000000000000
+      internalID: -1491770470959550843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_81
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 95
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adf206d92c979ed90800000000000000
+      internalID: -7067984263410339878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_82
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 115
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8e3c4a4917f7cdc0800000000000000
+      internalID: -3618652087576150388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_83
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 99
+        width: 14
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30b59884388ddcc60800000000000000
+      internalID: 7840160584691178243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_84
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 111
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c59c96ed5c14bf2d0800000000000000
+      internalID: -3243926788494472868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_85
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 99
+        width: 10
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b6b8a30af4363de0800000000000000
+      internalID: -1353836389570398539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_86
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 99
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d94cbc29b967148e0800000000000000
+      internalID: -1710955972869241699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_87
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 99
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24ef2ad4536365b00800000000000000
+      internalID: 816899984978017858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_88
+      rect:
+        serializedVersion: 2
+        x: 223
+        y: 99
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6eb029d91454ebee0800000000000000
+      internalID: -1243480298988893210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_89
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 99
+        width: 6
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f00bb8863a53f2180800000000000000
+      internalID: -9138026142961520625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_90
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 99
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26acc61b674a368f0800000000000000
+      internalID: -548413899919275422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_91
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 99
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2dd4dc5ad03673b0800000000000000
+      internalID: -5515166979250135761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_92
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 49
+        width: 21
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4ccbbc15457613b0800000000000000
+      internalID: -5542113351737553843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_93
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 49
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6e039bdfcc7c66d0800000000000000
+      internalID: -2995882419924300180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_94
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 44
+        width: 22
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85e893ba0ac63c7e0800000000000000
+      internalID: -1746432793166377384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_95
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 49
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa97ee0d430353e70800000000000000
+      internalID: 9094228025946306991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_96
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 49
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c69e001e580b3cc80800000000000000
+      internalID: -8303599198888990356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_97
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 49
+        width: 22
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 634676ce2bb8bca90800000000000000
+      internalID: -7292581571009747914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_98
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 49
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d41a9fbb33252bf50800000000000000
+      internalID: 6895664361608159565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_99
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 49
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26b40a379e7bdec30800000000000000
+      internalID: 4390367425051249506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_100
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 44
+        width: 22
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2221a5e1c119c65d0800000000000000
+      internalID: -3067917696191819230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_101
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 64
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0da5d46eb4acc8d90800000000000000
+      internalID: -7094072885680186672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_102
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 49
+        width: 22
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7e99d61df8fae890800000000000000
+      internalID: -7427850869500436866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_103
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 49
+        width: 27
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5cc0cedf4c3086b0800000000000000
+      internalID: -5296166848050443173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_104
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 49
+        width: 22
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 068297d779a8ba3e0800000000000000
+      internalID: -2041385622832600992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_105
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 49
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cb8a14d99ae082f0800000000000000
+      internalID: -972519573102621758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_106
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 49
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad0cae54b19d217d0800000000000000
+      internalID: -2949056094813896486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_107
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 49
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3acf71520f73c8b10800000000000000
+      internalID: 1985023040317553827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_108
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 26
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f46734f8d62c0cca0800000000000000
+      internalID: -5998580927846713777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_109
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 0
+        width: 27
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddaf8a320e25a3a40800000000000000
+      internalID: 5348678630080314077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_110
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 0
+        width: 27
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 653077664209e28c0800000000000000
+      internalID: -4022118931182976170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_111
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 0
+        width: 22
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab972e5a41d62f970800000000000000
+      internalID: 8787205758403115450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_112
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 0
+        width: 7
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1833f9d4b6dc74360800000000000000
+      internalID: 7153912393848796033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_113
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 0
+        width: 22
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b4db8b685caef920800000000000000
+      internalID: 3026045495400977592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_114
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 14
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6aa41e6bc458d63f0800000000000000
+      internalID: -905921385499374938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_115
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 0
+        width: 22
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b30cd938bbf1f5510800000000000000
+      internalID: 1539984487811498043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_116
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 0
+        width: 12
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbb7d2ec599c10580800000000000000
+      internalID: -8862580946442028099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_117
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 0
+        width: 27
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a38028ff3cff7caa0800000000000000
+      internalID: -6140658349625964486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_118
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 900b10dd7c4ddf160800000000000000
+      internalID: 7061033745658261513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_119
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 0
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f23cb12c7e309c60800000000000000
+      internalID: 7822821255605400312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: costume59_120
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 0
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f29be2e7d61cac390800000000000000
+      internalID: -7797207128826005201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      costume59_0: -4008236665324144420
+      costume59_1: -3753224648472802579
+      costume59_10: 951408024117073534
+      costume59_100: -3067917696191819230
+      costume59_101: -7094072885680186672
+      costume59_102: -7427850869500436866
+      costume59_103: -5296166848050443173
+      costume59_104: -2041385622832600992
+      costume59_105: -972519573102621758
+      costume59_106: -2949056094813896486
+      costume59_107: 1985023040317553827
+      costume59_108: -5998580927846713777
+      costume59_109: 5348678630080314077
+      costume59_11: 3306735850164759127
+      costume59_110: -4022118931182976170
+      costume59_111: 8787205758403115450
+      costume59_112: 7153912393848796033
+      costume59_113: 3026045495400977592
+      costume59_114: -905921385499374938
+      costume59_115: 1539984487811498043
+      costume59_116: -8862580946442028099
+      costume59_117: -6140658349625964486
+      costume59_118: 7061033745658261513
+      costume59_119: 7822821255605400312
+      costume59_12: 2566388607760458882
+      costume59_120: -7797207128826005201
+      costume59_13: -1801860271933171912
+      costume59_14: 4442159544321743386
+      costume59_15: 6618664147878893232
+      costume59_16: -8339929859866231266
+      costume59_17: -4164790290556552873
+      costume59_18: -8147080580751812263
+      costume59_19: 6186683953602824209
+      costume59_2: -8246954739489976143
+      costume59_20: -6412548340844604505
+      costume59_21: 3615949763784918097
+      costume59_22: -4931713375825319529
+      costume59_23: 8610658461834182982
+      costume59_24: 8120331677384906606
+      costume59_25: -199939978113101875
+      costume59_26: 6234585050279651784
+      costume59_27: -5873855999015820655
+      costume59_28: -5026775303969823741
+      costume59_29: 2945889022851582190
+      costume59_3: -8558100063955882205
+      costume59_30: 8909214970126336884
+      costume59_31: 2642649288036695989
+      costume59_32: -7558183700831420572
+      costume59_33: 4849635969849343025
+      costume59_34: 5236923324602540144
+      costume59_35: 9054579825008997078
+      costume59_36: -4756191035339445170
+      costume59_37: 3487696129353878518
+      costume59_38: -3767732357016263919
+      costume59_39: 3215023880579242852
+      costume59_4: -4309271215681669473
+      costume59_40: 7155649165571558656
+      costume59_41: 1547802269004703936
+      costume59_42: 4691672470530487180
+      costume59_43: -7179732439976122958
+      costume59_44: 1395923886045750157
+      costume59_45: -2201786561104650253
+      costume59_46: -2158591783157788685
+      costume59_47: 7781402123586250400
+      costume59_48: 7945911027272071781
+      costume59_49: 2988117089500390427
+      costume59_5: 6728505302383735538
+      costume59_50: -1655115336087131178
+      costume59_51: 1113104649265724583
+      costume59_52: -4865661149395101768
+      costume59_53: 4069982581285161658
+      costume59_54: 6752093844069768283
+      costume59_55: -1965217413119851427
+      costume59_56: -6563784881703870896
+      costume59_57: -888047778649814474
+      costume59_58: 4213462838637727438
+      costume59_59: -4275124034478548716
+      costume59_6: 1917763076737275770
+      costume59_60: -5189959385355673437
+      costume59_61: 7726618068567342499
+      costume59_62: 8814726722277137804
+      costume59_63: -1250072828839369708
+      costume59_64: 1946483624990390772
+      costume59_65: -1542715475061386591
+      costume59_66: 7651232799185760928
+      costume59_67: -7310211079434531153
+      costume59_68: -3679895479147451974
+      costume59_69: -1487164987179207181
+      costume59_7: -418190126850717115
+      costume59_70: 2753161855835024969
+      costume59_71: 4496710948325101757
+      costume59_72: -9220398120456071047
+      costume59_73: -9006843621369190272
+      costume59_74: -6629875817593268730
+      costume59_75: -8612810416784670113
+      costume59_76: -6188886169866846140
+      costume59_77: -1347126840921762981
+      costume59_78: 8800229618572992539
+      costume59_79: 913046125868393902
+      costume59_8: -4155858804801338679
+      costume59_80: -1491770470959550843
+      costume59_81: -7067984263410339878
+      costume59_82: -3618652087576150388
+      costume59_83: 7840160584691178243
+      costume59_84: -3243926788494472868
+      costume59_85: -1353836389570398539
+      costume59_86: -1710955972869241699
+      costume59_87: 816899984978017858
+      costume59_88: -1243480298988893210
+      costume59_89: -9138026142961520625
+      costume59_9: 8599743236068658033
+      costume59_90: -548413899919275422
+      costume59_91: -5515166979250135761
+      costume59_92: -5542113351737553843
+      costume59_93: -2995882419924300180
+      costume59_94: -1746432793166377384
+      costume59_95: 9094228025946306991
+      costume59_96: -8303599198888990356
+      costume59_97: -7292581571009747914
+      costume59_98: 6895664361608159565
+      costume59_99: 4390367425051249506
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
