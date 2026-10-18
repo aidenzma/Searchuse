@@ -54,10 +54,11 @@ Credits:
 - Some items are inspired by the games mentioned above such as Invis Pot, Bandages, AWP, etc.
 
 AI Assistance:
+
 I used Google Gemini throughout development, primarily to learn the syntax and concepts behind C#.
 
 - General programming: Used AI for lower-level tasks, such as positioning objects in the game.
-- Multiplayer networking: Used AI to help me configure the online relay system. I tested generated code, reported errors, and iterated on the results.
-- Neural-network AI: AI developed the initial neural network logic, which I subsequently modified to fit the game, incorporating game-specific info like airdrop locations and inferred enemy states. 
+- Multiplayer networking: Used AI to help me configure the online relay system. I tested generated code, reported errors, and iterated on the results. (Seen in RelayScript.cs)
+- Neural-network AI: AI developed the initial neural network logic, which I subsequently modified to fit the game, incorporating game-specific info like airdrop locations and inferred enemy states. (Seen in BotBrain.cs)
 - Build process: Used AI extensively to configure builds for Linux and Web.
 - Original work: Most of the code and all of the art assets were created by me.
