@@ -69,6 +69,6 @@ Code Highlights:
 
 For anyone interested in the technical implementation, here are some of the most interesting parts of Searchuse's codebase.
 
-- Main script: [LocalScript.cs](Assets/Scripts/LocalScript.cs)- The main script handling much of the game's core mechanics, including the grid-based vision system ([lines 8155-8925](Assets/Scripts/LocalScript.cs#L8155-L8925)).
-- Hardcoded bot logic: [BotScript.cs](Assets/Scripts/BotScript.cs)- Contains the decision-making logic of the hardcoded bot.
-- Neural-network bot logic: [BotBrain.cs](Assets/Scripts/BotBrain.cs)- Contains the decision-making logic of the neural-network bot. 
+- Main script: [LocalScript.cs](Assets/Scripts/LocalScript.cs) - The main script handling much of the game's core mechanics, including the grid-based vision system ([lines 8155-8925](Assets/Scripts/LocalScript.cs#L8155-L8925)).
+- Hardcoded bot logic: [BotScript.cs](Assets/Scripts/BotScript.cs) - Contains the decision-making logic of the hardcoded bot.
+- Neural-network bot logic: [BotBrain.cs](Assets/Scripts/BotBrain.cs) - Contains the decision-making logic of the neural-network bot. 
