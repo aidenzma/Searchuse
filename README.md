@@ -50,10 +50,10 @@ Controls:
 - If the screen is stuck in fullscreen press alt + shift + enter to exit
 
 Credits:
-- Some sound effects are from games such as Minecraft, CS2, Last Day on Earth, etc.
-- Some items are inspired by the games mentioned above such as Invis Pot, Bandages, AWP, etc.
+- Some sound effects are from games such as Minecraft, CS2, Last Day on Earth, and other games.
+- Some items are inspired by the games mentioned above such as Invis Pot, Bandages, AWP, and other items.
 - The Invis Pot artwork was redrawn by me using Minecraft's invisibility potion as a reference, including its colors.
-- I learned the Unity interface using [this tutorial](https://youtu.be/HwI90YLqMaY?si=SB3Whnh2m-d1OLkO).
+- I learned the Unity interface using [this YouTube tutorial series](https://youtu.be/HwI90YLqMaY?si=SB3Whnh2m-d1OLkO).
 
 AI Assistance:
 
