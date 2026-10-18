@@ -53,9 +53,11 @@ Credits:
 - Some sound effects are from games such as Minecraft, CS2, Last Day on Earth, etc.
 - Some items are inspired by the games mentioned above such as Invis Pot, Bandages, AWP, etc.
 
-AI:
-- I used AI for low-level help such as setting the positions of objects in game
-- AI helped me configure the online relay feature of the game
-- AI heavily helped me with the neural network logic
-- AI helped me a lot in the build process for Linux and Web
-- Most of the code and all of the art assets were made by me
+AI Assistance:
+I used Google Gemini throughout development, primarily to learn the syntax and concepts behind C#.
+
+- General programming: Used AI for lower-level tasks, such as positioning objects in the game.
+- Multiplayer networking: Used AI to help me configure the online relay system. I tested generated code, reported errors, and iterated on the results.
+- Neural-network AI: AI developed the initial neural network logic, which I subsequently modified to fit the game, incorporating game-specific info like airdrop locations and inferred enemy states. 
+- Build process: Used AI extensively to configure builds for Linux and Web.
+- Original work: Most of the code and all of the art assets were created by me.
