@@ -60,7 +60,15 @@ AI Assistance:
 I used Google Gemini throughout development, primarily to learn the syntax and concepts behind C#.
 
 - General programming: Used Gemini for lower-level tasks, such as positioning objects in the game.
-- Multiplayer networking: Used Gemini to help me configure the online relay system. I tested generated code, reported errors, and iterated on the results. (See [RelayScript.cs](Scripts/RelayScript.cs))
-- Neural-network AI: Gemini generated the initial neural network implementation, which I subsequently modified to fit the game, incorporating game-specific info like airdrop locations, inferred enemy states, and other mechanics. (See [BotBrain.cs](Scripts/BotBrain.cs))
+- Multiplayer networking: Used Gemini to help me configure the online relay system. I tested generated code, reported errors, and iterated on the results. (See [RelayScript.cs](Assets/Scripts/RelayScript.cs))
+- Neural-network AI: Gemini generated the initial neural network implementation, which I subsequently modified to fit the game, incorporating game-specific info like airdrop locations, inferred enemy states, and other mechanics. (See [BotBrain.cs](Assets/Scripts/BotBrain.cs))
 - Build process: Used Gemini extensively to configure builds for Linux and Web.
 - Original work: Most of the code and all of the art assets were created by me.
+
+Code Highlights:
+
+For anyone interested in the technical implementation, here are some of the most interesting parts of Searchuse's codebase.
+
+- Main script: [LocalScript.cs](Assets/Scripts/LocalScript.cs)- The main script handling much of the game's core mechanics. It contains the grid-based vision system, which is found on lines ....
+- Hardcoded bot logic: [BotScript.cs](Assets/Scripts/BotScript.cs)- Where the decisions of the hardcoded bot are made.
+- Neural-network bot logic: [BotBrain.cs](Assets/Scripts/BotBrain.cs)- Where the decisions of the neural network bot are made. 
