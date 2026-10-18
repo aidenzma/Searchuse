@@ -51,7 +51,7 @@ Controls:
 
 Credits:
 - Some sound effects are from games such as Minecraft, CS2, Last Day on Earth, and other games.
-- Some items, such as Invis Pot, Bandages, and AWP, were inspired by the games mentioned above.
+- Some items, such as Invis Pot, AWP, and Bandages, were inspired by the games mentioned above.
 - The Invis Pot artwork was redrawn by me using Minecraft's invisibility potion as a reference, including its colors.
 - I learned the Unity interface using [this YouTube tutorial series](https://youtu.be/HwI90YLqMaY?si=SB3Whnh2m-d1OLkO).
 
