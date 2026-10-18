@@ -59,6 +59,6 @@ I used Google Gemini throughout development, primarily to learn the syntax and c
 
 - General programming: Used Gemini for lower-level tasks, such as positioning objects in the game.
 - Multiplayer networking: Used Gemini to help me configure the online relay system. I tested generated code, reported errors, and iterated on the results. (See [RelayScript.cs](Scripts/RelayScript.cs))
-- Neural-network AI: Gemini generated the initial neural network implementation, which I subsequently modified to fit the game, incorporating game-specific info like airdrop locations and inferred enemy states. (See [BotBrain.cs](Scripts/BotBrain.cs))
+- Neural-network AI: Gemini generated the initial neural network implementation, which I subsequently modified to fit the game, incorporating game-specific info like airdrop locations, inferred enemy states, and other mechanics. (See [BotBrain.cs](Scripts/BotBrain.cs))
 - Build process: Used Gemini extensively to configure builds for Linux and Web.
 - Original work: Most of the code and all of the art assets were created by me.
